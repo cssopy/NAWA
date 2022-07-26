@@ -2,15 +2,20 @@ package com.ssafy.five.entity;
 
 
 import com.sun.istack.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Entity
 @Table(name = "block")
@@ -18,28 +23,28 @@ public class Block {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
+    @Column(name = "blockId", nullable = false)
     private Long blockId;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId", nullable = false)
-    @Column(name = "blockFrom") // length 넣을까 뺄까
-    private User user1;
+    @JoinColumn(name = "userId")
+    @Column(name = "blockFrom", nullable = false, columnDefinition = "varchar(20)")
+    private User blockFrom;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId", nullable = false)
-    @Column(name = "blockTo") // length 넣을까 뺄까
-    private User user2;
+    @JoinColumn(name = "userId")
+    @Column(name = "blockTo", nullable = false, columnDefinition = "varchar(20)")
+    private User blockTo;
 
 
-    @Column(name = "blockMemo", columnDefinition = "varchar(100)")
-    private String memo;
+    @Column(name = "blockMemo", nullable = false, columnDefinition = "varchar(100)")
+    private String blockMemo;
 
 
-    @Column(name = "blockDate", columnDefinition = "timestamp")
-    private LocalDateTime date;
+    @Column(name = "blockDate", nullable = false, columnDefinition = "timestamp")
+    private LocalDateTime blockDate;
 }

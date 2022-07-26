@@ -16,20 +16,24 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "calendar")
 public class Calendar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "calId", nullable = false)
     private Long calId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
-    @Column(name = "userId", nullable = false)
+    @Column(name = "userId", nullable = false, columnDefinition = "varchar(20)")
     private User userId;
 
     @Column(name = "calContent", nullable = false, columnDefinition = "varchar(255)")
     private String calContent;
 
+
+    // 협의 필요
     private LocalDateTime calDate;
 }

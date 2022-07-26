@@ -19,33 +19,37 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "boardId", nullable = false)
     private Long boardId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
     @Column(name = "userId", nullable = false, columnDefinition = "varchar(20)")
-    private User user;
+    private User userId;
 
-    @Column(name = "boardTitle", columnDefinition = "varchar(20)", nullable = false)
+    @Column(name = "boardTitle", nullable = false, columnDefinition = "varchar(20)")
     private String boardTitle;
 
-    @Column(name = "boardContent", columnDefinition = "text")
+    @Column(name = "boardContent", nullable = false, columnDefinition = "text")
     private String boardContent;
 
+    // 협의 필요
     @Column(name = "boardDate", nullable = false)
     private LocalDateTime boardDate;
 
+    // 협의 필요
     @Column(name = "boardUpdate", nullable = false)
     private LocalDateTime boardUpdate;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "boardType", nullable = false)
     private BOARDTYPE boardType;
 
-    @Column(name = "boardHit", nullable = false)
+    @Column(name = "boardHit", nullable = false, columnDefinition = "int")
     private int boardHit;
 
-    @Column(name = "boardLikes", nullable = false)
+    @Column(name = "boardLikes", nullable = false, columnDefinition = "int")
     private int boardLikes;
 
     public enum BOARDTYPE {
