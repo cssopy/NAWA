@@ -1,15 +1,20 @@
 package com.ssafy.five.entity;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
-
 @Getter
+@Builder
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "mate")
 public class Mate {
 
@@ -20,13 +25,15 @@ public class Mate {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userId")
+    @Column(name = "mateUserId1", nullable = false)
     private User user1;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userId")
+    @Column(name = "mateUserId2", nullable = false)
     private User user2;
 
 }

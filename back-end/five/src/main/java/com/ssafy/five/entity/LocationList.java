@@ -21,15 +21,16 @@ public class LocationList {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
+    @Column(name = "userId", nullable = false)
     private User user;
 
-    @Column(name = "locAddres", length = 255)
+    @Column(name = "locAddres", columnDefinition = "varchar(255)", nullable = false)
     private String locAddress;
 
-    @Column(name = "locLat")
+    @Column(name = "locLat", nullable = false)
     private float locLat;
 
-    @Column(name = "locLng")
+    @Column(name = "locLng", nullable = false)
     private float locLng;
 
 }

@@ -21,12 +21,14 @@ public class LikeBoard {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
+    @Column(name = "userId", nullable = false)
     private User user;
 
     // 피드백 필요
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "boardId")
+    @Column(name = "boardId", nullable = false)
     private Board board;
 
 }

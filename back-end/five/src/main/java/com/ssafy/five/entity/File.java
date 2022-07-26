@@ -21,15 +21,17 @@ public class File {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "boardId")
+    @Column(name = "boardId", nullable = false)
     private Board board;
 
-    @Column(name = "fileName", length = 255)
+    @Column(name = "fileName", columnDefinition = "varchar(255)", nullable = false)
     private String fileName;
 
-    @Column(name = "filePath", length = 100)
+    @Column(name = "filePath", columnDefinition = "varchar(100)", nullable = false)
     private String filePath;
 
-    @Column(name = "fileType")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "fileType", nullable = false)
     private FILETYPE fileType;
 
     private enum FILETYPE {
