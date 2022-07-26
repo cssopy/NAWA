@@ -24,10 +24,10 @@ public class Comment {
     @JoinColumn(name = "boardId")
     private Board board;
 
-    @Column(name = "cmtContent", length = 600)
+    @Column(name = "cmtContent", columnDefinition = "varchar(600)")
     private String cmtContent;
 
-    @Column(name = "userId", length = 40)
+    @Column(name = "userId", columnDefinition = "varchar(40)")
     private String userId;
 
     @Column(name = "cmtDate")

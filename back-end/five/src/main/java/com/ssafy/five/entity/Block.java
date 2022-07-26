@@ -1,12 +1,14 @@
 package com.ssafy.five.entity;
 
 
+import com.sun.istack.NotNull;
 import lombok.Getter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -16,18 +18,21 @@ public class Block {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull
     private Long blockId;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "blockFrom", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
+    @Column(name = "blockFrom") // length 넣을까 뺄까
     private User user1;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "blockTo", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
+    @Column(name = "blockTo") // length 넣을까 뺄까
     private User user2;
 
 
@@ -36,5 +41,5 @@ public class Block {
 
 
     @Column(name = "blockDate", columnDefinition = "timestamp")
-    private Timestamp date;
+    private LocalDateTime date;
 }

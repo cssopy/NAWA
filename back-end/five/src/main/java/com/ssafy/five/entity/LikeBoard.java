@@ -25,6 +25,7 @@ public class LikeBoard {
 
     // 피드백 필요
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "boardId")
     private Board board;
 

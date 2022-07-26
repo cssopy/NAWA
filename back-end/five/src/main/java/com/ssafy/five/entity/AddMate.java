@@ -15,18 +15,21 @@ public class AddMate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "addMateId", nullable = false)
     private Long mateId;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "addMateFrom", nullable = false)
+    @JoinColumn(name = "userId")
+    @Column(name = "addMateFrom",nullable = false, length = 20)
     private User user1;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "addMateTo", nullable = false)
+    @JoinColumn(name = "userId")
+    @Column(name = "addMateTo", nullable = false, length = 20)
     private User user2;
 
 }

@@ -19,16 +19,13 @@ public class Room {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.NO_ACTION)
-    @JoinColumn(name = "roomUserId1", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User user1;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.NO_ACTION)
-    @JoinColumn(name = "roomUserId2", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User user2;
 
-
-    @OneToMany(mappedBy = "roomId")
-    private Set<Chat> chatId;
 }

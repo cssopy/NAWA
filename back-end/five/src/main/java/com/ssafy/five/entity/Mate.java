@@ -20,13 +20,13 @@ public class Mate {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "mateUserId1", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User user1;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "mateUserId2", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User user2;
 
 }

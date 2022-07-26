@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.File;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,14 +77,14 @@ public class User {
     private int reportCount;
 
     // 정지 해제일
-    private Timestamp endDate;
+    private LocalDateTime endDate;
 
     // 역할
     @Column(nullable = false, length = 15)
     private String role;
 
     private enum State{
-        NORMAL, STOP
+        NORMAL, STOPPED
     }
 
     private enum Gender{
