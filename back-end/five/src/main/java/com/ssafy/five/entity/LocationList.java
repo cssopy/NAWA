@@ -1,14 +1,16 @@
 package com.ssafy.five.entity;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
+@Builder
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "location_list")
 public class LocationList {
 
@@ -17,6 +19,7 @@ public class LocationList {
     private Long locId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
     private User user;
 
@@ -24,9 +27,9 @@ public class LocationList {
     private String locAddress;
 
     @Column(name = "locLat")
-    private 보류 locLat;
+    private float locLat;
 
     @Column(name = "locLng")
-    private 보류 locLng;
+    private float locLng;
 
 }
