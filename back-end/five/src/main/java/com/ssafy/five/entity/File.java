@@ -16,22 +16,23 @@ public class File {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "fileId", nullable = false, columnDefinition = "Long")
     private Long fileId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "boardId")
-    @Column(name = "boardId", nullable = false)
+    @Column(name = "boardId", nullable = false, columnDefinition = "Long")
     private Board board;
 
-    @Column(name = "fileName", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "fileName", nullable = false, columnDefinition = "varchar(255)")
     private String fileName;
 
-    @Column(name = "filePath", columnDefinition = "varchar(100)", nullable = false)
+    @Column(name = "filePath", nullable = false, columnDefinition = "varchar(100)")
     private String filePath;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "fileType", nullable = false)
+    @Column(name = "fileType", nullable = false, columnDefinition = "enum")
     private FILETYPE fileType;
 
     private enum FILETYPE {

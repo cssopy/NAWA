@@ -21,7 +21,7 @@ public class AddMate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "addMateId", nullable = false)
+    @Column(name = "addMateId", nullable = false, columnDefinition = "Long")
     private Long addMateId;
 
 

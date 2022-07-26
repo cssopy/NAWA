@@ -23,19 +23,19 @@ public class Chat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chatId", nullable = false)
+    @Column(name = "chatId", nullable = false, columnDefinition = "Long")
     private Long chatId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @JoinColumn(name = "roomId")
-    @Column(name = "roomId", nullable = false)
+    @Column(name = "roomId", nullable = false, columnDefinition = "Long")
     private Room roomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @JoinColumn(name = "userId")
-    @Column(name = "userId", nullable = false)
+    @Column(name = "userId", nullable = false, columnDefinition = "varchar(20)")
     private User userId;
 
 
