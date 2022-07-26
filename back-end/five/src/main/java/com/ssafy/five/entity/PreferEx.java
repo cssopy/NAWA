@@ -33,7 +33,7 @@ public class PreferEx {
 
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ex", columnDefinition = "enum")
+    @Column(name = "ex", nullable = false, columnDefinition = "enum")
     private PREFER_EX prefer;
 
 

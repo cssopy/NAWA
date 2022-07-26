@@ -19,7 +19,7 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "boardId", nullable = false)
+    @Column(name = "boardId", nullable = false, columnDefinition = "Long")
     private Long boardId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,7 +43,7 @@ public class Board {
     private LocalDateTime boardUpdate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "boardType", nullable = false)
+    @Column(name = "boardType", nullable = false, columnDefinition = "enum")
     private BOARDTYPE boardType;
 
     @Column(name = "boardHit", nullable = false, columnDefinition = "int")

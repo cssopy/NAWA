@@ -23,7 +23,7 @@ public class Block {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "blockId", nullable = false)
+    @Column(name = "blockId", nullable = false, columnDefinition = "Long")
     private Long blockId;
 
 

@@ -17,18 +17,19 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cmtId", nullable = false, columnDefinition = "Long")
     private Long cmtId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "boardId")
-    @Column(name = "boardId", nullable = false)
+    @Column(name = "boardId", nullable = false, columnDefinition = "Long")
     private Board board;
 
-    @Column(name = "cmtContent", columnDefinition = "varchar(600)", nullable = false)
+    @Column(name = "cmtContent", nullable = false, columnDefinition = "varchar(600)")
     private String cmtContent;
 
-    @Column(name = "userId", columnDefinition = "varchar(40)", nullable = false)
+    @Column(name = "userId", nullable = false, columnDefinition = "varchar(40)")
     private String userId;
 
     @Column(name = "cmtDate", nullable = false)
