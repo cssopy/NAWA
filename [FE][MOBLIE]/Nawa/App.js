@@ -1,50 +1,31 @@
+import 'react-native-gesture-handler';
+
 import * as React from 'react';
-import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStack } from '@react-navigation/native-stack';
 
+import { Button, View } from 'react-native';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
-
-
-function HomeScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Home!</Text>
-    </View>
-  );
-}
-
-function MatingScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Mating!</Text>
-    </View>
-  );
-}
-function ChattingScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Chatting!</Text>
-    </View>
-  );
-}
-function SettingsScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
-    </View>
-  );
-}
+import HomeScreen from './src/screens/HomeScreen';
+import MatingScreen from './src/screens/MatingScreen';
+import ChattingScreen from './src/screens/ChattingScreen';
+import SettingScreen from './src/screens/SettingScreen';
 
 const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
+
 
 export default function App() {
   return (
     <>
       <NavigationContainer>
-          <Tab.Navigator
+        {/* <Drawer.Navigator>
+        </Drawer.Navigator> */}
+
+        <Tab.Navigator
             screenOptions={({ route }) => ({
               tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
@@ -64,13 +45,14 @@ export default function App() {
               tabBarInactiveTintColor : 'grey',  // 활성화 안된 탭 색
               tabBarActiveBackgroundColor : 'lightgrey', // 개별 탭 색
               headerShown : false,
+              tabBarHideOnKeyboard : true,
             })}
           >
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Mating" component={MatingScreen} />
             <Tab.Screen name="Chatting" component={ChattingScreen} options={{ tabBarBadge: 10 }} />
-            <Tab.Screen name="Settings" component={SettingsScreen} />
-          </Tab.Navigator>
+            <Tab.Screen name="Settings" component={SettingScreen} />
+        </Tab.Navigator>
       </NavigationContainer>
     </>
   );
