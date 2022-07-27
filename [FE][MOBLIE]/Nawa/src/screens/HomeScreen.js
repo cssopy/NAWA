@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { SafeAreaView, Text, Animated, View, StyleSheet } from "react-native";
 
+import FeedItem from '../components/FeedItem';
 import Search from "../components/Search";
 import UserIcon from "../components/userIcon";
 
@@ -69,9 +70,10 @@ const HomeScreen = () => {
           scrollEventThrottle={16}
           bounces={false}
         >
-          {Array.from(Array(100), (e, key) => (
-            <Text key={key}>contents {key}</Text>
-          ))}
+          <FeedItem />
+          <FeedItem />
+          <FeedItem />
+          <FeedItem />
         </Animated.ScrollView>
       </View>
     </SafeAreaView>
