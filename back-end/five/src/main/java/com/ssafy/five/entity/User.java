@@ -5,6 +5,9 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Builder
@@ -80,6 +83,13 @@ public class User {
     // 역할
     @Column(name = "role", nullable = false, columnDefinition = "varchar(15)")
     private String role;
+
+    public List<String> getRoleList(){
+        if(this.role.length() > 0){
+            return Arrays.asList(this.role.split(","));
+        }
+        return new ArrayList<>();
+    }
 
     private enum State{
         NORMAL, STOPPED
