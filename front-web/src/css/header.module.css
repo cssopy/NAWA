@@ -1,0 +1,20 @@
+.backgroundWrap {
+    background-image: url('../../public/img/HomeImg.png');
+    /* background-size: 500px 196px; */
+    width: auto;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.content span {
+    color: white;
+    text-align: center;
+    font-size: 50px;
+}
