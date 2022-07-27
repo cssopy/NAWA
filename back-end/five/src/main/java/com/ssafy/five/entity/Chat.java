@@ -44,6 +44,6 @@ public class Chat {
 
 
     // 협의 필요
-    @Column(name = "chatDate", nullable = false, columnDefinition = "timestamp")
+    @Column(name = "chatDate", nullable = false, columnDefinition = "LocalDateTime")
     private LocalDateTime chatDate;
 }

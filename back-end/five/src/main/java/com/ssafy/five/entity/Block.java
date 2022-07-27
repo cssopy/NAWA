@@ -45,6 +45,6 @@ public class Block {
     private String blockMemo;
 
 
-    @Column(name = "blockDate", nullable = false, columnDefinition = "timestamp")
+    @Column(name = "blockDate", nullable = false, columnDefinition = "LocalDateTime")
     private LocalDateTime blockDate;
 }

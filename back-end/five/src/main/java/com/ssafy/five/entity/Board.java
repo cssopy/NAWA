@@ -35,11 +35,11 @@ public class Board {
     private String boardContent;
 
     // 협의 필요
-    @Column(name = "boardDate", nullable = false)
+    @Column(name = "boardDate", nullable = false, columnDefinition = "LocalDateTime")
     private LocalDateTime boardDate;
 
     // 협의 필요
-    @Column(name = "boardUpdate", nullable = false)
+    @Column(name = "boardUpdate", nullable = false, columnDefinition = "LocalDateTime")
     private LocalDateTime boardUpdate;
 
     @Enumerated(EnumType.STRING)
