@@ -32,10 +32,10 @@ public class Comment {
     @Column(name = "userId", nullable = false, columnDefinition = "varchar(40)")
     private String userId;
 
-    @Column(name = "cmtDate", nullable = false)
+    @Column(name = "cmtDate", nullable = false, columnDefinition = "LocalDateTime")
     private LocalDateTime cmtDate;
 
-    @Column(name = "cmtUpdate", nullable = false)
+    @Column(name = "cmtUpdate", nullable = false, columnDefinition = "LocalDateTime")
     private LocalDateTime cmtUpdate;
 
 }

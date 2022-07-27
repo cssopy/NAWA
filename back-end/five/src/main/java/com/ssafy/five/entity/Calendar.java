@@ -35,5 +35,6 @@ public class Calendar {
 
 
     // 협의 필요
+    @Column(name = "calDate", nullable = false, columnDefinition = "LocalDateTime")
     private LocalDateTime calDate;
 }
