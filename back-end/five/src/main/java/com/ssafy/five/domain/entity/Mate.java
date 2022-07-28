@@ -1,4 +1,4 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 
 import com.sun.istack.NotNull;
@@ -12,30 +12,30 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Entity
-@Table(name = "add_mate")
-public class AddMate {
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "mate")
+public class Mate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "addMateId", nullable = false, columnDefinition = "Long")
-    private Long addMateId;
+    @Column(name = "mateId", nullable = false, columnDefinition = "int")
+    private Long mateId;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId")
-    @Column(name = "addMateFrom",nullable = false, columnDefinition = "varchar(20)")
-    private User addMateFrom;
+    @JoinColumn(name = "mateUserId1")
+    @NotNull
+    private Users users1;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId")
-    @Column(name = "addMateTo", nullable = false, columnDefinition = "varchar(20)")
-    private User addMateTo;
+    @JoinColumn(name = "mateUserId2")
+    @NotNull
+    private Users users2;
 
 }

@@ -1,8 +1,10 @@
 package com.ssafy.five.config.jwt;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.five.config.auth.PrincipalDetails;
-import com.ssafy.five.entity.User;
+import com.ssafy.five.domain.entity.Users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,10 +29,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         System.out.println("JwtAuthenticationFilter.attemptAuthentication");
         try {
             ObjectMapper om = new ObjectMapper();
-            User user = om.readValue(request.getInputStream(), User.class);
-            System.out.println("user = " + user);
+            Users users = om.readValue(request.getInputStream(), Users.class);
+            System.out.println("user = " + users);
 
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUserId(), user.getPassword());
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(users.getUserId(), users.getPassword());
 
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
 

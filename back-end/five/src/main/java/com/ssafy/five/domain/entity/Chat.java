@@ -1,6 +1,7 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +11,6 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 
 @Builder
@@ -23,20 +23,20 @@ public class Chat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chatId", nullable = false, columnDefinition = "Long")
+    @Column(name = "chatId", nullable = false, columnDefinition = "int")
     private Long chatId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @JoinColumn(name = "roomId")
-    @Column(name = "roomId", nullable = false, columnDefinition = "Long")
+    @NotNull
     private Room roomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @JoinColumn(name = "userId")
-    @Column(name = "userId", nullable = false, columnDefinition = "varchar(20)")
-    private User userId;
+    @NotNull
+    private Users users;
 
 
     @Column(name = "chatContent", nullable = false, columnDefinition = "text")
@@ -44,6 +44,6 @@ public class Chat {
 
 
     // 협의 필요
-    @Column(name = "chatDate", nullable = false, columnDefinition = "LocalDateTime")
+    @Column(name = "chatDate", nullable = false, columnDefinition = "timestamp")
     private LocalDateTime chatDate;
 }

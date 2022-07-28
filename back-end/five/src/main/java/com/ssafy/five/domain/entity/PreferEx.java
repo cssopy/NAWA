@@ -1,6 +1,7 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,24 +22,18 @@ public class PreferEx {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "preferId", nullable = false, columnDefinition = "Long")
+    @Column(name = "preferId", nullable = false, columnDefinition = "int")
     private Long preferId;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
-    @Column(name = "userId", nullable = false, columnDefinition = "varchar(20)")
-    private User user;
+    @NotNull
+    private Users users;
 
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ex", nullable = false, columnDefinition = "enum")
-    private PREFER_EX prefer;
-
-
-    public enum PREFER_EX {
-        BASEBALL, HIKING, TENNIS, CYCLING, SKATING, RUNNING, JOGGING, WALKING, WALK_WITH_PET, GYM, SWIMMING, BADMINTON,
-        SOCCER, BOWLING, SQUASH, BILLIARDS
-    }
+    @Column(name = "ex", nullable = false)
+    private Prefer prefer;
 }

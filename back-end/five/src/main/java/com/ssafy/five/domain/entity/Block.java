@@ -1,4 +1,4 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 
 import com.sun.istack.NotNull;
@@ -23,28 +23,28 @@ public class Block {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "blockId", nullable = false, columnDefinition = "Long")
+    @Column(name = "blockId", columnDefinition = "int")
     private Long blockId;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId")
-    @Column(name = "blockFrom", nullable = false, columnDefinition = "varchar(20)")
-    private User blockFrom;
+    @JoinColumn(name = "blockFrom")
+    @NotNull
+    private Users blockFrom;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId")
-    @Column(name = "blockTo", nullable = false, columnDefinition = "varchar(20)")
-    private User blockTo;
+    @JoinColumn(name = "blockTo")
+    @NotNull
+    private Users blockTo;
 
 
     @Column(name = "blockMemo", nullable = false, columnDefinition = "varchar(100)")
     private String blockMemo;
 
 
-    @Column(name = "blockDate", nullable = false, columnDefinition = "LocalDateTime")
+    @Column(name = "blockDate", nullable = false, columnDefinition = "timestamp")
     private LocalDateTime blockDate;
 }

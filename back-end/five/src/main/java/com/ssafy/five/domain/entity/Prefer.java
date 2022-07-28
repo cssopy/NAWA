@@ -1,0 +1,6 @@
+package com.ssafy.five.domain.entity;
+
+public enum Prefer {
+    BASEBALL, HIKING, TENNIS, CYCLING, SKATING, RUNNING, JOGGING, WALKING, WALK_WITH_PET, GYM, SWIMMING, BADMINTON,
+    SOCCER, BOWLING, SQUASH, BILLIARDS
+}

@@ -1,5 +1,6 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
+import com.sun.istack.NotNull;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -16,13 +17,13 @@ public class File {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "fileId", nullable = false, columnDefinition = "Long")
+    @Column(name = "fileId", nullable = false, columnDefinition = "int")
     private Long fileId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "boardId")
-    @Column(name = "boardId", nullable = false, columnDefinition = "Long")
+    @NotNull
     private Board board;
 
     @Column(name = "fileName", nullable = false, columnDefinition = "varchar(255)")
@@ -32,11 +33,7 @@ public class File {
     private String filePath;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "fileType", nullable = false, columnDefinition = "enum")
-    private FILETYPE fileType;
-
-    private enum FILETYPE {
-        GENERAL, VIDEO
-    }
+    @Column(name = "fileType", nullable = false)
+    private FileType fileType;
 
 }

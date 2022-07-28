@@ -1,4 +1,4 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 import lombok.*;
 
@@ -14,8 +14,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user")
-public class User {
+@Table(name = "users")
+public class Users {
 
     // 유저 아이디
     @Id
@@ -56,7 +56,7 @@ public class User {
 
     // 성별
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender", nullable = false, columnDefinition = "enum")
+    @Column(name = "gender", nullable = false)
     private Gender gender;
 
     // 사진
@@ -69,7 +69,7 @@ public class User {
 
     // 사용자 상태
     @Enumerated(EnumType.STRING)
-    @Column(name = "state", nullable = false, columnDefinition = "enum")
+    @Column(name = "state", nullable = false)
     private State state;
 
     // 신고 횟수
@@ -77,7 +77,7 @@ public class User {
     private int reportCount;
 
     // 정지 해제일
-    @Column(name = "endDate", columnDefinition = "LocalDateTime")
+    @Column(name = "endDate", columnDefinition = "timestamp")
     private LocalDateTime endDate;
 
     // 역할
@@ -89,13 +89,5 @@ public class User {
             return Arrays.asList(this.role.split(","));
         }
         return new ArrayList<>();
-    }
-
-    private enum State{
-        NORMAL, STOPPED
-    }
-
-    private enum Gender{
-        MAN, WOMAN
     }
 }

@@ -1,7 +1,10 @@
 package com.ssafy.five.config.jwt;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.ssafy.five.config.auth.PrincipalDetails;
-import com.ssafy.five.entity.User;
+import com.ssafy.five.domain.entity.Users;
+import com.ssafy.five.domain.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,8 +16,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-import static org.springframework.security.config.Elements.JWT;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -45,9 +46,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         // 서명이 정장적으로 됨
         if(userId != null){
-            User userEntity = userRepository.findByUserId(userId);
+            Users usersEntity = userRepository.findByUserId(userId);
 
-            PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
+            PrincipalDetails principalDetails = new PrincipalDetails(usersEntity);
 
             // Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다
             Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
