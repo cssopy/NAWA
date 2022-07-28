@@ -6,7 +6,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Builder
@@ -25,8 +24,8 @@ public class Board {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
-    @Column(name = "userId", nullable = false, columnDefinition = "varchar(20)")
-    private User userId;
+    @NotNull
+    private Users usersId;
 
     @Column(name = "boardTitle", nullable = false, columnDefinition = "varchar(20)")
     private String boardTitle;

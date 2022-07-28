@@ -1,5 +1,6 @@
 package com.ssafy.five.entity;
 
+import com.sun.istack.NotNull;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -22,8 +23,8 @@ public class LocationList {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
-    @Column(name = "userId", nullable = false, columnDefinition = "varchar(20)")
-    private User user;
+    @NotNull
+    private Users usersId;
 
     @Column(name = "locAddres", nullable = false, columnDefinition = "varchar(255)")
     private String locAddress;

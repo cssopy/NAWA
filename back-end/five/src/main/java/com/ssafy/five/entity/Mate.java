@@ -1,6 +1,7 @@
 package com.ssafy.five.entity;
 
 
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,15 +27,15 @@ public class Mate {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId")
-    @Column(name = "mateUserId1", nullable = false, columnDefinition = "varchar(20)")
-    private User user1;
+    @JoinColumn(name = "mateUserId1")
+    @NotNull
+    private Users users1;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId")
-    @Column(name = "mateUserId2", nullable = false, columnDefinition = "varchar(20)")
-    private User user2;
+    @JoinColumn(name = "mateUserId2")
+    @NotNull
+    private Users users2;
 
 }

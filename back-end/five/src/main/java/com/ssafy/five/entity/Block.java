@@ -29,16 +29,16 @@ public class Block {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId")
-    @Column(name = "blockFrom", nullable = false, columnDefinition = "varchar(20)")
-    private User blockFrom;
+    @JoinColumn(name = "blockFrom")
+    @NotNull
+    private Users blockFrom;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId")
-    @Column(name = "blockTo", nullable = false, columnDefinition = "varchar(20)")
-    private User blockTo;
+    @JoinColumn(name = "blockTo")
+    @NotNull
+    private Users blockTo;
 
 
     @Column(name = "blockMemo", nullable = false, columnDefinition = "varchar(100)")

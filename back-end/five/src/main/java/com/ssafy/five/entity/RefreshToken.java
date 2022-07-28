@@ -1,11 +1,10 @@
 package com.ssafy.five.entity;
 
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -23,8 +22,8 @@ public class RefreshToken {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "userId")
-    @Column(name = "userId", nullable = false, columnDefinition = "varchar(20)")
-    private User userId;
+    @NotNull
+    private Users usersId;
 
     @Column(name = "refreshToken", nullable = false, columnDefinition = "varchar(255)")
     private String refreshToken;

@@ -25,17 +25,14 @@ public class AddMate {
     private Long addMateId;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId")
-    @Column(name = "addMateFrom",nullable = false, columnDefinition = "varchar(20)")
-    private User addMateFrom;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "addMateFrom")
+    @NotNull
+    private Users addMateFrom;
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "userId")
-    @Column(name = "addMateTo", nullable = false, columnDefinition = "varchar(20)")
-    private User addMateTo;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "addmateTo")
+    @NotNull
+    private Users addMateTo;
 
 }

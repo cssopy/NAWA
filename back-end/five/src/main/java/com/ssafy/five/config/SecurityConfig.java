@@ -2,6 +2,7 @@ package com.ssafy.five.config;
 
 import com.ssafy.five.config.jwt.JwtAuthenticationFilter;
 import com.ssafy.five.config.jwt.JwtAuthorizationFilter;
+import com.ssafy.five.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

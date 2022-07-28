@@ -1,5 +1,6 @@
 package com.ssafy.five.entity;
 
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +9,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Builder
 @Getter
@@ -26,15 +26,15 @@ public class Room {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.NO_ACTION)
-    @JoinColumn(name = "userId")
-    @Column(name = "roomUserId1", nullable = false, columnDefinition = "varchar(20)")
-    private User user1;
+    @JoinColumn(name = "roomUserId1")
+    @NotNull
+    private Users users1;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.NO_ACTION)
-    @JoinColumn(name = "userId")
-    @Column(name = "roomUserId2", nullable = false, columnDefinition = "varchar(20)")
-    private User user2;
+    @JoinColumn(name = "roomUserId2")
+    @NotNull
+    private Users users2;
 
 }

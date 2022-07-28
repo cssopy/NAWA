@@ -1,5 +1,6 @@
 package com.ssafy.five.entity;
 
+import com.sun.istack.NotNull;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -22,7 +23,7 @@ public class File {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "boardId")
-    @Column(name = "boardId", nullable = false, columnDefinition = "Long")
+    @NotNull
     private Board board;
 
     @Column(name = "fileName", nullable = false, columnDefinition = "varchar(255)")

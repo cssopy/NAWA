@@ -1,6 +1,6 @@
 package com.ssafy.five.config.auth;
 
-import com.ssafy.five.entity.User;
+import com.ssafy.five.entity.Users;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -9,20 +9,20 @@ import java.util.Collection;
 
 public class PrincipalDetails implements UserDetails {
 
-    private User user;
+    private Users users;
 
-    public PrincipalDetails(User user){
-        this.user = user;
+    public PrincipalDetails(Users users){
+        this.users = users;
     }
 
-    public User getUser(){
-        return user;
+    public Users getUser(){
+        return users;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        user.getRoleList().forEach(r->{
+        users.getRoleList().forEach(r->{
             authorities.add(()->r);
         });
         return authorities;
@@ -30,12 +30,12 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return users.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUserId();
+        return users.getUserId();
     }
 
     @Override
