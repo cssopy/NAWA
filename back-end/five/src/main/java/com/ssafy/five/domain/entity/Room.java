@@ -1,5 +1,4 @@
-package com.ssafy.five.entity;
-
+package com.ssafy.five.domain.entity;
 
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,25 +15,25 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "mate")
-public class Mate {
+@Table(name = "room")
+public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mateId", nullable = false, columnDefinition = "Long")
-    private Long mateId;
+    @Column(name = "roomId", nullable = false, columnDefinition = "int")
+    private Long roomId;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "mateUserId1")
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @JoinColumn(name = "roomUserId1")
     @NotNull
     private Users users1;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "mateUserId2")
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @JoinColumn(name = "roomUserId2")
     @NotNull
     private Users users2;
 

@@ -1,4 +1,4 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 import com.sun.istack.NotNull;
 import lombok.*;
@@ -18,7 +18,7 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "boardId", nullable = false, columnDefinition = "Long")
+    @Column(name = "boardId", nullable = false, columnDefinition = "int")
     private Long boardId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,25 +34,21 @@ public class Board {
     private String boardContent;
 
     // 협의 필요
-    @Column(name = "boardDate", nullable = false, columnDefinition = "LocalDateTime")
+    @Column(name = "boardDate", nullable = false, columnDefinition = "timestamp")
     private LocalDateTime boardDate;
 
     // 협의 필요
-    @Column(name = "boardUpdate", nullable = false, columnDefinition = "LocalDateTime")
+    @Column(name = "boardUpdate", nullable = false)
     private LocalDateTime boardUpdate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "boardType", nullable = false, columnDefinition = "enum")
-    private BOARDTYPE boardType;
+    @Column(name = "boardType", nullable = false)
+    private BoardType boardType;
 
     @Column(name = "boardHit", nullable = false, columnDefinition = "int")
     private int boardHit;
 
     @Column(name = "boardLikes", nullable = false, columnDefinition = "int")
     private int boardLikes;
-
-    public enum BOARDTYPE {
-        NOTICE, GENERAL, QNA, VIDEO
-    }
 
 }

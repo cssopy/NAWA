@@ -1,4 +1,4 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 import lombok.*;
 
@@ -15,7 +15,7 @@ public class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reportId", nullable = false, columnDefinition = "Long")
+    @Column(name = "reportId", nullable = false, columnDefinition = "int")
     private Long reportId;
 
     @Column(name = "reportFrom", nullable = false, columnDefinition = "varchar(20)")
@@ -27,7 +27,7 @@ public class Report {
     @Column(name = "reportContent", nullable = false, columnDefinition = "varchar(600)")
     private String reportContent;
 
-    @Column(name = "reportDate", nullable = false, columnDefinition = "LocalDateTime")
+    @Column(name = "reportDate", nullable = false, columnDefinition = "timestamp")
     private LocalDateTime reportDate;
 
 }

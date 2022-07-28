@@ -1,4 +1,4 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 
 import com.sun.istack.NotNull;
@@ -23,7 +23,7 @@ public class Block {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "blockId", nullable = false, columnDefinition = "Long")
+    @Column(name = "blockId", columnDefinition = "int")
     private Long blockId;
 
 
@@ -45,6 +45,6 @@ public class Block {
     private String blockMemo;
 
 
-    @Column(name = "blockDate", nullable = false, columnDefinition = "LocalDateTime")
+    @Column(name = "blockDate", nullable = false, columnDefinition = "timestamp")
     private LocalDateTime blockDate;
 }

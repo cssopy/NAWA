@@ -1,4 +1,4 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,6 +10,7 @@ import javax.persistence.*;
 
 @Builder
 @Getter
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "refresh_table")
@@ -17,7 +18,7 @@ public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, columnDefinition = "Long")
+    @Column(name = "id", nullable = false, columnDefinition = "int")
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL)

@@ -1,4 +1,4 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 
 import com.sun.istack.NotNull;
@@ -21,18 +21,16 @@ public class AddMate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "addMateId", nullable = false, columnDefinition = "Long")
+    @Column(name = "addMateId", columnDefinition = "int")
     private Long addMateId;
 
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "addMateFrom")
-    @NotNull
     private Users addMateFrom;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "addmateTo")
-    @NotNull
     private Users addMateTo;
 
 }

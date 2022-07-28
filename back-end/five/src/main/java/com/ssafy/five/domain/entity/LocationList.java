@@ -1,4 +1,4 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 import com.sun.istack.NotNull;
 import lombok.*;
@@ -17,7 +17,7 @@ public class LocationList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "locId", nullable = false, columnDefinition = "Long")
+    @Column(name = "locId", nullable = false, columnDefinition = "int")
     private Long locId;
 
     @ManyToOne(fetch = FetchType.LAZY)

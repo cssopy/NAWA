@@ -1,4 +1,5 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
+
 
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -9,20 +10,21 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
-@Entity
+
 @Builder
 @Getter
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "calendar")
-public class Calendar {
+@Table(name = "prefer_ex")
+public class PreferEx {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "calId", nullable = false, columnDefinition = "Long")
-    private Long calId;
+    @Column(name = "preferId", nullable = false, columnDefinition = "int")
+    private Long preferId;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -30,11 +32,8 @@ public class Calendar {
     @NotNull
     private Users users;
 
-    @Column(name = "calContent", nullable = false, columnDefinition = "varchar(255)")
-    private String calContent;
 
-
-    // 협의 필요
-    @Column(name = "calDate", nullable = false, columnDefinition = "LocalDateTime")
-    private LocalDateTime calDate;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ex", nullable = false)
+    private Prefer prefer;
 }

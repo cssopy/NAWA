@@ -1,4 +1,4 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 
 import com.sun.istack.NotNull;
@@ -23,7 +23,7 @@ public class Chat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chatId", nullable = false, columnDefinition = "Long")
+    @Column(name = "chatId", nullable = false, columnDefinition = "int")
     private Long chatId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,6 +44,6 @@ public class Chat {
 
 
     // 협의 필요
-    @Column(name = "chatDate", nullable = false, columnDefinition = "LocalDateTime")
+    @Column(name = "chatDate", nullable = false, columnDefinition = "timestamp")
     private LocalDateTime chatDate;
 }

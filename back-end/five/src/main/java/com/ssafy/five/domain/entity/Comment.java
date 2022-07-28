@@ -1,4 +1,4 @@
-package com.ssafy.five.entity;
+package com.ssafy.five.domain.entity;
 
 import com.sun.istack.NotNull;
 import lombok.*;
@@ -18,7 +18,7 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cmtId", nullable = false, columnDefinition = "Long")
+    @Column(name = "cmtId", nullable = false, columnDefinition = "int")
     private Long cmtId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,10 +33,10 @@ public class Comment {
     @Column(name = "userId", nullable = false, columnDefinition = "varchar(40)")
     private String userId;
 
-    @Column(name = "cmtDate", nullable = false, columnDefinition = "LocalDateTime")
+    @Column(name = "cmtDate", nullable = false, columnDefinition = "timestamp")
     private LocalDateTime cmtDate;
 
-    @Column(name = "cmtUpdate", nullable = false, columnDefinition = "LocalDateTime")
+    @Column(name = "cmtUpdate", nullable = false, columnDefinition = "timestamp")
     private LocalDateTime cmtUpdate;
 
 }

@@ -1,5 +1,4 @@
-package com.ssafy.five.entity;
-
+package com.ssafy.five.domain.entity;
 
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,21 +9,20 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
-
+@Entity
 @Builder
 @Getter
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "prefer_ex")
-public class PreferEx {
+@Table(name = "calendar")
+public class Calendar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "preferId", nullable = false, columnDefinition = "Long")
-    private Long preferId;
-
+    @Column(name = "calId", nullable = false, columnDefinition = "int")
+    private Long calId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -32,14 +30,11 @@ public class PreferEx {
     @NotNull
     private Users users;
 
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ex", nullable = false, columnDefinition = "enum")
-    private PREFER_EX prefer;
+    @Column(name = "calContent", nullable = false, columnDefinition = "varchar(255)")
+    private String calContent;
 
 
-    public enum PREFER_EX {
-        BASEBALL, HIKING, TENNIS, CYCLING, SKATING, RUNNING, JOGGING, WALKING, WALK_WITH_PET, GYM, SWIMMING, BADMINTON,
-        SOCCER, BOWLING, SQUASH, BILLIARDS
-    }
+    // 협의 필요
+    @Column(name = "calDate", nullable = false, columnDefinition = "timestamp")
+    private LocalDateTime calDate;
 }
