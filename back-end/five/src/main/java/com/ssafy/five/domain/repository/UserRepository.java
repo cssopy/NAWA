@@ -1,6 +1,6 @@
-package com.ssafy.five.repository;
+package com.ssafy.five.domain.repository;
 
-import com.ssafy.five.entity.Users;
+import com.ssafy.five.domain.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<Users, String> {

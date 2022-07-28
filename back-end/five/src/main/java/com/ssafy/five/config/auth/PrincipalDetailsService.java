@@ -1,7 +1,7 @@
 package com.ssafy.five.config.auth;
 
-import com.ssafy.five.entity.Users;
-import com.ssafy.five.repository.UserRepository;
+import com.ssafy.five.domain.entity.Users;
+import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

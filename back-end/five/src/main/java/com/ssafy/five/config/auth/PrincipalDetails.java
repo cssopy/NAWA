@@ -1,6 +1,6 @@
 package com.ssafy.five.config.auth;
 
-import com.ssafy.five.entity.Users;
+import com.ssafy.five.domain.entity.Users;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
