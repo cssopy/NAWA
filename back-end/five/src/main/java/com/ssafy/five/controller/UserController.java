@@ -28,4 +28,26 @@ public class UserController {
         return false;
     }
 
+    // 회원 한명 조회
+    @GetMapping("/user/{userId}")
+    public FindUserResDto findUser(@PathVariable String userId){
+        Users user = userService.findUserByUserId(userId);
+
+        FindUserResDto findUserResDto = FindUserResDto.builder()
+                .userId(user.getUserId())
+                .password(user.getPassword())
+                .birth(user.getBirth())
+                .emailId(user.getEmailId())
+                .emailDomain(user.getEmailDomain())
+                .name(user.getName())
+                .nickname(user.getNickname())
+//                .ment(user.getMent())
+                .number(user.getNumber())
+//                .gender(user.getGender())
+//                .picture(user.getPicture())
+                .point(user.getPoint())
+                .build();
+
+        return findUserResDto;
+    }
 }
