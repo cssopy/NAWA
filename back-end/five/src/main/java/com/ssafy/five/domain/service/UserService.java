@@ -1,9 +1,9 @@
 package com.ssafy.five.domain.service;
 
 import com.ssafy.five.controller.dto.SignUpReqDto;
-import com.ssafy.five.domain.entity.Gender;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.UserRepository;
+import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,12 +20,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Transactional(readOnly = false)
+    // 회원가입 폼을 받아서 회원가입
+    // 성공하면 return true
+    @Transactional
     public boolean signUp(SignUpReqDto signUpReqDto) {
-        String encodedPassword = passwordEncoder.encode(signUpReqDto.getPassword());
+        if(userRepository.existsById(signUpReqDto.getUserId())){
+            return false;
+        }
         Users user = Users.builder()
                 .userId(signUpReqDto.getUserId())
-                .password(encodedPassword)
+                .password(passwordEncoder.encode(signUpReqDto.getPassword()))
                 .birth(signUpReqDto.getBirth())
                 .emailId(signUpReqDto.getEmailId())
                 .emailDomain(signUpReqDto.getEmailDomain())
@@ -33,16 +37,14 @@ public class UserService {
                 .nickname(signUpReqDto.getNickname())
                 .ment(signUpReqDto.getMent())
                 .number(signUpReqDto.getNumber())
-                .gender(Gender.MAN)
-                .picture(signUpReqDto.getPicture())
+//                .gender(Gender.MAN)
+//                .picture(signUpReqDto.getPicture())
                 .role("ROLE_USER")
                 .build();
 
         Users signUpUser = userRepository.save(user);
-
-        if(signUpUser == null){
-            return false;
-        }
-        else return true;
+        return true;
     }
+
+
 }

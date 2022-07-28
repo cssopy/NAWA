@@ -23,7 +23,7 @@ public class Users {
     private String userId;
 
     // 비밀번호
-    @Column(name = "password", nullable = false, columnDefinition = "varchar(20)")
+    @Column(name = "password", nullable = false, columnDefinition = "varchar(255)")
     private String password;
 
     // 생년월일
@@ -51,16 +51,16 @@ public class Users {
     private String ment;
 
     // 전화번호
-    @Column(name = "number", nullable = false, columnDefinition = "varchar(11)")
+    @Column(name = "number", nullable = false, columnDefinition = "varchar(13)")
     private String number;
 
     // 성별
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender", nullable = false)
+//    @Column(name = "gender", nullable = false)
     private Gender gender;
 
     // 사진
-    @Column(name = "picture", nullable = false, columnDefinition = "text")
+//    @Column(name = "picture", nullable = false, columnDefinition = "text")
     private File picture;
 
     // 인기점수
@@ -69,7 +69,7 @@ public class Users {
 
     // 사용자 상태
     @Enumerated(EnumType.STRING)
-    @Column(name = "state", nullable = false)
+//    @Column(name = "state", nullable = false)
     private State state;
 
     // 신고 횟수
@@ -90,4 +90,32 @@ public class Users {
         }
         return new ArrayList<>();
     }
+
+    public void updatePassword(String password){
+        this.password = password;
+    }
+
+    public void updateEmailId(String emailId){
+        this.emailId = emailId;
+    }
+
+    public void updateEmailDomain(String emailDomain){
+        this.emailDomain = emailDomain;
+    }
+
+    public void updateNickname(String nickname){
+        this.nickname = nickname;
+    }
+
+//    public void updateMent(String ment){
+//        this.ment = ment;
+//    }
+//
+//    public void updateGender(Gender gender){
+//        this.gender = gender;
+//    }
+//
+//    public void updatePicture(File picture){
+//        this.picture = picture;
+//    }
 }
