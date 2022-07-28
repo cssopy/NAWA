@@ -1,5 +1,6 @@
 package com.ssafy.five.domain.service;
 
+import com.ssafy.five.controller.dto.DeleteUserReqDto;
 import com.ssafy.five.controller.dto.SignUpReqDto;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.UserRepository;
@@ -50,6 +51,36 @@ public class UserService {
         Users user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException());
 
         return user;
+    }
+
+    @Transactional
+    public void updateUser(Users user){
+        Users user1 = userRepository.findUserByUserId(user.getUserId());
+        System.out.println(user.getPassword());
+        user1.updatePassword(passwordEncoder.encode(user.getPassword()));
+        System.out.println(user1.getPassword());
+        user1.updateEmailId(user.getEmailId());
+        user1.updateEmailDomain(user.getEmailDomain());
+        user1.updateNickname(user.getNickname());
+//        user1.updateMent(user.getMent());
+//        user1.updateGender(user.getGender());
+//        user1.updatePicture(user.getPicture());
+
+        userRepository.save(user1);
+    }
+
+    @Transactional
+    public void deleteUser(DeleteUserReqDto deleteUserReqDto){
+
+        Users user = userRepository.findUserByUserId(deleteUserReqDto.getUserId());
+        System.out.println(user.getPassword());
+        System.out.println(deleteUserReqDto.getPassword());
+        if(user != null){
+            if(passwordEncoder.matches(deleteUserReqDto.getPassword(), user.getPassword())){
+                userRepository.delete(user);
+            }
+        }
+
     }
 
 }

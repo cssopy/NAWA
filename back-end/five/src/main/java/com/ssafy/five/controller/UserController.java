@@ -1,11 +1,13 @@
 package com.ssafy.five.controller;
 
+import com.ssafy.five.controller.dto.DeleteUserReqDto;
 import com.ssafy.five.controller.dto.FindUserResDto;
 import com.ssafy.five.controller.dto.SignUpReqDto;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.UserRepository;
 import com.ssafy.five.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -13,8 +15,6 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-
-    private UserRepository userRepository;
 
     private final UserService userService;
 
@@ -49,5 +49,17 @@ public class UserController {
                 .build();
 
         return findUserResDto;
+    }
+
+    // 회원 정보 수정
+    @PutMapping("/user")
+    public void updateUser(@Valid @RequestBody Users user){
+        userService.updateUser(user);
+    }
+
+    // 회원 탈퇴
+    @DeleteMapping("/user")
+    public void deleteUser(@Valid @RequestBody DeleteUserReqDto deleteUserReqDto){
+        userService.deleteUser(deleteUserReqDto);
     }
 }
