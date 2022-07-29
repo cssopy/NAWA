@@ -56,12 +56,8 @@ public class Users {
 
     // 성별
     @Enumerated(EnumType.STRING)
-//    @Column(name = "gender", nullable = false)
+    @Column(name = "gender", nullable = false)
     private Gender gender;
-
-    // 사진
-//    @Column(name = "picture", nullable = false, columnDefinition = "text")
-    private File picture;
 
     // 인기점수
     @Column(name = "point", nullable = false, columnDefinition = "float")
@@ -107,13 +103,13 @@ public class Users {
         this.nickname = nickname;
     }
 
-//    public void updateMent(String ment){
-//        this.ment = ment;
-//    }
-//
-//    public void updateGender(Gender gender){
-//        this.gender = gender;
-//    }
+    public void updateMent(String ment){
+        this.ment = ment;
+    }
+
+    public void updateGender(Gender gender){
+        this.gender = gender;
+    }
 //
 //    public void updatePicture(File picture){
 //        this.picture = picture;
