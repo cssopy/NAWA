@@ -1,7 +1,7 @@
 package com.ssafy.five.config;
 
-import com.ssafy.five.config.jwt.JwtAuthenticationFilter;
-import com.ssafy.five.config.jwt.JwtAuthorizationFilter;
+//import com.ssafy.five.config.jwt.JwtAuthenticationFilter;
+//import com.ssafy.five.config.jwt.JwtAuthorizationFilter;
 import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,13 +31,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(corsFilter)
                 .formLogin().disable()
                 .httpBasic().disable()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
+//                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+//                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
                 .authorizeRequests()
-                .antMatchers("/user/**")
-                .access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-                .antMatchers("/admin/**")
-                .access("hasRole('ROLE_ADMIN')")
+//                .antMatchers("/user/**")
+//                .access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+//                .antMatchers("/admin/**")
+//                .access("hasRole('ROLE_ADMIN')")
                 .anyRequest().permitAll();
     }
 

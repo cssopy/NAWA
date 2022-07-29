@@ -41,7 +41,7 @@ public class Block {
     private Users blockTo;
 
 
-    @Column(name = "blockMemo", nullable = false, columnDefinition = "varchar(100)")
+    @Column(name = "blockMemo", columnDefinition = "varchar(100)")
     private String blockMemo;
 
 
