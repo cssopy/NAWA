@@ -30,7 +30,7 @@ public class Board {
     @Column(name = "boardTitle", nullable = false, columnDefinition = "varchar(20)")
     private String boardTitle;
 
-    @Column(name = "boardContent", nullable = false, columnDefinition = "text")
+    @Column(name = "boardContent", columnDefinition = "text")
     private String boardContent;
 
     // 협의 필요
