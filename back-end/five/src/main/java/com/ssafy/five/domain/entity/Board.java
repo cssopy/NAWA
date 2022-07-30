@@ -1,7 +1,11 @@
 package com.ssafy.five.domain.entity;
 
+import com.ssafy.five.domain.entity.EnumType.BoardType;
 import com.sun.istack.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -25,12 +29,12 @@ public class Board {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
     @NotNull
-    private Users usersId;
+    private Users user;
 
     @Column(name = "boardTitle", nullable = false, columnDefinition = "varchar(20)")
     private String boardTitle;
 
-    @Column(name = "boardContent", nullable = false, columnDefinition = "text")
+    @Column(name = "boardContent", columnDefinition = "text")
     private String boardContent;
 
     // 협의 필요
