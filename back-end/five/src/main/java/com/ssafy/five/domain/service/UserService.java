@@ -1,6 +1,7 @@
 package com.ssafy.five.domain.service;
 
-import com.ssafy.five.controller.dto.DeleteUserReqDto;
+import com.ssafy.five.controller.dto.FindUserIdReqDto;
+import com.ssafy.five.controller.dto.GiveTempPwReqDto;
 import com.ssafy.five.controller.dto.SignUpReqDto;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.UserRepository;
@@ -38,12 +39,12 @@ public class UserService {
                 .nickname(signUpReqDto.getNickname())
                 .ment(signUpReqDto.getMent())
                 .number(signUpReqDto.getNumber())
-//                .gender(Gender.MAN)
+                .gender(signUpReqDto.getGender())
 //                .picture(signUpReqDto.getPicture())
                 .role("ROLE_USER")
                 .build();
 
-        Users signUpUser = userRepository.save(user);
+        userRepository.save(user);
         return true;
     }
 
@@ -57,30 +58,54 @@ public class UserService {
     public void updateUser(Users user){
         Users user1 = userRepository.findUserByUserId(user.getUserId());
         System.out.println(user.getPassword());
-        user1.updatePassword(passwordEncoder.encode(user.getPassword()));
         System.out.println(user1.getPassword());
+        user1.updatePassword(passwordEncoder.encode(user.getPassword()));
         user1.updateEmailId(user.getEmailId());
         user1.updateEmailDomain(user.getEmailDomain());
         user1.updateNickname(user.getNickname());
-//        user1.updateMent(user.getMent());
-//        user1.updateGender(user.getGender());
+        user1.updateMent(user.getMent());
+        user1.updateGender(user.getGender());
 //        user1.updatePicture(user.getPicture());
 
         userRepository.save(user1);
     }
 
     @Transactional
-    public void deleteUser(DeleteUserReqDto deleteUserReqDto){
-
-        Users user = userRepository.findUserByUserId(deleteUserReqDto.getUserId());
-        System.out.println(user.getPassword());
-        System.out.println(deleteUserReqDto.getPassword());
-        if(user != null){
-            if(passwordEncoder.matches(deleteUserReqDto.getPassword(), user.getPassword())){
-                userRepository.delete(user);
-            }
+    public void deleteUser(String userId){
+        if(userRepository.findUserByUserId(userId) != null){
+            userRepository.deleteById(userId);
         }
+    }
+
+    @Transactional
+    public String findUserId(FindUserIdReqDto findUserIdReqDto){
+
+        String userId = userRepository.findUserIdByNameAndEmail(findUserIdReqDto.getName(), findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
+
+        if(userId != null){
+            return userId;
+        }
+        return null;
 
     }
 
+    @Transactional
+    public boolean giveUserTempPass(GiveTempPwReqDto giveTempPwReqDto){
+        Users user = findUserByUserId(giveTempPwReqDto.getUserId());
+        if(user != null){
+            user.updatePassword("1234");
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public boolean availableNickname(String nickname){
+        Users user = userRepository.findByNickname(nickname);
+        if(user != null){
+            return false;
+        }
+        return true;
+    }
 }

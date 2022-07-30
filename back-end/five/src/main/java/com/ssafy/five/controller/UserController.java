@@ -1,13 +1,12 @@
 package com.ssafy.five.controller;
 
-import com.ssafy.five.controller.dto.DeleteUserReqDto;
+import com.ssafy.five.controller.dto.FindUserIdReqDto;
+import com.ssafy.five.controller.dto.GiveTempPwReqDto;
 import com.ssafy.five.controller.dto.FindUserResDto;
 import com.ssafy.five.controller.dto.SignUpReqDto;
 import com.ssafy.five.domain.entity.Users;
-import com.ssafy.five.domain.repository.UserRepository;
 import com.ssafy.five.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -41,9 +40,9 @@ public class UserController {
                 .emailDomain(user.getEmailDomain())
                 .name(user.getName())
                 .nickname(user.getNickname())
-//                .ment(user.getMent())
+                .ment(user.getMent())
                 .number(user.getNumber())
-//                .gender(user.getGender())
+                .gender(user.getGender())
 //                .picture(user.getPicture())
                 .point(user.getPoint())
                 .build();
@@ -58,8 +57,35 @@ public class UserController {
     }
 
     // 회원 탈퇴
-    @DeleteMapping("/user")
-    public void deleteUser(@Valid @RequestBody DeleteUserReqDto deleteUserReqDto){
-        userService.deleteUser(deleteUserReqDto);
+    @DeleteMapping("/user/{userId}")
+    public void deleteUser(@PathVariable String userId){
+        userService.deleteUser(userId);
+    }
+
+    // 아이디 찾기
+    @PostMapping("/user/find-id")
+    public String findUserId(@Valid @RequestBody FindUserIdReqDto findUserIdReqDto){
+
+        String userId = userService.findUserId(findUserIdReqDto);
+        if(userId != null){
+            return userId;
+        }
+        return null;
+    }
+
+    // 임시 비밀번호 발급
+    @PostMapping("/user/give-temp-pw")
+    public boolean giveTempPassword(@Valid @RequestBody GiveTempPwReqDto giveTempPwReqDto){
+        if(userService.giveUserTempPass(giveTempPwReqDto)){
+            return true;
+        }
+        return false;
+    }
+
+    // 닉네임 중복 확인
+    @GetMapping("/user/nickname/{nickname}")
+    public boolean availableNickname(@PathVariable String nickname){
+        System.out.println(nickname);
+        return userService.availableNickname(nickname);
     }
 }

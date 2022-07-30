@@ -1,13 +1,10 @@
 package com.ssafy.five.controller.dto;
 
 import com.ssafy.five.domain.entity.Gender;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import java.io.File;
 
 @Builder
 @Getter
@@ -44,8 +41,7 @@ public class SignUpReqDto {
     @NotBlank(message = "전화번호는 필수 입력 값입니다.")
     private String number;
 
-//    @NotBlank(message = "성별은 필수 입력 값입니다.")
-//    private Gender gender;
+    private Gender gender;
 
 //    @NotBlank(message = "사진은 필수 입력 값입니다.")
 //    private File picture;

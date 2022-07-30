@@ -1,7 +1,9 @@
 package com.ssafy.five.controller.dto;
 
+import com.ssafy.five.domain.entity.Gender;
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
 import java.io.File;
 
 @Builder
@@ -26,11 +28,11 @@ public class FindUserResDto {
 
     private String nickname;
 
-//    private String ment;
+    private String ment;
 
     private String number;
 
-//    private String gender;
+    private Gender gender;
 
 //    private File picture;
 
