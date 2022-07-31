@@ -1,7 +1,10 @@
 package com.ssafy.five.domain.entity;
 
 import com.sun.istack.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -30,8 +33,11 @@ public class Comment {
     @Column(name = "cmtContent", nullable = false, columnDefinition = "varchar(600)")
     private String cmtContent;
 
-    @Column(name = "userId", nullable = false, columnDefinition = "varchar(40)")
-    private String userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @JoinColumn(name = "userId")
+    @NotNull
+    private Users user;
 
     @Column(name = "cmtDate", nullable = false, columnDefinition = "timestamp")
     private LocalDateTime cmtDate;
