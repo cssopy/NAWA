@@ -18,7 +18,7 @@ public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, columnDefinition = "int")
+    @Column(name = "id", columnDefinition = "int")
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL)

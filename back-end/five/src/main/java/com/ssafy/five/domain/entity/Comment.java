@@ -9,7 +9,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Builder
 @Getter
@@ -21,7 +21,7 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cmtId", nullable = false, columnDefinition = "int")
+    @Column(name = "cmtId", columnDefinition = "int")
     private Long cmtId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,10 +39,12 @@ public class Comment {
     @NotNull
     private Users user;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "cmtDate", nullable = false, columnDefinition = "timestamp")
-    private LocalDateTime cmtDate;
+    private Date cmtDate;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "cmtUpdate", nullable = false, columnDefinition = "timestamp")
-    private LocalDateTime cmtUpdate;
+    private Date cmtUpdate;
 
 }

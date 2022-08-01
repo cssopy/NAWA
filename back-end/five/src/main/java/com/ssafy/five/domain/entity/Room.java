@@ -20,7 +20,7 @@ public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "roomId", nullable = false, columnDefinition = "int")
+    @Column(name = "roomId", columnDefinition = "int")
     private Long roomId;
 
 
@@ -28,13 +28,13 @@ public class Room {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @JoinColumn(name = "roomUserId1")
     @NotNull
-    private Users users1;
+    private Users roomUserId1;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @JoinColumn(name = "roomUserId2")
     @NotNull
-    private Users users2;
+    private Users roomUserId2;
 
 }

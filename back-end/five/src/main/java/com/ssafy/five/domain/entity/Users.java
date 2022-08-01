@@ -4,7 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.File;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,8 +73,9 @@ public class Users {
     private int reportCount;
 
     // 정지 해제일
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "endDate", columnDefinition = "timestamp")
-    private LocalDateTime endDate;
+    private Date endDate;
 
     // 역할
     @Column(name = "role", nullable = false, columnDefinition = "varchar(15)")
