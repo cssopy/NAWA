@@ -1,6 +1,6 @@
 package com.ssafy.five.domain.service;
 
-import com.ssafy.five.controller.dto.req.PostBoardReqDto;
+import com.ssafy.five.controller.dto.req.RegistBoardReqDto;
 import com.ssafy.five.controller.dto.req.UpdateBoardReqDto;
 import com.ssafy.five.controller.dto.res.PostBoardResDto;
 import com.ssafy.five.domain.entity.Board;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
 
-    public boolean regist(PostBoardReqDto boardDto, MultipartFile[] multipartFiles) throws Exception {
+    public boolean regist(RegistBoardReqDto boardDto, MultipartFile[] multipartFiles) throws Exception {
         if (boardDto == null) {
             return false;
         }

@@ -1,6 +1,7 @@
 package com.ssafy.five.controller;
 
-import com.ssafy.five.controller.dto.req.PostCmtReqDto;
+import com.ssafy.five.controller.dto.req.RegistCmtReqDto;
+import com.ssafy.five.controller.dto.req.UpdateCmtReqDto;
 import com.ssafy.five.controller.dto.res.GetCmtResDto;
 import com.ssafy.five.domain.service.CmtService;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,11 @@ public class CmtController {
     private final CmtService cmtService;
 
     @PostMapping("/")
-    public ResponseEntity<?> postCmt(@RequestBody PostCmtReqDto postCmtReqDto) {
-        if (cmtService.regist(postCmtReqDto)) {
+    public ResponseEntity<?> postCmt(@RequestBody RegistCmtReqDto registCmtReqDto) {
+        if (cmtService.regist(registCmtReqDto)) {
             Map<String, String> map = new HashMap<>();
             map.put("result", "SUCESS");
-            map.put("detail", "OK");
+            map.put("detail", "댓글 작성에 설공했습니다.");
             return new ResponseEntity<>(map, HttpStatus.OK);
         } else {
             Map<String, String> map = new HashMap<>();
@@ -42,13 +43,23 @@ public class CmtController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<?> putCmt() {
-        return null;
+    public ResponseEntity<?> putCmt(@RequestBody UpdateCmtReqDto updateCmtReqDto) {
+        if (cmtService.updateCmt(updateCmtReqDto)) {
+            Map<String, String> map = new HashMap<>();
+            map.put("result", "SUCESS");
+            map.put("detail", "댓글을 수정하는데 성공했습니다.");
+            return new ResponseEntity<>(map, HttpStatus.OK);
+        } else {
+            Map<String, String> map = new HashMap<>();
+            map.put("result", "FAIL");
+            map.put("detail", "댓글을 수정하는데 실패했습니다");
+            return new ResponseEntity<>(map, HttpStatus.OK);
+        }
     }
 
     @DeleteMapping("/{cmtId}")
-    public ResponseEntity<?> deleteCmt(@PathVariable Long cmtId) {
-        return null;
+    public void deleteCmt(@PathVariable Long cmtId) {
+        cmtService.deleteByCmtId(cmtId);
     }
 
 }

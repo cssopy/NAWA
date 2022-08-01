@@ -3,30 +3,25 @@ package com.ssafy.five.controller.dto.res;
 import com.ssafy.five.domain.entity.Comment;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 public class GetCmtResDto {
 
     private Long cmtId;
-
     private Long boardid;
-
     private String userId;
+    private String cmtContent;
+    private Date cmtDate;
+    private Date cmtUpdate;
 
-    private String boardContent;
-
-    private LocalDateTime boardDate;
-
-    private LocalDateTime boardUpdate;
-
-    public GetCmtResDto(Comment entity) {
-        this.cmtId = entity.getCmtId();
-        this.boardid = entity.getBoard().getBoardId();
-        this.userId = entity.getUser().getUserId();
-        this.boardContent = entity.getCmtContent();
-        this.boardDate = entity.getCmtDate();
-        this.boardUpdate = entity.getCmtUpdate();
+    public GetCmtResDto(Comment cmtEntity) {
+        this.cmtId = cmtEntity.getCmtId();
+        this.boardid = cmtEntity.getBoard().getBoardId();
+        this.userId = cmtEntity.getUser().getUserId();
+        this.cmtContent = cmtEntity.getCmtContent();
+        this.cmtDate = cmtEntity.getCmtDate();
+        this.cmtUpdate = cmtEntity.getCmtUpdate();
     }
 
 }

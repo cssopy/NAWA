@@ -1,6 +1,6 @@
 package com.ssafy.five.controller;
 
-import com.ssafy.five.controller.dto.req.PostBoardReqDto;
+import com.ssafy.five.controller.dto.req.RegistBoardReqDto;
 import com.ssafy.five.controller.dto.req.UpdateBoardReqDto;
 import com.ssafy.five.controller.dto.res.PostBoardResDto;
 import com.ssafy.five.domain.service.BoardService;
@@ -24,9 +24,9 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/")
-    public ResponseEntity<?> postBoard(@RequestPart(value = "key", required = true) PostBoardReqDto postBoardReqDto,
+    public ResponseEntity<?> postBoard(@RequestPart(value = "key", required = true) RegistBoardReqDto registBoardReqDto,
                                        @RequestPart(value = "uploadfile", required = false) MultipartFile[] uploadfile) throws Exception {
-        if (boardService.regist(postBoardReqDto, uploadfile)) {
+        if (boardService.regist(registBoardReqDto, uploadfile)) {
             Map<String, String> map = new HashMap<>();
             map.put("result", "SUCESS");
             map.put("detail", "OK");

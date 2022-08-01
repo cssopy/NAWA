@@ -12,11 +12,8 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class UpdateBoardReqDto {
-
     private Long boardId;
-
     private String boardTitle;
-
     private String boardContent;
 
     public Board toEntity() {
