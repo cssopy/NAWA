@@ -13,6 +13,7 @@ import com.ssafy.five.exception.BoardNotFoundException;
 import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -44,6 +45,7 @@ public class CmtService {
         return list.stream().map(GetCmtResDto::new).collect(Collectors.toList());
     }
 
+    @Transactional
     public boolean updateCmt(UpdateCmtReqDto updateCmtReqDto) {
         int result = cmtRepository.updateCmt(updateCmtReqDto.getCmtId(), updateCmtReqDto.getCmtContent(), new Date());
         return (result > 0 ? true : false);
