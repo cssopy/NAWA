@@ -1,6 +1,6 @@
-package com.ssafy.five.controller.dto;
+package com.ssafy.five.controller.dto.req;
 
-import com.ssafy.five.domain.entity.Gender;
+import com.ssafy.five.domain.entity.EnumType.GenderType;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -41,7 +41,7 @@ public class SignUpReqDto {
     @NotBlank(message = "전화번호는 필수 입력 값입니다.")
     private String number;
 
-    private Gender gender;
+    private GenderType genderType;
 
 //    @NotBlank(message = "사진은 필수 입력 값입니다.")
 //    private File picture;

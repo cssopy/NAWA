@@ -9,20 +9,20 @@ import java.util.Collection;
 
 public class PrincipalDetails implements UserDetails {
 
-    private Users users;
+    private Users user;
 
-    public PrincipalDetails(Users users){
-        this.users = users;
+    public PrincipalDetails(Users user) {
+        this.user = user;
     }
 
-    public Users getUser(){
-        return users;
+    public Users getUser() {
+        return user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        users.getRoleList().forEach(r->{
+        user.getRoleList().forEach(r->{
             authorities.add(()->r);
         });
         return authorities;
@@ -30,12 +30,12 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return users.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return users.getUserId();
+        return user.getUserId();
     }
 
     @Override
@@ -57,5 +57,5 @@ public class PrincipalDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }
+

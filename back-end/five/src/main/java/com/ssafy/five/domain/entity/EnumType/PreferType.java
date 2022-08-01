@@ -1,6 +1,6 @@
-package com.ssafy.five.domain.entity;
+package com.ssafy.five.domain.entity.EnumType;
 
-public enum Prefer {
+public enum PreferType {
     BASEBALL, HIKING, TENNIS, CYCLING, SKATING, RUNNING, JOGGING, WALKING, WALK_WITH_PET, GYM, SWIMMING, BADMINTON,
     SOCCER, BOWLING, SQUASH, BILLIARDS
 }

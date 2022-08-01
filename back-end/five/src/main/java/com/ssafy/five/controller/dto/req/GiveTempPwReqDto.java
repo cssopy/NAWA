@@ -1,4 +1,4 @@
-package com.ssafy.five.controller.dto;
+package com.ssafy.five.controller.dto.req;
 
 import lombok.*;
 

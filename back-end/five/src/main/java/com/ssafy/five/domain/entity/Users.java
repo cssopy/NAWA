@@ -1,9 +1,10 @@
 package com.ssafy.five.domain.entity;
 
+import com.ssafy.five.domain.entity.EnumType.GenderType;
+import com.ssafy.five.domain.entity.EnumType.StateType;
 import lombok.*;
 
 import javax.persistence.*;
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +58,7 @@ public class Users {
     // 성별
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
-    private Gender gender;
+    private GenderType genderType;
 
     // 인기점수
     @Column(name = "point", nullable = false, columnDefinition = "float")
@@ -66,7 +67,7 @@ public class Users {
     // 사용자 상태
     @Enumerated(EnumType.STRING)
 //    @Column(name = "state", nullable = false)
-    private State state;
+    private StateType stateType;
 
     // 신고 횟수
     @Column(name = "reportCount", nullable = false, columnDefinition = "int")
@@ -107,8 +108,8 @@ public class Users {
         this.ment = ment;
     }
 
-    public void updateGender(Gender gender){
-        this.gender = gender;
+    public void updateGender(GenderType genderType){
+        this.genderType = genderType;
     }
 //
 //    public void updatePicture(File picture){

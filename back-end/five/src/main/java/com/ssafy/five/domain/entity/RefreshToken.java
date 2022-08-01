@@ -24,8 +24,12 @@ public class RefreshToken {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "userId")
     @NotNull
-    private Users userId;
+    private Users user;
 
     @Column(name = "refreshToken", nullable = false, columnDefinition = "varchar(255)")
     private String refreshToken;
+
+    public void updateRefreshToken(String refreshToken){
+        this.refreshToken = refreshToken;
+    }
 }
