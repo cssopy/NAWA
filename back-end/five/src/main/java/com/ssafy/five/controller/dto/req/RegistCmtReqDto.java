@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
 @ToString
-public class PostCmtReqDto {
+public class RegistCmtReqDto {
 
     private Long boardId;
 
@@ -25,8 +25,8 @@ public class PostCmtReqDto {
                 .user(usersEntity)
                 .cmtContent(this.cmtContent)
                 .board(boardEntity)
-                .cmtDate(LocalDateTime.now())
-                .cmtUpdate(LocalDateTime.now())
+                .cmtDate(new Date())
+                .cmtUpdate(new Date())
                 .build();
     }
 

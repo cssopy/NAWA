@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class PostBoardReqDto {
+public class RegistBoardReqDto {
 
     private String boardTitle;
 
@@ -23,7 +23,7 @@ public class PostBoardReqDto {
 
     private MultipartFile[] uploadfile;
 
-    public Board toEntity(){
+    public Board toEntity() {
         return Board.builder()
                 .boardTitle(this.boardTitle)
                 .user(Users.builder().userId(this.userId).build())
