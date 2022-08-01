@@ -2,7 +2,10 @@ package com.ssafy.five.domain.entity;
 
 import com.ssafy.five.domain.entity.EnumType.FileType;
 import com.sun.istack.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -14,7 +17,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "file")
-public class File {
+public class Files {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +32,6 @@ public class File {
 
     @Column(name = "fileName", nullable = false, columnDefinition = "varchar(255)")
     private String fileName;
-
-    @Column(name = "filePath", nullable = false, columnDefinition = "varchar(100)")
-    private String filePath;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "fileType", nullable = false)

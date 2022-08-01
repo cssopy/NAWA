@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -20,8 +20,8 @@ public class UpdateBoardReqDto {
         return Board.builder()
                 .boardTitle(this.boardTitle)
                 .boardContent(this.boardContent)
-                .boardDate(LocalDateTime.now())
-                .boardUpdate(LocalDateTime.now())
+                .boardDate(new Date())
+                .boardUpdate(new Date())
                 .boardHit(0)
                 .boardLikes(0)
                 .boardType(BoardType.VIDEO)

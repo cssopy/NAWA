@@ -30,35 +30,39 @@ public class BoardController {
             Map<String, String> map = new HashMap<>();
             map.put("result", "SUCESS");
             map.put("detail", "OK");
-            return new ResponseEntity<Map<String, String>>(map, HttpStatus.OK);
+            return new ResponseEntity<>(map, HttpStatus.OK);
         } else {
             Map<String, String> map = new HashMap<>();
             map.put("result", "FAIL");
             map.put("detail", "게시글 작성에 실패했습니다.");
-            return new ResponseEntity<Map<String, String>>(map, HttpStatus.OK);
+            return new ResponseEntity<>(map, HttpStatus.OK);
         }
     }
 
     @GetMapping("/")
     public ResponseEntity<?> getBoard() {
         List<PostBoardResDto> list = boardService.findAll();
-        return new ResponseEntity<List<PostBoardResDto>>(list, HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @PutMapping("/")
     public ResponseEntity<?> updateBoard(@RequestBody UpdateBoardReqDto updateBoardReqDto) {
-        boardService.update(updateBoardReqDto);
-        PostBoardResDto postBoardResDto = boardService.findById(updateBoardReqDto.getBoardId());
-        return new ResponseEntity<>(postBoardResDto, HttpStatus.OK);
+        if (boardService.update(updateBoardReqDto)) {
+            Map<String, String> map = new HashMap<>();
+            map.put("result", "SUCESS");
+            map.put("detail", "게시글 수정에 성공했습니다.");
+            return new ResponseEntity<>(map, HttpStatus.OK);
+        } else {
+            Map<String, String> map = new HashMap<>();
+            map.put("result", "FAIL");
+            map.put("detail", "게시글 수정에 실패했습니다.");
+            return new ResponseEntity<>(map, HttpStatus.OK);
+        }
     }
 
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<?> deleteBoard(@PathVariable(name = "boardId") Long boardId) {
+    public void deleteBoard(@PathVariable(name = "boardId") Long boardId) {
         boardService.deleteById(boardId);
-        Map<String, String> map = new HashMap<>();
-        map.put("result", "SUCESS");
-        map.put("detail", "OK");
-        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
     @GetMapping("/{boardId}")
