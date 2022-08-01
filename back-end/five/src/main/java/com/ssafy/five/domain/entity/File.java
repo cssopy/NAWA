@@ -1,5 +1,6 @@
 package com.ssafy.five.domain.entity;
 
+import com.ssafy.five.domain.entity.EnumType.FileType;
 import com.sun.istack.NotNull;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -17,7 +18,7 @@ public class File {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "fileId", nullable = false, columnDefinition = "int")
+    @Column(name = "fileId", columnDefinition = "int")
     private Long fileId;
 
     @ManyToOne(fetch = FetchType.LAZY)

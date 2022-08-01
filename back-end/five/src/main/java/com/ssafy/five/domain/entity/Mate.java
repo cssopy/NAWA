@@ -21,7 +21,7 @@ public class Mate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mateId", nullable = false, columnDefinition = "int")
+    @Column(name = "mateId", columnDefinition = "int")
     private Long mateId;
 
 
@@ -29,13 +29,13 @@ public class Mate {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "mateUserId1")
     @NotNull
-    private Users users1;
+    private Users mateUserId1;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "mateUserId2")
     @NotNull
-    private Users users2;
+    private Users mateUserId2;
 
 }

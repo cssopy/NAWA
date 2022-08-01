@@ -1,7 +1,6 @@
 package com.ssafy.five.domain.entity;
 
 
-import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +9,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Builder
 @NoArgsConstructor
@@ -26,11 +26,15 @@ public class AddMate {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "addMateFrom")
+    @NotNull
     private Users addMateFrom;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "addmateTo")
+    @NotNull
     private Users addMateTo;
 
 }
