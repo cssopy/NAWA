@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+
 
 @Slf4j
 @Service
@@ -42,7 +44,7 @@ public class UserService {
                 .number(signUpReqDto.getNumber())
                 .genderType(signUpReqDto.getGenderType())
 //                .picture(signUpReqDto.getPicture())
-                .role("ROLE_USER")
+                .roles(Collections.singletonList("ROLE_USER"))
                 .build();
 
         userRepository.save(user);

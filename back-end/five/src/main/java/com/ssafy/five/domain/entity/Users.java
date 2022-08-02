@@ -3,12 +3,16 @@ package com.ssafy.five.domain.entity;
 import com.ssafy.five.domain.entity.EnumType.GenderType;
 import com.ssafy.five.domain.entity.EnumType.StateType;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Builder
@@ -16,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class Users {
+public class Users implements UserDetails {
 
     // 유저 아이디
     @Id
@@ -77,16 +81,9 @@ public class Users {
     @Column(name = "endDate", columnDefinition = "timestamp")
     private LocalDateTime endDate;
 
-    // 역할
-    @Column(name = "role", nullable = false, columnDefinition = "varchar(15)")
-    private String role;
-
-    public List<String> getRoleList(){
-        if(this.role.length() > 0){
-            return Arrays.asList(this.role.split(","));
-        }
-        return new ArrayList<>();
-    }
+//    // 역할
+//    @Column(name = "role", nullable = false, columnDefinition = "varchar(15)")
+//    private String role;
 
     public void updatePassword(String password){
         this.password = password;
@@ -111,8 +108,42 @@ public class Users {
     public void updateGender(GenderType genderType){
         this.genderType = genderType;
     }
-//
+
 //    public void updatePicture(File picture){
 //        this.picture = picture;
 //    }
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername() {
+        return this.userId;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
