@@ -12,7 +12,7 @@ function Home1() {
     >
       <div>
         <video
-            src="video/HomeVideo.mp4"
+            src="video/HomeVideo2.mp4"
             type="video/mp4"
             autoPlay
             muted
