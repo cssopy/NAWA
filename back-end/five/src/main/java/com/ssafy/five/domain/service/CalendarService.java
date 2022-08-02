@@ -32,7 +32,7 @@ public class CalendarService {
 
     public List<CalResDto> findTodo(String userId) {
         Users user = userRepository.findUserByUserId(userId);
-        List<Calendar> Todos = calenderRepository.findByUserId(user);
+        List<Calendar> Todos = calenderRepository.findByUsers(user);
         return Todos.stream().map(CalResDto::new).collect(Collectors.toList());
     }
 

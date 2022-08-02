@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface MateRepository extends JpaRepository<Mate, Long> {
 
-    List<Mate> findAllByMateUserId1OrMateUserId2(Users user);
+    List<Mate> findAllByMateUserId1OrMateUserId2(Users user1, Users user2);
 }
