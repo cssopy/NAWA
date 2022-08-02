@@ -12,12 +12,11 @@ public class CalReqDto {
 
     private String userId;
     private String calContent;
-    private Date calDate;
 
     public Calendar saveTodo(Users user) {
         return Calendar.builder()
                 .users(user)
-                .calDate(this.calDate)
+                .calDate(new Date())
                 .calContent(this.calContent)
                 .build();
     }
