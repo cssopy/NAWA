@@ -46,7 +46,7 @@
 //
 //        // 서명이 정장적으로 됨
 //        if(userId != null){
-//            Users usersEntity = userRepository.findByUsers(userId);
+//            Users usersEntity = userRepository.findByUserId(userId);
 //
 //            PrincipalDetails principalDetails = new PrincipalDetails(usersEntity);
 //
