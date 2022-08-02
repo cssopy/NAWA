@@ -4,7 +4,6 @@ package com.ssafy.five.controller;
 import com.ssafy.five.controller.dto.req.CalReqDto;
 import com.ssafy.five.controller.dto.res.CalResDto;
 import com.ssafy.five.domain.service.CalendarService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +24,8 @@ public class CalendarController {
         return new ResponseEntity<List<CalResDto>>(calendars, HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<?> findTodo(@RequestBody String userId) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> findTodo(@PathVariable String userId) {
         List<CalResDto> calendars = calendarService.findTodo(userId);
         return new ResponseEntity<List<CalResDto>>(calendars, HttpStatus.OK);
     }

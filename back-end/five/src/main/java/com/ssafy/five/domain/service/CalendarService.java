@@ -39,7 +39,7 @@ public class CalendarService {
     @Transactional
     public List<CalResDto> updateTodo(CalReqDto calReqDto) {
         Users user = userRepository.findUserByUserId(calReqDto.getUserId());
-        calenderRepository.save(calReqDto.saveTodo(user));
+        calenderRepository.save(calReqDto.updateTodo(user));
         return findTodo(calReqDto.getUserId());
     }
 
