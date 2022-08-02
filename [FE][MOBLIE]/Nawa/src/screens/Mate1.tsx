@@ -2,75 +2,52 @@ import React from "react";
 import {Text, View, StyleSheet, Button } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const Mate1 = ( {navigation} ) => {
+import * as Progress from 'react-native-progress';
+import constants from '../constants';
+
+
+const Mate2 = ( {navigation} ) => {
+
     return (
-      <>
-        <View style={styles.processBar}></View>
-        <View style={styles.loactionBox}>
-          <View style={styles.location}>
-            <Text>지도 설정</Text>
+      <View style={{ backgroundColor:'lightgrey', width:constants.width, height:constants.height }}>
+        <View style={styles.topBox}>
+
+          <View style={styles.infoBox}>
+            <Ionicons onPress={() => {navigation.goBack()}} name={'md-caret-back-circle-sharp'} size={30} color={'black'} />
+            <Text style={{color:'black'}}>위치 설정</Text>
+            <Ionicons onPress={() => {navigation.push('Mate2')}} name={'md-caret-forward-circle'} size={30} color={'black'} />
           </View>
-        </View>
-        <View style={styles.buttonBox}>
-          <Button
-            style={styles.Button}
-            title='나가기'
-            onPress={() => {navigation.goBack()}}
-          >
-          </Button>
-          <Button
-            style={styles.Button}
-            title='운동설정'
-            onPress={() => {navigation.push('Mate2')}}
-          >
-          </Button>
-        </View>
+
+          <Progress.Bar style={{marginHorizontal:3}} progress ={0.3} width={constants.width - 6} height={6} unfilledColor={'lightgrey'} />
         
-      </>
+        </View>        
+      </View>
     );
   }
 
 
 const styles = StyleSheet.create({
-  processBar : {
-      backgroundColor : 'lightgrey',
-      marginHorizontal :3,
-      marginVertical : 3,
-      borderRadius : 5,
-      height : 30
-    },
-  loactionBox : {
-      flexDirection: 'column',
-      backgroundColor : 'lightgrey',
-      fontWeight : '900',
-      // paddingHorizontal : 10,
-      // paddingVertical : 10,
-      marginHorizontal :3,
-      marginVertical : 3,
-      borderRadius : 5,
-      height : 440
-    },
-  location : {
-      backgroundColor : 'white',
-      marginHorizontal : 3,
-      marginTop : 3,
-      borderRadius : 10,
-      height : 434
-    },
-  buttonBox : {
-
-    flexDirection: 'row',
-    justifyContent : "space-between",
-    marginHorizontal : 3,
-    
+  topBox : {
+    backgroundColor:'white',
+    shadowColor: "black", //그림자색
+    shadowOpacity: 1,//그림자 투명도
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 8,
+    width: constants.width,
+    height : 45,
+    borderBottomLeftRadius: 7,
+    borderBottomEndRadius: 7,
   },
-  Button : {
-      backgroundColor : 'black',
-      marginHorizontal : 10,
-      marginTop : 10,
-      borderRadius : 20,
-    },
+  infoBox : {
+    flexDirection : 'row',
+    justifyContent : "space-between",
+    alignItems : 'center',
+    marginHorizontal : 3,
+    marginBottom : 2,
+    width : constants.width - 6,
+    height : 30
+  },
 })
 
 
-export default Mate1;
+export default Mate2;
