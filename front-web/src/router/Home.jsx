@@ -9,7 +9,6 @@ function Home() {
       <Home1/>
       <Home2 />
       <Home3 />
-      <hr style={{marginBottom: '10px'}} />
       <Copyright />
     </div>
   )

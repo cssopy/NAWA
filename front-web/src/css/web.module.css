@@ -15,11 +15,10 @@
   background-image: url(../../public/img/Download.jpg);
   background-size: cover;
   width: auto;
-  height: 800px;
+  height: 600px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 100px;
 }
 
 .copyright {
@@ -55,4 +54,10 @@ video {
   color: #F2A1CE;
   text-align: center;
   font-size: 50px;
+}
+
+.link {
+  text-decoration: none;
+  color: black;
+  font-size: 8px;
 }
