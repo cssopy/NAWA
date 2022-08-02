@@ -38,8 +38,8 @@ public class CalendarController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteTodo(@RequestBody Long calId) {
-        List<CalResDto> calendars = calendarService.deleteTodo(calId);
+    public ResponseEntity<?> deleteTodo(@RequestBody Long calendarId) {
+        List<CalResDto> calendars = calendarService.deleteTodo(calendarId);
         return new ResponseEntity<List<CalResDto>>(calendars, HttpStatus.OK);
     }
 }

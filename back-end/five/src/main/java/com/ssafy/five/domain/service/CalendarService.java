@@ -25,20 +25,20 @@ public class CalendarService {
 
     @Transactional
     public List<CalResDto> createTodo(CalReqDto calReqDto) {
-        Users user = userRepository.findById(calReqDto.getUserId()).get();
+        Users user = userRepository.findUserByUserId(calReqDto.getUserId());
         calenderRepository.save(calReqDto.saveTodo(user));
         return findTodo(calReqDto.getUserId());
     }
 
     public List<CalResDto> findTodo(String userId) {
-        Users user = userRepository.findById(userId).get();
-        List<Calendar> Todos = calenderRepository.findByUserId(user);
+        Users user = userRepository.findUserByUserId(userId);
+        List<Calendar> Todos = calenderRepository.findByUsers(user);
         return Todos.stream().map(CalResDto::new).collect(Collectors.toList());
     }
 
     @Transactional
     public List<CalResDto> updateTodo(CalReqDto calReqDto) {
-        Users user = userRepository.findById(calReqDto.getUserId()).get();
+        Users user = userRepository.findUserByUserId(calReqDto.getUserId());
         calenderRepository.save(calReqDto.saveTodo(user));
         return findTodo(calReqDto.getUserId());
     }
