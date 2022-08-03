@@ -1,63 +1,51 @@
-//package com.ssafy.five.config.jwt;
-//
-//import com.auth0.jwt.JWT;
-//import com.auth0.jwt.algorithms.Algorithm;
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.ssafy.five.config.auth.PrincipalDetails;
-//import com.ssafy.five.domain.entity.Users;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.security.authentication.AuthenticationManager;
-//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.security.core.AuthenticationException;
-//import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-//
-//import javax.servlet.FilterChain;
-//import javax.servlet.ServletException;
-//import javax.servlet.http.HttpServletRequest;
-//import javax.servlet.http.HttpServletResponse;
-//import java.io.IOException;
-//import java.util.Date;
-//
-//@RequiredArgsConstructor
-//public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-//
-//    private final AuthenticationManager authenticationManager;
-//
-//    @Override
-//    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-//        System.out.println("JwtAuthenticationFilter.attemptAuthentication");
-//        try {
-//            ObjectMapper om = new ObjectMapper();
-//            Users users = om.readValue(request.getInputStream(), Users.class);
-//            System.out.println("user = " + users);
-//
-//            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(users.getUserId(), users.getPassword());
-//
-//            Authentication authentication = authenticationManager.authenticate(authenticationToken);
-//
-//            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-//            System.out.println("principalDetails.getUser().getUserId() = " + principalDetails.getUser().getUserId());
-//
-//            return authentication;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-//
-//    @Override
-//    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-//        System.out.println("JwtAuthenticationFilter.successfulAuthentication");
-//        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
-//
-//        String jwtToken = JWT.create()
-//                .withSubject("nawa토큰")
-//                .withExpiresAt(new Date(System.currentTimeMillis()+(60000*10)))
-//                .withClaim("userId", principalDetails.getUser().getUserId())
-//                .withClaim("name", principalDetails.getUser().getName())
-//                .sign(Algorithm.HMAC512("nawa"));
-//
-//        response.addHeader("Authorization", "Bearer " + jwtToken);
-//    }
-//}
+package com.ssafy.five.config.jwt;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.GenericFilterBean;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@Slf4j
+public class JwtAuthenticationFilter extends GenericFilterBean {
+
+    private JwtTokenProvider jwtTokenProvider;
+
+    // Jwt Provider 주입
+    public JwtAuthenticationFilter(@Lazy JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    // 토큰의 인증정보를 SecurityContext에 저장하는 역할 수행
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+
+        String jwt = jwtTokenProvider.resolveToken(httpServletRequest);
+        String requestURI = httpServletRequest.getRequestURI();
+
+        // 토큰이 존재하고, 유효하면
+        if(jwt!=null && jwtTokenProvider.validateToken(jwt)){
+            // 토큰으로 인증 정보 조회
+            Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
+            // Context에 담는다
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
+        } else {
+            log.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
+        }
+        chain.doFilter(request, response);
+    }
+
+
+}

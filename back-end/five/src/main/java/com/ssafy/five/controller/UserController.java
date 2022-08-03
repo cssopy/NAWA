@@ -1,9 +1,9 @@
 package com.ssafy.five.controller;
 
-import com.ssafy.five.controller.dto.FindUserIdReqDto;
-import com.ssafy.five.controller.dto.GiveTempPwReqDto;
-import com.ssafy.five.controller.dto.FindUserResDto;
-import com.ssafy.five.controller.dto.SignUpReqDto;
+import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
+import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
+import com.ssafy.five.controller.dto.res.FindUserResDto;
+import com.ssafy.five.controller.dto.req.SignUpReqDto;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class UserController {
                 .nickname(user.getNickname())
                 .ment(user.getMent())
                 .number(user.getNumber())
-                .gender(user.getGender())
+                .genderType(user.getGenderType())
 //                .picture(user.getPicture())
                 .point(user.getPoint())
                 .build();

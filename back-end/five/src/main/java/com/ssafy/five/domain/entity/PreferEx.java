@@ -1,6 +1,7 @@
 package com.ssafy.five.domain.entity;
 
 
+import com.ssafy.five.domain.entity.EnumType.PreferType;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,5 +36,5 @@ public class PreferEx {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ex", nullable = false)
-    private Prefer prefer;
+    private PreferType preferType;
 }

@@ -1,8 +1,8 @@
 package com.ssafy.five.domain.service;
 
-import com.ssafy.five.controller.dto.FindUserIdReqDto;
-import com.ssafy.five.controller.dto.GiveTempPwReqDto;
-import com.ssafy.five.controller.dto.SignUpReqDto;
+import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
+import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
+import com.ssafy.five.controller.dto.req.SignUpReqDto;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.UserRepository;
 import com.ssafy.five.exception.UserNotFoundException;
@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
 
 
 @Slf4j
@@ -39,9 +41,9 @@ public class UserService {
                 .nickname(signUpReqDto.getNickname())
                 .ment(signUpReqDto.getMent())
                 .number(signUpReqDto.getNumber())
-                .gender(signUpReqDto.getGender())
+                .genderType(signUpReqDto.getGenderType())
 //                .picture(signUpReqDto.getPicture())
-                .role("ROLE_USER")
+                .roles(Collections.singletonList("ROLE_USER"))
                 .build();
 
         userRepository.save(user);
@@ -56,15 +58,14 @@ public class UserService {
 
     @Transactional
     public void updateUser(Users user){
-        Users user1 = userRepository.findUserByUserId(user.getUserId());
-        System.out.println(user.getPassword());
-        System.out.println(user1.getPassword());
+        Users user1 = userRepository.findByUserId(user.getUserId());
         user1.updatePassword(passwordEncoder.encode(user.getPassword()));
+//        user1.updatePassword(user.getPassword());
         user1.updateEmailId(user.getEmailId());
         user1.updateEmailDomain(user.getEmailDomain());
         user1.updateNickname(user.getNickname());
         user1.updateMent(user.getMent());
-        user1.updateGender(user.getGender());
+        user1.updateGender(user.getGenderType());
 //        user1.updatePicture(user.getPicture());
 
         userRepository.save(user1);
@@ -72,12 +73,11 @@ public class UserService {
 
     @Transactional
     public void deleteUser(String userId){
-        if(userRepository.findUserByUserId(userId) != null){
+        if(userRepository.findByUserId(userId) != null){
             userRepository.deleteById(userId);
         }
     }
 
-    @Transactional
     public String findUserId(FindUserIdReqDto findUserIdReqDto){
 
         String userId = userRepository.findUserIdByNameAndEmail(findUserIdReqDto.getName(), findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
@@ -91,7 +91,7 @@ public class UserService {
 
     @Transactional
     public boolean giveUserTempPass(GiveTempPwReqDto giveTempPwReqDto){
-        Users user = findUserByUserId(giveTempPwReqDto.getUserId());
+        Users user = userRepository.findByUserId(giveTempPwReqDto.getUserId());
         if(user != null){
             user.updatePassword("1234");
             userRepository.save(user);

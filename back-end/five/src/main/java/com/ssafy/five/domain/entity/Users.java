@@ -1,13 +1,19 @@
 package com.ssafy.five.domain.entity;
 
+import com.ssafy.five.domain.entity.EnumType.GenderType;
+import com.ssafy.five.domain.entity.EnumType.StateType;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.File;
 import java.util.Date;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Builder
@@ -15,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class Users {
+public class Users implements UserDetails {
 
     // 유저 아이디
     @Id
@@ -57,7 +63,7 @@ public class Users {
     // 성별
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
-    private Gender gender;
+    private GenderType genderType;
 
     // 인기점수
     @Column(name = "point", nullable = false, columnDefinition = "float")
@@ -66,7 +72,7 @@ public class Users {
     // 사용자 상태
     @Enumerated(EnumType.STRING)
 //    @Column(name = "state", nullable = false)
-    private State state;
+    private StateType stateType;
 
     // 신고 횟수
     @Column(name = "reportCount", nullable = false, columnDefinition = "int")
@@ -77,15 +83,22 @@ public class Users {
     @Column(name = "endDate", columnDefinition = "timestamp")
     private Date endDate;
 
-    // 역할
-    @Column(name = "role", nullable = false, columnDefinition = "varchar(15)")
-    private String role;
+    // refreshToken
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "refreshTokenId")
+    private RefreshTable refreshToken;
 
-    public List<String> getRoleList(){
-        if(this.role.length() > 0){
-            return Arrays.asList(this.role.split(","));
-        }
-        return new ArrayList<>();
+//    // 역할
+//    @Column(name = "role", nullable = false, columnDefinition = "varchar(15)")
+//    private String role;
+
+
+    public void setRefreshToken(RefreshTable refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public void updateRefreshToken(String refreshToken){
+        this.refreshToken = new RefreshTable(refreshToken);
     }
 
     public void updatePassword(String password){
@@ -108,11 +121,45 @@ public class Users {
         this.ment = ment;
     }
 
-    public void updateGender(Gender gender){
-        this.gender = gender;
+    public void updateGender(GenderType genderType){
+        this.genderType = genderType;
     }
-//
+
 //    public void updatePicture(File picture){
 //        this.picture = picture;
 //    }
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername() {
+        return this.userId;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
