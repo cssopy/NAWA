@@ -34,7 +34,7 @@ public class ReportService {
 
         if (reportReqDto.getReportTo().equals(reportReqDto.getReportFrom())) {
             throw new UserNotFoundException("잘못된 입력입니다.");
-        // 신고 한 적 있으면
+            // 신고 한 적 있으면
         } else if (reportRepositery.findByReportFromAndReportTo(reportReqDto.getReportFrom(), reportReqDto.getReportTo()).isPresent()) {
             response.put("result", "FAIL");
             response.put("detail", "이미 신고한 사용자입니다.");
@@ -43,7 +43,7 @@ public class ReportService {
 
             // 유저 정보 업데이트
             int reportCount = user.getReportCount() + 1;
-            StateType userState = StateType.NORMAL;
+            StateType userStateType = StateType.NORMAL;
             Calendar date = Calendar.getInstance();
             Date endDate = user.getEndDate();
 
@@ -51,11 +51,11 @@ public class ReportService {
             if (reportCount == 5) {
                 date.add(Calendar.DATE, 7);
                 endDate = new Date(date.getTimeInMillis());
-                userState = StateType.STOP;
+                userStateType = StateType.STOP;
             } else if (reportCount == 10){
                 date.add(Calendar.YEAR, 10);
                 endDate = new Date(date.getTimeInMillis());
-                userState = StateType.STOP;
+                userStateType = StateType.STOP;
             }
 
             // 유저 정보 업데이트
@@ -70,10 +70,10 @@ public class ReportService {
                     .ment(user.getMent())
                     .number(user.getNumber())
                     .genderType(user.getGenderType())
-    //                .picture(user.getPicture())
+                    //                .picture(user.getPicture())
                     .point(user.getPoint())
                     .reportCount(reportCount)
-                    .stateType(userState)
+                    .stateType(userStateType)
                     .endDate(endDate)
                     .roles(user.getRoles())
                     .build();
