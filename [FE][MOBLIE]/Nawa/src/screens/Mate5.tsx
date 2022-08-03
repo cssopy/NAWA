@@ -4,18 +4,7 @@ import Video from 'react-native-video';
 
 const Mate5 = () => {
   return (
-    <View style={styles.container}>
-      <Video
-        source={{
-          uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-        }}
-        style={styles.backgroundVideo}
-        fullscreen={true}
-        resizeMode={'contain'}
-        repeat={true}
-        controls={true}
-      />
-    </View>
+   <View></View>
   );
 };
 
