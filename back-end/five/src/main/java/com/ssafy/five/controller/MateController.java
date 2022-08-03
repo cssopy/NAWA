@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,7 +25,6 @@ public class MateController {
 
     @DeleteMapping("/{mateId}")
     public ResponseEntity<?> deleteMate(@PathVariable Long mateId) {
-        mateService.deleteMate(mateId);
-        return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
+        return new ResponseEntity<Map>(mateService.deleteMate(mateId), HttpStatus.OK);
     }
 }

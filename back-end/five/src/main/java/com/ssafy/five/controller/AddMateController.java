@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,8 +20,7 @@ public class AddMateController {
 
     @PostMapping
     public ResponseEntity<?> addMate(@RequestBody AddMateReqDto addMateReqDto) {
-        addMateService.addMate(addMateReqDto);
-        return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
+        return new ResponseEntity<Map>(addMateService.addMate(addMateReqDto), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}")
@@ -31,13 +31,11 @@ public class AddMateController {
 
     @PutMapping
     public ResponseEntity<?> acceptMate(@RequestBody Long addMateId) {
-        addMateService.acceptMate(addMateId);
-        return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
+        return new ResponseEntity<Map>(addMateService.acceptMate(addMateId), HttpStatus.OK);
     }
 
     @DeleteMapping("/{addMateId}")
     public ResponseEntity<?> rejectMate(@PathVariable Long addMateId) {
-        addMateService.rejectMate(addMateId);
-        return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
+        return new ResponseEntity<Map>(addMateService.rejectMate(addMateId), HttpStatus.OK);
     }
 }
