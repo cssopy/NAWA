@@ -34,7 +34,6 @@ public class UserService {
         Users user = Users.builder()
                 .userId(signUpReqDto.getUserId())
                 .password(passwordEncoder.encode(signUpReqDto.getPassword()))
-//                .password(signUpReqDto.getPassword())
                 .birth(signUpReqDto.getBirth())
                 .emailId(signUpReqDto.getEmailId())
                 .emailDomain(signUpReqDto.getEmailDomain())
@@ -59,7 +58,7 @@ public class UserService {
 
     @Transactional
     public void updateUser(Users user){
-        Users user1 = userRepository.findUserByUserId(user.getUserId());
+        Users user1 = userRepository.findByUserId(user.getUserId());
         user1.updatePassword(passwordEncoder.encode(user.getPassword()));
 //        user1.updatePassword(user.getPassword());
         user1.updateEmailId(user.getEmailId());
@@ -74,7 +73,7 @@ public class UserService {
 
     @Transactional
     public void deleteUser(String userId){
-        if(userRepository.findUserByUserId(userId) != null){
+        if(userRepository.findByUserId(userId) != null){
             userRepository.deleteById(userId);
         }
     }
@@ -92,7 +91,7 @@ public class UserService {
 
     @Transactional
     public boolean giveUserTempPass(GiveTempPwReqDto giveTempPwReqDto){
-        Users user = findUserByUserId(giveTempPwReqDto.getUserId());
+        Users user = userRepository.findByUserId(giveTempPwReqDto.getUserId());
         if(user != null){
             user.updatePassword("1234");
             userRepository.save(user);

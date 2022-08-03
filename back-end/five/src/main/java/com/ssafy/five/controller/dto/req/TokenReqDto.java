@@ -10,6 +10,8 @@ import lombok.*;
 @AllArgsConstructor
 public class TokenReqDto {
 
+    private String userId;
+
     private String accessToken;
 
     private String refreshToken;

@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,11 +31,7 @@ public class JwtTokenProvider implements InitializingBean {
     private long accessTokenExpireTime = 1000L * 60 * 60 * 24 * 1; // access 토큰 유효기간 1일
     private long refreshTokenExpireTime = 1000L * 60 * 60 * 24 * 30; // refresh 토큰 유효기간 30일
 
-    public static final String AUTHORIZATION_HEADER = "Authorization";
-
     private final UserDetailsService userDetailsService;
-
-
 
     public TokenResDto createToken(String userId, List<String> roles){
 
@@ -89,13 +86,13 @@ public class JwtTokenProvider implements InitializingBean {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public List<String> getUserRole(String token){
+    public List<String> getUserRoles(String token){
         return (List<String>) Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("roles");
     }
 
     // Header에서 token 추출
     public String resolveToken(HttpServletRequest request){
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        String bearerToken = request.getHeader("Authorization");
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
             return bearerToken.substring(7);
         }

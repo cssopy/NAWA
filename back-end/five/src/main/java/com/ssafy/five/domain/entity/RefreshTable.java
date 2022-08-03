@@ -5,8 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.swing.*;
 
 @Builder
 @Getter
@@ -14,22 +17,17 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "refresh_table")
-public class RefreshToken {
+public class RefreshTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, columnDefinition = "int")
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "userId")
-    @NotNull
-    private Users user;
-
-    @Column(name = "refreshToken", nullable = false, columnDefinition = "varchar(255)")
+    @Column(name = "refreshToken", columnDefinition = "varchar(255)")
     private String refreshToken;
 
-    public void updateRefreshToken(String refreshToken){
+    public RefreshTable(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 }

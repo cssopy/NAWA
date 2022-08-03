@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-import static com.ssafy.five.util.SecurityUtil.getCurrentUserId;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,8 +29,11 @@ public class UserTokenController {
 
     // 로그아웃
     @PostMapping("/user/logout")
-    public void logout(@Valid @RequestBody TokenReqDto tokenReqDto) throws Exception {
-        userTokenService.logout(getCurrentUserId(), tokenReqDto.getRefreshToken());
+    public boolean logout(@RequestBody String userId) throws Exception {
+        if(userTokenService.logout(userId)) {
+            return true;
+        }
+        return false;
     }
 
     // 토큰 재발급

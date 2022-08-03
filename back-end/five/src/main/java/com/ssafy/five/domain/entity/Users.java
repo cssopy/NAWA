@@ -81,9 +81,23 @@ public class Users implements UserDetails {
     @Column(name = "endDate", columnDefinition = "timestamp")
     private LocalDateTime endDate;
 
+    // refreshToken
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "refreshTokenId")
+    private RefreshTable refreshToken;
+
 //    // 역할
 //    @Column(name = "role", nullable = false, columnDefinition = "varchar(15)")
 //    private String role;
+
+
+    public void setRefreshToken(RefreshTable refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public void updateRefreshToken(String refreshToken){
+        this.refreshToken = new RefreshTable(refreshToken);
+    }
 
     public void updatePassword(String password){
         this.password = password;

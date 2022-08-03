@@ -2,6 +2,7 @@ package com.ssafy.five.config.jwt;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -20,7 +21,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private JwtTokenProvider jwtTokenProvider;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+    // Jwt Provider 주입
+    public JwtAuthenticationFilter(@Lazy JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -32,8 +34,11 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         String jwt = jwtTokenProvider.resolveToken(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
 
+        // 토큰이 존재하고, 유효하면
         if(jwt!=null && jwtTokenProvider.validateToken(jwt)){
+            // 토큰으로 인증 정보 조회
             Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
+            // Context에 담는다
             SecurityContextHolder.getContext().setAuthentication(authentication);
             log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
         } else {
