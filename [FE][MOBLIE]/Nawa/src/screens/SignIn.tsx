@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -15,6 +16,7 @@ import axios, {AxiosError} from 'axios';
 import {RootStackParamList} from '../../AppInner';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
+import {Form, FormItem} from 'react-native-form-component';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -80,6 +82,12 @@ function SignIn({navigation}: SignInScreenProps) {
   const canGoNext = userId && password;
   return (
     <DismissKeyboardView>
+      {/* <View style={styles.inputWrapper}>
+        <Image
+                source={require('../assets/nawa_white.png')}
+                style={styles.logoImage}
+            /> 
+      </View>
       <View style={styles.inputWrapper}>
         <Text style={styles.label}>아이디</Text>
         <TextInput
@@ -134,7 +142,71 @@ function SignIn({navigation}: SignInScreenProps) {
         <Pressable onPress={toSignUp}>
           <Text>회원가입하기</Text>
         </Pressable>
-      </View>
+      </View> */}
+      <View style={styles.logoWrap}>
+        <Image
+          source={require('../assets/nawa_black.png')}
+          style={styles.logoImage}
+        />
+      </View> 
+      <Form
+        onButtonPress={onSubmit}
+        buttonText = '로그인'
+        buttonStyle = {
+          canGoNext
+            ? StyleSheet.compose(styles.loginButtonForm, styles.loginButtonActiveForm)
+            : styles.loginButtonForm
+          }
+        style = {styles.inputWrapperForm}
+        >
+          <View style = {styles.inputWrapperForm}>
+            <FormItem 
+              // label = "아이디"
+              // labelStyle= {styles.labelForm}
+              textInputStyle={styles.textInputForm}
+              // isRequired  // 넣으면 칸 안이쁘게깨짐
+              onChangeText={onChangeuserId}
+              placeholder="아이디"
+              placeholderTextColor="#666"
+              importantForAutofill="yes"
+              autoComplete="username"
+              textContentType="username"
+              value={userId}
+              returnKeyType="next"
+              clearButtonMode="while-editing"
+              ref={userIdRef}
+              onSubmitEditing={() => passwordRef.current?.focus()}
+              blurOnSubmit={false}
+              underneathText= "아이디"
+            />
+          </View>
+          <View style = {styles.inputWrapperFormPassword}>
+          <FormItem
+            // label = "비밀번호"
+            // labelStyle={styles.labelForm}
+            textInputStyle={styles.textInputForm}
+            onChangeText={onChangePassword}
+            placeholder="비밀번호"
+            placeholderTextColor="#666"
+            importantForAutofill="yes"  
+            autoComplete="password"
+            textContentType="password"
+            secureTextEntry
+            value = {password}
+            returnKeyType="send"
+            clearButtonMode="while-editing"
+            ref={passwordRef}
+            onSubmitEditing={onSubmit}
+          />
+          </View>
+      </Form>
+      <Form 
+        onButtonPress={toSignUp}
+        buttonText = '회원가입하기'
+        buttonStyle={styles.signUpButtonForm}
+        style = {styles.inputWrapperForm}
+        >
+      </Form>
     </DismissKeyboardView>
   );
 }
@@ -156,18 +228,77 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loginButton: {
-    backgroundColor: 'gray',
-    paddingHorizontal: 20,
+    // backgroundColor: 'gray',
+    backgroundColor: '#acd5e8',
+    paddingHorizontal: 140,
     paddingVertical: 10,
     borderRadius: 5,
     marginBottom: 10,
   },
   loginButtonActive: {
-    backgroundColor: 'blue',
+    // backgroundColor: 'blue',
+    backgroundColor: '#00aeff',
   },
   loginButtonText: {
     color: 'white',
     fontSize: 16,
+  },
+  logoWrap: {
+    flex : 1,
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+  logoImage : {
+    width : 120,
+    height : 60,
+    resizeMode : 'contain',
+    marginLeft: 120,
+    marginTop: 120,
+    marginBottom: 20,
+  },
+  signUpButtonForm: {
+    backgroundColor: 'gray',
+    marginLeft: 20,
+    marginRight: 20,
+    marginBottom: 10,
+    marginTop: 10,
+    paddingVertical: 1,
+    borderRadius: 5,
+  },
+  loginButtonForm: {
+    backgroundColor: '#acd5e8',
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginLeft: 20,
+    marginRight: 20,
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  loginButtonActiveForm: {
+    backgroundColor: '#00aeff',
+  },
+  textInputForm: {
+    padding: 5,
+    borderWidth: StyleSheet.hairlineWidth,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 10,
+    marginTop: 10,
+    borderRadius: 5,
+  },
+  labelForm : {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginLeft: 30,
+  },
+  inputWrapperForm: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    backgroundColor: '#F5F5F5'
+  },
+  inputWrapperFormPassword: {
+    paddingLeft: 20,
+    paddingRight: 0,
   },
 });
 
