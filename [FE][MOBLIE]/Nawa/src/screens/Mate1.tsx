@@ -59,6 +59,7 @@ const Mate1 = ( {navigation} ) => {
                 name: 'check',
                 color: 'white',
               }}
+              disabled={!visible}
           />
         </View>
       </>

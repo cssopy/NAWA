@@ -95,8 +95,7 @@ function AppInner() {
       <NavigationContainer>
         {/* <Drawer.Navigator>
         </Drawer.Navigator> */}
-        {isLoggedIn ? (
-        // {!isLoggedIn ? (
+        {!isLoggedIn ? (
           <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {

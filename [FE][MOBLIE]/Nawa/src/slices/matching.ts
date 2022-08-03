@@ -29,11 +29,7 @@ const matchingSlice = createSlice({
         },
         setC1(state, action : PayloadAction<Matching> ) {
             state.category1 = action.payload.category1;
-        },
-        setC2(state, action : PayloadAction<Matching> ) {
             state.category2 = action.payload.category2;
-        },
-        setC3(state, action : PayloadAction<Matching> ) {
             state.category3 = action.payload.category3;
         },
         setS1(state, action : PayloadAction<Matching> ) {
