@@ -11,6 +11,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 
 @Builder
@@ -23,7 +24,7 @@ public class Chat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chatId", nullable = false, columnDefinition = "int")
+    @Column(name = "chatId", columnDefinition = "int")
     private Long chatId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,7 +44,7 @@ public class Chat {
     private String chatContent;
 
 
-    // 협의 필요
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "chatDate", nullable = false, columnDefinition = "timestamp")
-    private LocalDateTime chatDate;
+    private Date chatDate;
 }

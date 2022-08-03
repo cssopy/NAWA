@@ -8,7 +8,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.io.File;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -78,8 +79,9 @@ public class Users implements UserDetails {
     private int reportCount;
 
     // 정지 해제일
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "endDate", columnDefinition = "timestamp")
-    private LocalDateTime endDate;
+    private Date endDate;
 
     // refreshToken
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

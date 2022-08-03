@@ -9,7 +9,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Builder
@@ -21,7 +21,7 @@ public class Calendar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "calId", nullable = false, columnDefinition = "int")
+    @Column(name = "calId", columnDefinition = "int")
     private Long calId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,7 +34,7 @@ public class Calendar {
     private String calContent;
 
 
-    // 협의 필요
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "calDate", nullable = false, columnDefinition = "timestamp")
-    private LocalDateTime calDate;
+    private Date calDate;
 }

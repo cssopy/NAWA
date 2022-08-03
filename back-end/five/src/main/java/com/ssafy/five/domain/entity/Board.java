@@ -10,7 +10,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Builder
 @Getter
@@ -22,11 +22,11 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "boardId", nullable = false, columnDefinition = "int")
+    @Column(name = "boardId", columnDefinition = "int")
     private Long boardId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     @JoinColumn(name = "userId")
     @NotNull
     private Users user;
@@ -37,13 +37,13 @@ public class Board {
     @Column(name = "boardContent", columnDefinition = "text")
     private String boardContent;
 
-    // 협의 필요
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "boardDate", nullable = false, columnDefinition = "timestamp")
-    private LocalDateTime boardDate;
+    private Date boardDate;
 
-    // 협의 필요
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "boardUpdate", nullable = false)
-    private LocalDateTime boardUpdate;
+    private Date boardUpdate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "boardType", nullable = false)

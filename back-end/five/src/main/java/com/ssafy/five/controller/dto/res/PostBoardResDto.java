@@ -15,7 +15,7 @@ public class PostBoardResDto {
     private int boardHit;
     private int boardLikes;
 
-    public PostBoardResDto(Board entity){
+    public PostBoardResDto(Board entity) {
         this.boardId = entity.getBoardId();
         this.userId = entity.getUser().getUserId();
         this.boardTitle = entity.getBoardTitle();

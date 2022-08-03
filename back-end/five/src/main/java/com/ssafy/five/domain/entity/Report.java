@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Builder
 @Getter
@@ -15,7 +16,7 @@ public class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reportId", nullable = false, columnDefinition = "int")
+    @Column(name = "reportId", columnDefinition = "int")
     private Long reportId;
 
     @Column(name = "reportFrom", nullable = false, columnDefinition = "varchar(20)")
@@ -27,7 +28,8 @@ public class Report {
     @Column(name = "reportContent", nullable = false, columnDefinition = "varchar(600)")
     private String reportContent;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "reportDate", nullable = false, columnDefinition = "timestamp")
-    private LocalDateTime reportDate;
+    private Date reportDate;
 
 }

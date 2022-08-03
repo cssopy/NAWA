@@ -23,7 +23,7 @@ public class PreferEx {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "preferId", nullable = false, columnDefinition = "int")
+    @Column(name = "preferId", columnDefinition = "int")
     private Long preferId;
 
 

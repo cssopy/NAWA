@@ -17,7 +17,7 @@ public class LocationList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "locId", nullable = false, columnDefinition = "int")
+    @Column(name = "locId", columnDefinition = "int")
     private Long locId;
 
     @ManyToOne(fetch = FetchType.LAZY)

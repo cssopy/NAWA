@@ -10,7 +10,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 
 @Builder
@@ -44,7 +44,7 @@ public class Block {
     @Column(name = "blockMemo", columnDefinition = "varchar(100)")
     private String blockMemo;
 
-
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "blockDate", nullable = false, columnDefinition = "timestamp")
-    private LocalDateTime blockDate;
+    private Date blockDate;
 }
