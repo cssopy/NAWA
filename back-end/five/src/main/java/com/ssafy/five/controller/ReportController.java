@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/report")
@@ -19,7 +21,6 @@ public class ReportController {
 
     @PostMapping
     public ResponseEntity<?> reported(@RequestBody ReportReqDto reportReqDto) {
-        reportService.reported(reportReqDto);
-        return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
+        return new ResponseEntity<Map>(reportService.reported(reportReqDto), HttpStatus.OK);
     }
 }

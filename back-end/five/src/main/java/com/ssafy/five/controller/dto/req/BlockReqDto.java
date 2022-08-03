@@ -13,6 +13,12 @@ public class BlockReqDto {
     private String blockTo;
     private String blockMemo;
 
+    public BlockReqDto(String blockFrom, String blockTo, String blockMemo) {
+        this.blockFrom = blockFrom;
+        this.blockTo = blockTo;
+        this.blockMemo = blockMemo;
+    }
+
     public Block addBlock(Users From, Users To) {
         return Block.builder()
                 .blockFrom(From)

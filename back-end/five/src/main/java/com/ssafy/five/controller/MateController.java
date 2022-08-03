@@ -16,8 +16,8 @@ public class MateController {
 
     private final MateService mateService;
 
-    @GetMapping
-    public ResponseEntity<?> findAllMate(@RequestBody String userId) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> findAllMate(@PathVariable String userId) {
         List<MateResDto> allMate = mateService.findAllMate(userId);
         return new ResponseEntity<List<MateResDto>>(allMate, HttpStatus.OK);
     }

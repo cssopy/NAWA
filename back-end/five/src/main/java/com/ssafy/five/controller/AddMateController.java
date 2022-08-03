@@ -23,8 +23,8 @@ public class AddMateController {
         return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<?> findAllAddMate(@RequestBody String userId) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> findAllAddMate(@PathVariable String userId) {
         List<AddMateResDto> allMateRequest = addMateService.findAllAddMate(userId);
         return new ResponseEntity<List<AddMateResDto>>(allMateRequest, HttpStatus.OK);
     }

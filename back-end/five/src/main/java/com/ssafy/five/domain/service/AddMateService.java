@@ -43,7 +43,7 @@ public class AddMateService {
         AddMate addMate = addMateRepository.findById(mateId).get();
         Users user1 = userRepository.findUserByUserId(addMate.getAddMateFrom().getUserId());
         Users user2 = userRepository.findUserByUserId(addMate.getAddMateTo().getUserId());
-        mateRepository.save(Mate.builder().mateUserId2(user1).mateUserId2(user2).build());
+        mateRepository.save(Mate.builder().mateUserId1(user1).mateUserId2(user2).build());
         addMateRepository.delete(addMate);
     }
 
