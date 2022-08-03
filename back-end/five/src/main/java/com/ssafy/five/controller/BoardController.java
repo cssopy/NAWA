@@ -1,5 +1,6 @@
 package com.ssafy.five.controller;
 
+import com.ssafy.five.controller.dto.req.GetUserTypeBoardReqDto;
 import com.ssafy.five.controller.dto.req.OnOffBoardLikeReqDto;
 import com.ssafy.five.controller.dto.req.RegistBoardReqDto;
 import com.ssafy.five.controller.dto.req.UpdateBoardReqDto;
@@ -37,8 +38,8 @@ public class BoardController {
 
     @GetMapping("/")
     public ResponseEntity<?> getBoard() {
-        List<GetBoardResDto> list = boardService.findAll();
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        List<GetBoardResDto> boards = boardService.findAll();
+        return new ResponseEntity<>(boards, HttpStatus.OK);
     }
 
     @PutMapping("/")
@@ -63,22 +64,33 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     public ResponseEntity<?> getBoardById(@PathVariable(name = "boardId") Long boardId) {
-        GetBoardResDto getBoardResDto = boardService.findById(boardId);
-        getBoardResDto.setComments(cmtService.findALLByBoardId(boardId));
-        getBoardResDto.setFileResDtos(fileService.getFilesByBoardId(boardId));
-        return new ResponseEntity<>(getBoardResDto, HttpStatus.OK);
+        GetBoardResDto board = boardService.findById(boardId);
+        board.setComments(cmtService.findALLByBoardId(boardId));
+        board.setFileResDtos(fileService.getFilesByBoardId(boardId));
+        return new ResponseEntity<>(board, HttpStatus.OK);
     }
 
     @GetMapping("/type/{boardType}")
     public ResponseEntity<?> getBoardByType(@PathVariable(name = "boardType") BoardType boardType) {
-        List<GetBoardResDto> getBoardResDtos = boardService.findAllByBoardType(boardType);
-        return new ResponseEntity<>(getBoardResDtos, HttpStatus.OK);
+        List<GetBoardResDto> boards = boardService.findAllByBoardType(boardType);
+        return new ResponseEntity<>(boards, HttpStatus.OK);
+    }
+
+    @PostMapping("/type")
+    public ResponseEntity<?> getBoardByUserAndType(@RequestBody GetUserTypeBoardReqDto getUserTypeBoardReqDto) {
+        List<GetBoardResDto> boards = boardService.findAllByUserAndType(getUserTypeBoardReqDto);
+        return new ResponseEntity<>(boards, HttpStatus.OK);
     }
 
     @PostMapping("/like")
-    public ResponseEntity<?> onOffBoardLike(@RequestBody OnOffBoardLikeReqDto onOffBoardLikeReqDto) {
+    public void onOffBoardLike(@RequestBody OnOffBoardLikeReqDto onOffBoardLikeReqDto) {
         boardService.onOffBoardLike(onOffBoardLikeReqDto);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @GetMapping("/like/{userId}")
+    public ResponseEntity<?> getLikeBoardsByUserId(@PathVariable String userId) {
+        List<GetBoardResDto> boards = boardService.findAllByUser(userId);
+        return new ResponseEntity<>(boards, HttpStatus.OK);
     }
 
 }

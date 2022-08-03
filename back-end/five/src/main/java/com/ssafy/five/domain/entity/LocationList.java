@@ -1,7 +1,10 @@
 package com.ssafy.five.domain.entity;
 
 import com.sun.istack.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -24,15 +27,15 @@ public class LocationList {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
     @NotNull
-    private Users usersId;
+    private Users user;
 
     @Column(name = "locAddres", nullable = false, columnDefinition = "varchar(255)")
     private String locAddress;
 
-    @Column(name = "locLat", nullable = false, columnDefinition = "float")
-    private float locLat;
+    @Column(name = "locLat", nullable = false, columnDefinition = "double")
+    private double locLat;
 
-    @Column(name = "locLng", nullable = false, columnDefinition = "float")
-    private float locLng;
+    @Column(name = "locLng", nullable = false, columnDefinition = "double")
+    private double locLng;
 
 }

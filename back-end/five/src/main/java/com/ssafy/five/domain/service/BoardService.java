@@ -1,5 +1,6 @@
 package com.ssafy.five.domain.service;
 
+import com.ssafy.five.controller.dto.req.GetUserTypeBoardReqDto;
 import com.ssafy.five.controller.dto.req.OnOffBoardLikeReqDto;
 import com.ssafy.five.controller.dto.req.RegistBoardReqDto;
 import com.ssafy.five.controller.dto.req.UpdateBoardReqDto;
@@ -150,7 +151,8 @@ public class BoardService {
     }
 
     public List<GetBoardResDto> findAllByBoardType(BoardType boardType) {
-        return boardRepository.findAllByBoardType(boardType);
+        List<Board> boards = boardRepository.findAllByBoardType(boardType);
+        return boards.stream().map(GetBoardResDto::new).collect(Collectors.toList());
     }
 
     public void onOffBoardLike(OnOffBoardLikeReqDto onOffBoardLikeReqDto) {
@@ -167,5 +169,16 @@ public class BoardService {
                     .build();
             likeBoardRepository.save(likeBoard);
         }
+    }
+
+    public List<GetBoardResDto> findAllByUser(String userId) {
+        Users usersEntity = userRepository.findUserByUserId(userId);
+        List<Board> likeBoards = likeBoardRepository.findAllByUser(usersEntity);
+        return likeBoards.stream().map(GetBoardResDto::new).collect(Collectors.toList());
+    }
+
+    public List<GetBoardResDto> findAllByUserAndType(GetUserTypeBoardReqDto getUserTypeBoardReqDto) {
+        Users userEntity = userRepository.findUserByUserId(getUserTypeBoardReqDto.getUserId());
+        return boardRepository.findAllByUserAndType(userEntity, getUserTypeBoardReqDto.getBoardType());
     }
 }
