@@ -49,16 +49,16 @@ const HomeScreen = () => {
             elevation: 8,
           }}
         >
-          <View style={{ flex:1, backgroundColor:'lightgrey', justifyContent:'center', alignItems:'center' }}>
+          <View style={{ flex:1, backgroundColor:'rgb(0, 197, 145)', justifyContent:'center', alignItems:'center' }}>
             <Image
               source={require('../assets/nawa_white.png')}
               style={styles.logoImage}
             /> 
           </View>
-          <View style={{ flex:4, backgroundColor:'lightgrey', justifyContent:'center', alignItems:'center'}}>
+          <View style={{ flex:4, backgroundColor:'rgb(0, 197, 145)', justifyContent:'center', alignItems:'center'}}>
             <Search />
           </View>
-          <View style={{ flex:1, backgroundColor:'lightgrey', justifyContent:'center', alignItems:'center' }}>
+          <View style={{ flex:1, backgroundColor:'rgb(0, 197, 145)', justifyContent:'center', alignItems:'center' }}>
           <Image
               source={require('../assets/map.png')}
               style={styles.map}
