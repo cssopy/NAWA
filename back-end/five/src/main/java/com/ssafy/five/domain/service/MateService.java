@@ -22,7 +22,7 @@ public class MateService {
     private final UserRepository userRepository;
 
     public List<MateResDto> findAllMate(String userId) {
-        Users user = userRepository.findUserByUserId(userId);
+        Users user = userRepository.findByUserId(userId);
         List<Mate> allMate = mateRepository.findAllByMateUserId1OrMateUserId2(user, user);
         return allMate.stream().map(MateResDto::new).collect(Collectors.toList());
     }

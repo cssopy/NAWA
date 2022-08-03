@@ -3,7 +3,7 @@ package com.ssafy.five.domain.service;
 
 import com.ssafy.five.controller.dto.req.BlockReqDto;
 import com.ssafy.five.controller.dto.req.ReportReqDto;
-import com.ssafy.five.domain.entity.State;
+import com.ssafy.five.domain.entity.EnumType.StateType;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.ReportRepositery;
 import com.ssafy.five.domain.repository.UserRepository;
@@ -43,7 +43,7 @@ public class ReportService {
 
             // 유저 정보 업데이트
             int reportCount = user.getReportCount() + 1;
-            State userState = State.NORMAL;
+            StateType userState = StateType.NORMAL;
             Calendar date = Calendar.getInstance();
             Date endDate = user.getEndDate();
 
@@ -51,11 +51,11 @@ public class ReportService {
             if (reportCount == 5) {
                 date.add(Calendar.DATE, 7);
                 endDate = new Date(date.getTimeInMillis());
-                userState = State.STOP;
+                userState = StateType.STOP;
             } else if (reportCount == 10){
                 date.add(Calendar.YEAR, 10);
                 endDate = new Date(date.getTimeInMillis());
-                userState = State.STOP;
+                userState = StateType.STOP;
             }
 
             // 유저 정보 업데이트
@@ -69,13 +69,13 @@ public class ReportService {
                     .nickname(user.getNickname())
                     .ment(user.getMent())
                     .number(user.getNumber())
-                    .gender(user.getGender())
+                    .genderType(user.getGenderType())
     //                .picture(user.getPicture())
                     .point(user.getPoint())
                     .reportCount(reportCount)
-                    .state(userState)
+                    .stateType(userState)
                     .endDate(endDate)
-                    .role(user.getRole())
+                    .roles(user.getRoles())
                     .build();
 
             userRepository.save(updateUser);

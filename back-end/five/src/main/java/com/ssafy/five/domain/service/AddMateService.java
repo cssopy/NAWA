@@ -27,13 +27,13 @@ public class AddMateService {
 
     @Transactional
     public void addMate(AddMateReqDto addMateReqDto) {
-        Users user1 = userRepository.findUserByUserId(addMateReqDto.getAddMateFrom());
-        Users user2 = userRepository.findUserByUserId(addMateReqDto.getAddMateTo());
+        Users user1 = userRepository.findByUserId(addMateReqDto.getAddMateFrom());
+        Users user2 = userRepository.findByUserId(addMateReqDto.getAddMateTo());
         addMateRepository.save(addMateReqDto.addMate(user1, user2));
     }
 
     public List<AddMateResDto> findAllAddMate(String userId) {
-        Users user = userRepository.findUserByUserId(userId);
+        Users user = userRepository.findByUserId(userId);
         List<AddMate> addMateList = addMateRepository.findAllByAddMateTo(user);
         return addMateList.stream().map(AddMateResDto::new).collect(Collectors.toList());
     }
@@ -41,8 +41,8 @@ public class AddMateService {
     @Transactional
     public void acceptMate(Long mateId) {
         AddMate addMate = addMateRepository.findById(mateId).get();
-        Users user1 = userRepository.findUserByUserId(addMate.getAddMateFrom().getUserId());
-        Users user2 = userRepository.findUserByUserId(addMate.getAddMateTo().getUserId());
+        Users user1 = userRepository.findByUserId(addMate.getAddMateFrom().getUserId());
+        Users user2 = userRepository.findByUserId(addMate.getAddMateTo().getUserId());
         mateRepository.save(Mate.builder().mateUserId1(user1).mateUserId2(user2).build());
         addMateRepository.delete(addMate);
     }
