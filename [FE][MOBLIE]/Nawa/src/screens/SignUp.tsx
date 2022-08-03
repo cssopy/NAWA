@@ -117,10 +117,11 @@ function SignUp({navigation} : SignUpScreenProps) {
 
         try {
             setLoading(true);
-            const response = await axios.post('http://10.0.2.2:3105/user', {
+            console.log(`${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`)
+            const response = await axios.post('http://i7d205.p.ssafy.io:8080/user', {
                 userId : userId,
                 password : password,
-                birth : date,
+                birth : `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`,
                 emailId : email.split('@')[0],
                 emailDomain : email.split('@')[1],
                 name : name,
@@ -182,8 +183,10 @@ function SignUp({navigation} : SignUpScreenProps) {
             <Button title='open' onPress={() => setOpen(true)} />
             <DatePicker
                 modal
+                locale="ko"
                 open={open}
                 date={date}
+                mode="date"
                 onConfirm={(date) => {
                     setOpen(false)
                     setDate(date)

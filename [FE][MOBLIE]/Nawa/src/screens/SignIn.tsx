@@ -21,13 +21,13 @@ type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 function SignIn({navigation}: SignInScreenProps) {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
+  const [userId, setuserId] = useState('');
   const [password, setPassword] = useState('');
-  const emailRef = useRef<TextInput | null>(null);
+  const userIdRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
 
-  const onChangeEmail = useCallback(text => {
-    setEmail(text.trim());
+  const onChangeuserId = useCallback(text => {
+    setuserId(text.trim());
   }, []);
   const onChangePassword = useCallback(text => {
     setPassword(text.trim());
@@ -36,16 +36,16 @@ function SignIn({navigation}: SignInScreenProps) {
     if (loading) {
       return;
     }
-    if (!email || !email.trim()) {
-      return Alert.alert('알림', '이메일을 입력해주세요.');
+    if (!userId || !userId.trim()) {
+      return Alert.alert('알림', '아이디을 입력해주세요.');
     }
     if (!password || !password.trim()) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
     try {
       setLoading(true);
-      const response = await axios.post(`http://10.0.2.2:3105/login`, {
-        email,
+      const response = await axios.post(`http://i7d205.p.ssafy.io:8080/user/login`, {
+        userId,
         password,
       });
       Alert.alert('알림', '로그인 되었습니다.');
@@ -71,29 +71,29 @@ function SignIn({navigation}: SignInScreenProps) {
     } finally {
       setLoading(false);
     }
-  }, [loading, dispatch, email, password]);
+  }, [loading, dispatch, userId, password]);
 
   const toSignUp = useCallback(() => {
     navigation.navigate('SignUp');
   }, [navigation]);
 
-  const canGoNext = email && password;
+  const canGoNext = userId && password;
   return (
     <DismissKeyboardView>
       <View style={styles.inputWrapper}>
-        <Text style={styles.label}>이메일</Text>
+        <Text style={styles.label}>아이디</Text>
         <TextInput
           style={styles.textInput}
-          onChangeText={onChangeEmail}
-          placeholder="이메일을 입력해주세요"
+          onChangeText={onChangeuserId}
+          placeholder="아이디를 입력해주세요"
           placeholderTextColor="#666"
           importantForAutofill="yes"
-          autoComplete="email"
-          textContentType="emailAddress"
-          value={email}
+          autoComplete="username"
+          textContentType="username"
+          value={userId}
           returnKeyType="next"
           clearButtonMode="while-editing"
-          ref={emailRef}
+          ref={userIdRef}
           onSubmitEditing={() => passwordRef.current?.focus()}
           blurOnSubmit={false}
         />
