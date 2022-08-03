@@ -17,12 +17,12 @@ public class LocListService {
 
 
     public void save(LocListReqDto locListReqDto) {
-        Users userEntity = userRepository.findUserByUserId(locListReqDto.getUserId());
+        Users userEntity = userRepository.findByUserId(locListReqDto.getUserId());
         locListRepository.save(locListReqDto.toEntity(userEntity));
     }
 
     public LocListResDto findAllByUserId(String userId) {
-        Users users = userRepository.findUserByUserId(userId);
+        Users users = userRepository.findByUserId(userId);
         return new LocListResDto(locListRepository.findAllByUser(users));
     }
 

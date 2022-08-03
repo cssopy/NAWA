@@ -172,13 +172,13 @@ public class BoardService {
     }
 
     public List<GetBoardResDto> findAllByUser(String userId) {
-        Users usersEntity = userRepository.findUserByUserId(userId);
+        Users usersEntity = userRepository.findByUserId(userId);
         List<Board> likeBoards = likeBoardRepository.findAllByUser(usersEntity);
         return likeBoards.stream().map(GetBoardResDto::new).collect(Collectors.toList());
     }
 
     public List<GetBoardResDto> findAllByUserAndType(GetUserTypeBoardReqDto getUserTypeBoardReqDto) {
-        Users userEntity = userRepository.findUserByUserId(getUserTypeBoardReqDto.getUserId());
+        Users userEntity = userRepository.findByUserId(getUserTypeBoardReqDto.getUserId());
         return boardRepository.findAllByUserAndType(userEntity, getUserTypeBoardReqDto.getBoardType());
     }
 }
