@@ -1,10 +1,9 @@
 import React, { useRef, useEffect, useState } from "react";
-import { SafeAreaView, Text, Animated, View, StyleSheet } from "react-native";
+import { SafeAreaView, Text, Animated, View, StyleSheet, Image } from "react-native";
 
 import FeedItem from '../components/FeedItem';
 import Search from "../components/Search";
-import UserIcon from "../components/userIcon";
-
+import constants from '../constants';
 
 const HEADER_HEIGHT = 60;
 
@@ -35,9 +34,9 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView>
+        {/* <View style={styles.fixedBox}></View> */}
       <View>
         <Animated.View
-          
           style={{
             height: HEADER_HEIGHT,
             backgroundColor: "white",
@@ -50,14 +49,20 @@ const HomeScreen = () => {
             elevation: 8,
           }}
         >
-          <View style={{ flex:1, backgroundColor:'rgb(153, 204, 255)', justifyContent:'center', alignItems:'center' }}>
-            <Text style={styles.first}>나와</Text>
+          <View style={{ flex:1, backgroundColor:'lightgrey', justifyContent:'center', alignItems:'center' }}>
+            <Image
+              source={require('../assets/nawa_white.png')}
+              style={styles.logoImage}
+            /> 
           </View>
-          <View style={{ flex:4, backgroundColor:'rgb(153, 204, 255)', justifyContent:'center', alignItems:'center'}}>
+          <View style={{ flex:4, backgroundColor:'lightgrey', justifyContent:'center', alignItems:'center'}}>
             <Search />
           </View>
-          <View style={{ flex:1, backgroundColor:'rgb(153, 204, 255)', justifyContent:'center', alignItems:'center' }}>
-            <UserIcon />
+          <View style={{ flex:1, backgroundColor:'lightgrey', justifyContent:'center', alignItems:'center' }}>
+          <Image
+              source={require('../assets/map.png')}
+              style={styles.map}
+            /> 
           </View>
         </Animated.View>
 
@@ -81,10 +86,26 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  fixedBox : {
+    backgroundColor : 'black',
+    width : constants.width,
+    height : 30,
+  },
   first: {
     color : 'black',
     fontSize : 18,
     fontWeight : '900',
+  },
+  logoImage : {
+    width : 50,
+    height : 50,
+    resizeMode : 'contain',
+  },
+  map : {
+    width : 60,
+    height : 60,
+    resizeMode : 'contain',
+    marginTop : 7,
   }
 })
 

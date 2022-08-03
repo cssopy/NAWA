@@ -6,6 +6,7 @@ import Mate1 from './Mate1';
 import Mate2 from './Mate2';
 import Mate3 from './Mate3';
 import Mate4 from './Mate4';
+import Mate5 from './Mate5';
 
 
 const Stack = createNativeStackNavigator()
@@ -19,6 +20,7 @@ const MatingScreen = () => {
         <Stack.Screen name="Mate2" component={Mate2} />
         <Stack.Screen name="Mate3" component={Mate3} />
         <Stack.Screen name="Mate4" component={Mate4} />
+        <Stack.Screen name="Mate5" component={Mate5} />
       </Stack.Navigator>
     );
   }

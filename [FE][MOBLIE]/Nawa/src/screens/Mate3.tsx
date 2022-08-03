@@ -5,7 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Progress from 'react-native-progress';
 import constants from '../constants';
 
-const Mate2 = ( {navigation} ) => {
+const Mate3 = ( {navigation} ) => {
     return (
       <View style={{ backgroundColor:'lightgrey', width:constants.width, height:constants.height }}>
         <View style={styles.topBox}>
@@ -48,4 +48,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default Mate2;
+export default Mate3;

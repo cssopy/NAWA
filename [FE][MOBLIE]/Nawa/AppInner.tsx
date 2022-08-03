@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React, {useEffect} from 'react';
-import { Alert } from 'react-native';
+import { Alert, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -14,12 +14,16 @@ import HomeScreen from './src/screens/HomeScreen';
 import MatingScreen from './src/screens/Matching';
 import ChattingScreen from './src/screens/ChattingScreen';
 import SettingScreen from './src/screens/SettingScreen';
+import ProfileScreen from './src/screens/profileScreen';
 import SignUp from './src/screens/SignUp';
 import SignIn from './src/screens/SignIn';
 import { useAppDispatch } from './src/store';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, { AxiosError } from 'axios';
 import userSlice from './src/slices/user';
+import SplashScreen from 'react-native-splash-screen';
+
+StatusBar.setBackgroundColor("lightgrey");
 
 export type LoggedInParamList = {  //다른 곳에서도 쓸꺼니까 export
   Home: undefined;
@@ -50,6 +54,7 @@ function AppInner() {
       try {
         const token = await EncryptedStorage.getItem('refreshToken');
         if (!token) {
+          SplashScreen.hide();
           return;
         }
         const response = await axios.post(
@@ -78,6 +83,7 @@ function AppInner() {
           Alert.alert('알림', '다시 로그인 해주세요');
         }
       } finally {
+        SplashScreen.hide();
       }
     };
     getTokenAndRefresh();
@@ -103,6 +109,8 @@ function AppInner() {
                 iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
               } else if (route.name === '설정') {
                 iconName = focused ? 'settings' : 'settings-outline';
+              } else if (route.name === '프로필') {
+                iconName = focused ? 'person' : 'person-outline';
               }
               return <Ionicons name={iconName} size={size} color={color} />;
             },
@@ -114,8 +122,9 @@ function AppInner() {
           })}
         >
           <Tab.Screen name="홈" component={HomeScreen} />
-          <Tab.Screen name="매칭" component={MatingScreen} />
           <Tab.Screen name="채팅" component={ChattingScreen} options={{ tabBarBadge: 10 }} />
+          <Tab.Screen name="매칭" component={MatingScreen} />
+          <Tab.Screen name="프로필" component={ProfileScreen} />
           <Tab.Screen name="설정" component={SettingScreen} />
       </Tab.Navigator>
         ) : (

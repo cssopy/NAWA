@@ -5,7 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Progress from 'react-native-progress';
 import constants from '../constants';
 
-const Mate2 = ( {navigation} ) => {
+const Mate4 = ( {navigation} ) => {
     return (
       <View style={{ backgroundColor:'lightgrey', width:constants.width, height:constants.height }}>
         <View style={styles.topBox}>
@@ -13,11 +13,10 @@ const Mate2 = ( {navigation} ) => {
           <View style={styles.infoBox}>
             <Ionicons onPress={() => {navigation.goBack()}} name={'md-caret-back-circle-sharp'} size={30} color={'black'} />
             <Text style={{color:'black'}}>내용 점검</Text>
-            <Ionicons name={'md-caret-forward-circle'} size={30} color={'white'} />
+            <Ionicons onPress={() => {navigation.push('Mate5')}} name={'md-caret-forward-circle'} size={30} color={'black'} />
           </View>
 
           <Progress.Bar style={{marginHorizontal:3}} progress ={0.9} width={constants.width - 6} height={6} unfilledColor={'lightgrey'} />
-        
         </View>        
       </View>
     );
@@ -48,4 +47,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default Mate2;
+export default Mate4;
