@@ -33,7 +33,6 @@ public class BlockService {
     private final AddMateRepository addMateRepository;
 
     private final MateService mateService;
-    private final AddMateService addMateService;
 
     @Transactional
     public Map<String, String> addBlock(BlockReqDto blockReqDto) {
