@@ -17,7 +17,6 @@ import DismissKeyboardView from '../components/DismissKeyboardView';
 import axios, {AxiosError} from 'axios';
 import {RootStackParamList} from '../../AppInner';
 import DatePicker from 'react-native-date-picker';
-import { Form, FormItem } from "react-native-form-component";
 
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>
 

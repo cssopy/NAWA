@@ -129,7 +129,7 @@ function AppInner() {
       </Tab.Navigator>
         ) : (
           // jh 상단 헤더 없애기
-          <Stack.Navigator screenOptions={ () => ({ headerShown: false, })}>  
+          <Stack.Navigator screenOptions={{headerShown: false}}>  
                 <Stack.Screen
                 name="SignIn"
                 component={SignIn}
@@ -138,7 +138,7 @@ function AppInner() {
                 <Stack.Screen
                 name="SignUp"
                 component={SignUp}
-                options={{title: '회원가입'}}
+                options={{title: '회원가입', headerShown:true ,headerStyle:{backgroundColor:'rgb(0, 197, 145)'}}}
                 />
                 
             </Stack.Navigator>
