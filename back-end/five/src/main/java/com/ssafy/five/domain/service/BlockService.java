@@ -32,6 +32,8 @@ public class BlockService {
     private final MateRepository mateRepository;
     private final AddMateRepository addMateRepository;
 
+    private final MateService mateService;
+
     @Transactional
     public Map<String, String> addBlock(BlockReqDto blockReqDto) {
         Users From = userRepository.findById(blockReqDto.getBlockFrom()).orElseThrow(()-> new UserNotFoundException("잘못된 입력입니다."));
@@ -40,11 +42,14 @@ public class BlockService {
 
         // 차단은 한 번만 가능합니다!
         if (blockRepository.findByBlockFromAndBlockTo(From, To).isPresent()) {
-            response.put("result", "false");
+            response.put("result", "FAIL");
             response.put("detail", "이미 차단한 사용자입니다");
+        } else if (blockReqDto.getBlockTo().equals(blockReqDto.getBlockFrom())) {
+            response.put("result", "FAIL");
+            response.put("detail", "잘못된 요청입니다.");
         } else {
             blockRepository.save(blockReqDto.addBlock(From, To));
-            response.put("result", "true");
+            response.put("result", "SUCCESS");
             response.put("detail", "정상적으로 차단되었습니다.");
         }
 
@@ -52,9 +57,9 @@ public class BlockService {
         Optional<Mate> mated1 = mateRepository.findByMateUserId1AndMateUserId2(From, To);
         Optional<Mate> mated2 = mateRepository.findByMateUserId1AndMateUserId2(To, From);
         if (mated1.isPresent()) {
-            mateRepository.delete(mated1.get());
+            mateService.deleteMate(mated1.get().getMateId());
         } else if (mated2.isPresent()) {
-            mateRepository.delete(mated2.get());
+            mateService.deleteMate(mated2.get().getMateId());
         }
 
         // 신청도 와있을 경우, 삭제해버리기
