@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React, {useEffect} from 'react';
-import { Alert, StatusBar } from 'react-native';
+import { Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -23,7 +23,6 @@ import axios, { AxiosError } from 'axios';
 import userSlice from './src/slices/user';
 import SplashScreen from 'react-native-splash-screen';
 
-StatusBar.setBackgroundColor("lightgrey");
 
 export type LoggedInParamList = {  //다른 곳에서도 쓸꺼니까 export
   Home: undefined;
@@ -47,7 +46,8 @@ const Stack = createNativeStackNavigator();
 function AppInner() {
   const dispatch = useAppDispatch()
   const isLoggedIn = useSelector((state : RootState) => !!state.user.userId)
-  
+
+
   // 자동 로그인
   useEffect(() => {
     const getTokenAndRefresh = async () => {
@@ -95,8 +95,7 @@ function AppInner() {
       <NavigationContainer>
         {/* <Drawer.Navigator>
         </Drawer.Navigator> */}
-        {isLoggedIn ? (
-        // {!isLoggedIn ? (
+        {!isLoggedIn ? (
           <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
@@ -115,9 +114,8 @@ function AppInner() {
               }
               return <Ionicons name={iconName} size={size} color={color} />;
             },
-            tabBarActiveTintColor : 'black', // 활성화된 탭 색
+            tabBarActiveTintColor : 'rgb(0, 197, 145)', // 활성화된 탭 색
             tabBarInactiveTintColor : 'grey',  // 활성화 안된 탭 색
-            tabBarActiveBackgroundColor : 'lightgrey', // 개별 탭 색
             headerShown : false,
             tabBarHideOnKeyboard : true,
           })}
