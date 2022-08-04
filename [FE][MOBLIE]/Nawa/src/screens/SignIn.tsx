@@ -157,54 +157,52 @@ function SignIn({navigation}: SignInScreenProps) {
             ? StyleSheet.compose(styles.loginButtonForm, styles.loginButtonActiveForm)
             : styles.loginButtonForm
           }
-        style = {styles.inputWrapperForm}
         >
-          <View style = {styles.inputWrapperForm}>
-            <FormItem 
-              // label = "아이디"
-              // labelStyle= {styles.labelForm}
-              textInputStyle={styles.textInputForm}
-              // isRequired  // 넣으면 칸 안이쁘게깨짐
-              onChangeText={onChangeuserId}
-              placeholder="아이디"
-              placeholderTextColor="#666"
-              importantForAutofill="yes"
-              autoComplete="username"
-              textContentType="username"
-              value={userId}
-              returnKeyType="next"
-              clearButtonMode="while-editing"
-              ref={userIdRef}
-              onSubmitEditing={() => passwordRef.current?.focus()}
-              blurOnSubmit={false}
-              underneathText= "아이디"
-            />
-          </View>
-          <View style = {styles.inputWrapperFormPassword}>
-          <FormItem
-            // label = "비밀번호"
-            // labelStyle={styles.labelForm}
-            textInputStyle={styles.textInputForm}
-            onChangeText={onChangePassword}
-            placeholder="비밀번호"
+          <FormItem 
+            // label = "아이디"
+            // labelStyle= {styles.labelForm}
+            style={styles.textInputForm}
+            // isRequired  // 넣으면 칸 안이쁘게 깨짐
+            onChangeText={onChangeuserId}
+            placeholder="아이디"
             placeholderTextColor="#666"
-            importantForAutofill="yes"  
-            autoComplete="password"
-            textContentType="password"
-            secureTextEntry
-            value = {password}
-            returnKeyType="send"
+            importantForAutofill="yes"
+            autoComplete="username"
+            textContentType="username"
+            // keyboardType="default"
+            value={userId}
+            returnKeyType="next"
             clearButtonMode="while-editing"
-            ref={passwordRef}
-            onSubmitEditing={onSubmit}
+            ref={userIdRef}
+            onSubmitEditing={() => passwordRef.current?.focus()}
+            blurOnSubmit={false}
+            underneathText= "아이디"
+            autoCapitalize= 'none'
           />
-          </View>
+        <FormItem
+          // label = "비밀번호"
+          // labelStyle={styles.labelForm}
+          style={styles.textInputForm}
+          onChangeText={onChangePassword}
+          value = {password}
+          placeholder="비밀번호"
+          placeholderTextColor="#666"
+          importantForAutofill="yes"  
+          autoComplete="password"
+          textContentType="password"
+          secureTextEntry
+          returnKeyType="send"
+          clearButtonMode="while-editing"
+          ref={passwordRef}
+          onSubmitEditing={onSubmit}
+          autoCapitalize= 'none'
+        />
       </Form>
       <Form 
         onButtonPress={toSignUp}
         buttonText = '회원가입하기'
         buttonStyle={styles.signUpButtonForm}
-        style = {styles.inputWrapperForm}
+        // style = {styles.inputWrapperForm}
         >
       </Form>
     </DismissKeyboardView>
@@ -279,12 +277,14 @@ const styles = StyleSheet.create({
   },
   textInputForm: {
     padding: 5,
-    borderWidth: StyleSheet.hairlineWidth,
-    marginLeft: 10,
-    marginRight: 10,
+    borderWidth: 1,
+    marginLeft: 20,
+    marginRight: 20,
     marginBottom: 10,
     marginTop: 10,
     borderRadius: 5,
+    autoCapitalize: "none"
+    
   },
   labelForm : {
     fontWeight: 'bold',
@@ -292,8 +292,6 @@ const styles = StyleSheet.create({
     marginLeft: 30,
   },
   inputWrapperForm: {
-    paddingLeft: 20,
-    paddingRight: 20,
     backgroundColor: '#F5F5F5'
   },
   inputWrapperFormPassword: {

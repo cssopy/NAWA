@@ -17,6 +17,7 @@ import DismissKeyboardView from '../components/DismissKeyboardView';
 import axios, {AxiosError} from 'axios';
 import {RootStackParamList} from '../../AppInner';
 import DatePicker from 'react-native-date-picker';
+import { Form, FormItem } from "react-native-form-component";
 
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>
 
@@ -145,7 +146,7 @@ function SignUp({navigation} : SignUpScreenProps) {
     const canGoNext = userId && password && date && email && name && nickName && number && gender;
     return (
         <DismissKeyboardView>
-          <View style={styles.inputWrapper}>
+          {/* <View style={styles.inputWrapper}>
             <Text style={styles.label}>아이디</Text>
             <TextInput
               style={styles.textInput}
@@ -292,7 +293,152 @@ function SignUp({navigation} : SignUpScreenProps) {
                 <Text style={styles.loginButtonText}>회원가입</Text>
               )}
             </Pressable>
-          </View>
+          </View> */}
+          <View style={styles.viewTop} />
+          <Form
+            onButtonPress={onSubmit}
+            buttonText = "회원가입"
+            buttonStyle={
+              canGoNext
+                ? StyleSheet.compose(styles.loginButtonForm, styles.loginButtonActiveForm)
+                : styles.loginButtonForm
+            }
+          >
+            <FormItem
+              label = "아이디" 
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
+              onChangeText={onChangeUserId}
+              placeholder="아이디를 입력해주세요."
+              placeholderTextColor="#666"
+              textContentType="username"
+              value={userId}
+              returnKeyType="next"
+              clearButtonMode="while-editing"
+              ref={userIdRef}
+              onSubmitEditing={() => passwordRef.current?.focus()}
+              blurOnSubmit={false}
+              autoCapitalize= 'none'
+            />
+            <FormItem 
+              label = "비밀번호"
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
+              placeholder="비밀번호를 입력해주세요.(영문,숫자,특수문자)"
+              placeholderTextColor="#666"
+              onChangeText={onChangePassword}
+              value={password}
+              keyboardType={Platform.OS === 'android' ? 'default' : 'ascii-capable'}
+              textContentType="password"
+              secureTextEntry
+              returnKeyType="send"
+              clearButtonMode="while-editing"
+              ref={passwordRef}
+              onSubmitEditing={() => emailRef.current?.focus()}
+              autoCapitalize= 'none'
+            />
+            <View style={styles.inputWrapper}>
+              <Text style={styles.label}>생일</Text>
+              <Button title='open'
+                color={'#00aeff'} 
+                onPress={() => setOpen(true)} />
+              <DatePicker
+                  modal
+                  locale="ko"
+                  open={open}
+                  date={date}
+                  mode="date"
+                  onConfirm={(date) => {
+                      setOpen(false)
+                      setDate(date)
+                  }}
+                  onCancel={() => {
+                      setOpen(false)
+                  }}
+              />
+            </View>
+            <FormItem 
+              label = "이메일"
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
+              onChangeText={onChangeEmail}
+              placeholder="이메일을 입력해주세요."
+              placeholderTextColor="#666"
+              textContentType="emailAddress"
+              value={email}
+              returnKeyType="next"
+              clearButtonMode="while-editing"
+              ref={emailRef}
+              onSubmitEditing={() => nameRef.current?.focus()}
+              blurOnSubmit={false}
+              autoCapitalize= 'none'
+              // keyboardType="email-address"  // 빨간 에러 발생 시 못 생겨서 보류
+            />
+            <FormItem 
+              label = "이름"
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
+              onChangeText={onChangeName}
+              placeholder="이름을 입력해주세요."
+              placeholderTextColor="#666"
+              textContentType="name"
+              value={name}
+              returnKeyType="next"
+              clearButtonMode="while-editing"
+              ref={nameRef}
+              onSubmitEditing={() => nickNameRef.current?.focus()}
+              blurOnSubmit={false}
+              autoCapitalize= 'none'
+            />
+            <FormItem 
+              label = "닉네임"
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
+              onChangeText={onChangeNickName}
+              placeholder="닉네임을 입력해주세요."
+              placeholderTextColor="#666"
+              textContentType="username"
+              value={nickName}
+              returnKeyType="next"
+              clearButtonMode="while-editing"
+              ref={nickNameRef}
+              onSubmitEditing={() => numberRef.current?.focus()}////
+              blurOnSubmit={false}
+              autoCapitalize= 'none'
+            />
+            <FormItem 
+              label = "전화번호"
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
+              onChangeText={onChangeNumber}
+              placeholder="전화번호를 입력해주세요."
+              placeholderTextColor="#666"
+              textContentType="telephoneNumber"
+              value={number}
+              returnKeyType="next"
+              clearButtonMode="while-editing"
+              ref={numberRef}
+              onSubmitEditing={() => genderRef.current?.focus()}
+              blurOnSubmit={false}
+              autoCapitalize= 'none'
+              // keyboardType="numeric"  //  빨간 에러 발생 시 못생겨서 보류
+            />
+            <FormItem 
+              label = "성별"
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
+              onChangeText={onChangeGender}
+              placeholder="성별을 입력해주세요."
+              placeholderTextColor="#666"
+              textContentType="none"
+              value={gender}
+              returnKeyType="send"
+              clearButtonMode="while-editing"
+              ref={genderRef}
+              onSubmitEditing={onSubmit}
+              autoCapitalize= 'none'
+            />
+          </Form>
         </DismissKeyboardView>
       );
     }
@@ -303,12 +449,16 @@ function SignUp({navigation} : SignUpScreenProps) {
         borderBottomWidth: StyleSheet.hairlineWidth,
       },
       inputWrapper: {
-        padding: 20,
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingBottom: 20,
       },
       label: {
-        fontWeight: 'bold',
+        fontWeight: '600',
         fontSize: 16,
-        marginBottom: 20,
+        color : 'black',
+        marginBottom: 10,
+        marginLeft: 10,
       },
       buttonZone: {
         alignItems: 'center',
@@ -327,6 +477,35 @@ function SignUp({navigation} : SignUpScreenProps) {
         color: 'white',
         fontSize: 16,
       },
+      textInputForm: {
+        padding: 5,
+        borderWidth: 1,
+        marginLeft: 20,
+        marginRight: 20,
+        marginBottom: 10,
+        marginTop: 10,
+        borderRadius: 5,
+      },
+      loginButtonForm: {
+        backgroundColor: '#acd5e8',
+        paddingVertical: 10,
+        borderRadius: 5,
+        marginLeft: 20,
+        marginRight: 20,
+        marginBottom: 10,
+        marginTop: 10,
+      },
+      loginButtonActiveForm: {
+        backgroundColor: '#00aeff',
+      },
+      labelForm : {
+        fontWeight: 'bold',
+        fontSize: 16,
+        marginLeft: 30,
+      },
+      viewTop :{
+        marginTop: 25,
+      }
     });
     
     export default SignUp;
