@@ -9,6 +9,7 @@ import com.ssafy.five.domain.repository.UserRepository;
 import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,6 +87,11 @@ public class UserTokenService {
             return tokenResDto;
         }
 
-        return null;
+        TokenResDto tokenResDto = TokenResDto.builder()
+                .accessToken(tokenReqDto.getAccessToken())
+                .refreshToken(tokenReqDto.getRefreshToken())
+                .build();
+
+        return tokenResDto;
     }
 }
