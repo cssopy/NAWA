@@ -33,7 +33,7 @@ public class Users implements UserDetails {
     private String password;
 
     // 생년월일
-    @Column(name = "birth", nullable = false, columnDefinition = "varchar(8)")
+    @Column(name = "birth", nullable = false, columnDefinition = "varchar(10)")
     private String birth;
 
     // 이메일 아이디
