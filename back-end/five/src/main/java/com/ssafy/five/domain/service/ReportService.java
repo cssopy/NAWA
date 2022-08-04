@@ -38,6 +38,9 @@ public class ReportService {
         } else if (reportRepositery.findByReportFromAndReportTo(reportReqDto.getReportFrom(), reportReqDto.getReportTo()).isPresent()) {
             response.put("result", "FAIL");
             response.put("detail", "이미 신고한 사용자입니다.");
+        } else if (reportReqDto.getReportFrom().equals(reportReqDto.getReportTo())) {
+            response.put("result", "FAIL");
+            response.put("detail", "잘못된 요청입니다.");
         } else {
             reportRepositery.save(reportReqDto.reported());
 

@@ -66,10 +66,13 @@ public class AddMateService {
             response.put("detail", "이미 메이트 등록된 사용자입니다.");
         } else if (isAdd.isPresent()) {
             response.put("result", "FAIL");
-            response.put("detail", "메이트 신청을 받은 사용자입니다.");
+            response.put("detail", "이미 메이트 신청한 사용자입니다.");
         } else if (isAdded.isPresent()) {
             response.put("result", "FAIL");
-            response.put("detail", "이미 메이트 신청한 사용자입니다.");
+            response.put("detail", "메이트 신청을 받은 사용자입니다.");
+        } else if (addMateReqDto.getAddMateFrom().equals(addMateReqDto.getAddMateTo())) {
+            response.put("result", "FAIL");
+            response.put("detail", "잘못된 요청입니다");
         } else {
             response.put("result", "SUCCESS");
             response.put("detail", "메이트 요청을 보냈습니다.");
@@ -136,7 +139,7 @@ public class AddMateService {
 
         if (addMate.isPresent()) {
             response.put("result", "SUCCESS");
-            response.put("detail", "메이트가 해제되었습니다.");
+            response.put("detail", "메이트 신청을 거절하였습니다.");
             addMateRepository.delete(addMate.get());
         } else {
             response.put("result", "FAIL");

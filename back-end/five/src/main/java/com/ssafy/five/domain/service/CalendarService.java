@@ -47,7 +47,7 @@ public class CalendarService {
     public List<CalResDto> updateTodo(CalReqDto calReqDto) {
         Users user = userRepository.findById(calReqDto.getUserId()).orElseThrow(()-> new UserNotFoundException("잘못된 입력입니다"));
         Calendar calendar = calenderRepository.findByCalDate(calReqDto.getCalDate());
-        if (calendar != null && calendar.getCalId() == calReqDto.getCalId()) {
+        if (calendar != null && calendar.getCalId().equals(calReqDto.getCalId())) {
             calenderRepository.save(calReqDto.updateTodo(user));
         } else {
             throw new CalendarNotFoundException("잘못된 입력입니다");
