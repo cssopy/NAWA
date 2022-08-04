@@ -1,34 +1,36 @@
 package com.ssafy.five.domain.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.apache.commons.mail.SimpleEmail;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class MailService {
 
-    @Autowired
-    private JavaMailSender javaMailSender;
-
     public void snedMailWithNewPwd(String email, String newPwd) {
-        List<String> toUserList = new ArrayList<>();
+        SimpleEmail simpleEmail = new SimpleEmail();
+        simpleEmail.setHostName("smtp.naver.com");
+        simpleEmail.setSmtpPort(465);
+        simpleEmail.setAuthentication("cssopy", "dl765416!#%");
+        simpleEmail.setCharset("utf-8");
 
-        toUserList.add(email);
+        simpleEmail.setSSL(true);
+        simpleEmail.setTLS(true);
 
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        try {
+            simpleEmail.setFrom("cssopy@naver.com", "나와");
+            simpleEmail.addTo(email);
+            simpleEmail.setSubject("[나와] 임시 비밀번호 발급");
+            simpleEmail.setMsg("아래 발급한 임시 비밀번호를 사용해 로그인 가능합니다.\n" +
+                    "New Password : " + newPwd);
+            try {
+                simpleEmail.send();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        simpleMailMessage.setTo((String[]) toUserList.toArray(new String[toUserList.size()]));
-
-        simpleMailMessage.setSubject("[나와] 임시 비밀번호 발급");
-
-        simpleMailMessage.setText("아래 발급한 임시 비밀번호를 사용해 로그인 가능합니다.\n" +
-                "New Password : " + newPwd);
-
-        javaMailSender.send(simpleMailMessage);
     }
 
 }
