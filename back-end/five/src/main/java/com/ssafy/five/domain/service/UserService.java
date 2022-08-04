@@ -12,8 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.Collections;
-
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,14 +22,16 @@ import java.util.Collections;
 @Transactional(readOnly = true)
 public class UserService {
 
+    private final MailService mailService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
 
     // 회원가입 폼을 받아서 회원가입
     // 성공하면 return true
     @Transactional
     public boolean signUp(SignUpReqDto signUpReqDto) {
-        if(userRepository.existsById(signUpReqDto.getUserId())){
+        if (userRepository.existsById(signUpReqDto.getUserId())) {
             return false;
         }
         Users user = Users.builder()
@@ -50,14 +53,14 @@ public class UserService {
         return true;
     }
 
-    public Users findUserByUserId(String userId){
-        Users user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException());
+    public Users findUserByUserId(String userId) {
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 
         return user;
     }
 
     @Transactional
-    public void updateUser(Users user){
+    public void updateUser(Users user) {
         Users user1 = userRepository.findByUserId(user.getUserId());
         user1.updatePassword(passwordEncoder.encode(user.getPassword()));
 //        user1.updatePassword(user.getPassword());
@@ -72,17 +75,17 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(String userId){
-        if(userRepository.findByUserId(userId) != null){
+    public void deleteUser(String userId) {
+        if (userRepository.findByUserId(userId) != null) {
             userRepository.deleteById(userId);
         }
     }
 
-    public String findUserId(FindUserIdReqDto findUserIdReqDto){
+    public String findUserId(FindUserIdReqDto findUserIdReqDto) {
 
         String userId = userRepository.findUserIdByNameAndEmail(findUserIdReqDto.getName(), findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
 
-        if(userId != null){
+        if (userId != null) {
             return userId;
         }
         return null;
@@ -90,20 +93,31 @@ public class UserService {
     }
 
     @Transactional
-    public boolean giveUserTempPass(GiveTempPwReqDto giveTempPwReqDto){
+    public boolean giveUserTempPass(GiveTempPwReqDto giveTempPwReqDto) {
         Users user = userRepository.findByUserId(giveTempPwReqDto.getUserId());
-        if(user != null){
-            user.updatePassword("1234");
+        if (user != null) {
+            // 랜덤 비밀번호 생성 (영소문자, 10자리)
+            SecureRandom random = new SecureRandom();
+            String newPwd = random.ints(10, 97, 122 + 1)
+                    .mapToObj(i -> String.valueOf((char) i))
+                    .collect(Collectors.joining());
+
+            // DB에 새비밀번호 업데이트
+            user.updatePassword(passwordEncoder.encode(newPwd));
             userRepository.save(user);
+
+            // 메일 전송
+            mailService.snedMailWithNewPwd(user.getEmailId() + "@" + user.getEmailDomain(), newPwd);
+
             return true;
         }
         return false;
     }
 
     @Transactional
-    public boolean availableNickname(String nickname){
+    public boolean availableNickname(String nickname) {
         Users user = userRepository.findByNickname(nickname);
-        if(user != null){
+        if (user != null) {
             return false;
         }
         return true;
