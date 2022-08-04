@@ -2,15 +2,12 @@ package com.ssafy.five.controller.dto.res;
 
 import lombok.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-@Builder
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class SmsResDto {
+public class SmsResponse {
     private String requestId;
     private LocalDateTime requestTime;
     private String statusCode;

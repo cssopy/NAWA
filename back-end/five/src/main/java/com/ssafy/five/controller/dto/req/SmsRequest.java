@@ -1,14 +1,19 @@
 package com.ssafy.five.controller.dto.req;
 
+import com.ssafy.five.controller.dto.MessageDto;
 import lombok.*;
 
-@Builder
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class SmsRequest {
-    private String tel;
-    private String title;
+    private String type;
+    private String contentType;
+    private String countryCode;
+    private String from;
     private String content;
+    private List<MessageDto> messages;
 }

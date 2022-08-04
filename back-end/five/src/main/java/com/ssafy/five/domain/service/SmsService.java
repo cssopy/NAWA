@@ -2,8 +2,9 @@ package com.ssafy.five.domain.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.five.controller.dto.req.SmsReqDto;
-import com.ssafy.five.controller.dto.res.SmsResDto;
+import com.ssafy.five.controller.dto.MessageDto;
+import com.ssafy.five.controller.dto.req.SmsRequest;
+import com.ssafy.five.controller.dto.res.SmsResponse;
 import com.ssafy.five.domain.entity.Messages;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @Transactional
@@ -37,14 +39,24 @@ public class SmsService {
     @Value("${sms.secretKey}")
     private String secretKey;
 
-    public SmsResDto sendSms(String tel, String content) throws JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
+    public SmsResponse sendSms(String recipientPhoneNumber) throws JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
         Long time = System.currentTimeMillis();
-        List<Messages> messages = new ArrayList<>();
-        messages.add(new Messages(tel, content));
+        List<MessageDto> messages = new ArrayList<>();
 
-        SmsReqDto smsReqDto = new SmsReqDto("SMS", "COMM", "82", "01099136810", "내용", messages);
+        String numStr = makeRandNum();
+
+        String ctt = "인증번호 [" + numStr + "]";
+        messages.add(new MessageDto(recipientPhoneNumber, ctt));
+
+        // db에 저장
+        Messages.builder()
+                .receiver(recipientPhoneNumber)
+                .content(numStr)
+                .build();
+
+        SmsRequest smsRequest = new SmsRequest("SMS", "COMM", "82", "01099136810", "NAWA", messages);
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonBody = objectMapper.writeValueAsString(smsReqDto);
+        String jsonBody = objectMapper.writeValueAsString(smsRequest);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -57,9 +69,19 @@ public class SmsService {
 
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-        SmsResDto smsResDto = restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/" + this.serviceId + "/messages"), body, SmsResDto.class);
+        SmsResponse smsResponse = restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/" + this.serviceId + "/messages"), body, SmsResponse.class);
 
-        return smsResDto;
+        return smsResponse;
+    }
+
+    private String makeRandNum() {
+        Random rand = new Random();
+        String numStr = "";
+        for(int i=0;i<4;i++){
+            String ran = Integer.toString(rand.nextInt(10));
+            numStr += ran;
+        }
+        return numStr;
     }
 
     public String makeSignature(Long time) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException{
