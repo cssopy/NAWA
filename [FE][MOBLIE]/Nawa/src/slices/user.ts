@@ -4,14 +4,12 @@ interface User  {
     userId : string,
     nickname : string,
     accessToken: string,
-    refreshToken: string,
 }
 
 const initialState = {
     userId : '',
     nickname: '',
     accessToken: '',
-    refreshToken: '',
 };
 
 const userSlice = createSlice({
@@ -22,7 +20,6 @@ const userSlice = createSlice({
             state.userId = action.payload.userId;
             state.nickname = action.payload.nickname;
             state.accessToken = action.payload.accessToken;
-            state.refreshToken = action.payload.refreshToken;
         },
     },
 })

@@ -9,9 +9,9 @@ import {
     TextInput,
     View,
     Button,
-    
 } from 'react-native';
 
+import { Form, FormItem } from "react-native-form-component";
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import DismissKeyboardView from '../components/DismissKeyboardView';
 import axios, {AxiosError} from 'axios';
@@ -127,8 +127,8 @@ function SignUp({navigation} : SignUpScreenProps) {
                 name : name,
                 nickname : nickName,
                 number : number,
-                gender : gender,
-            });
+                genderType : gender,
+            }).then(() =>console.log(response));
             Alert.alert('Welcome !', '회원가입 되었습니다.')
             navigation.navigate('SignIn')
         } catch (error) {
@@ -145,12 +145,22 @@ function SignUp({navigation} : SignUpScreenProps) {
     const canGoNext = userId && password && date && email && name && nickName && number && gender;
     return (
         <DismissKeyboardView>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>아이디</Text>
-            <TextInput
-              style={styles.textInput}
+          <View style={styles.viewTop} />
+          <Form
+            onButtonPress={onSubmit}
+            buttonText = "회원가입"
+            buttonStyle={
+              canGoNext
+                ? StyleSheet.compose(styles.loginButtonForm, styles.loginButtonActiveForm)
+                : styles.loginButtonForm
+            }
+          >
+            <FormItem
+              label = "아이디" 
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
               onChangeText={onChangeUserId}
-              placeholder="아이디를 입력해주세요"
+              placeholder="아이디를 입력해주세요."
               placeholderTextColor="#666"
               textContentType="username"
               value={userId}
@@ -159,13 +169,13 @@ function SignUp({navigation} : SignUpScreenProps) {
               ref={userIdRef}
               onSubmitEditing={() => passwordRef.current?.focus()}
               blurOnSubmit={false}
+              autoCapitalize= 'none'
             />
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>비밀번호</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="비밀번호를 입력해주세요(영문,숫자,특수문자)"
+            <FormItem 
+              label = "비밀번호"
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
+              placeholder="비밀번호를 입력해주세요.(영문,숫자,특수문자)"
               placeholderTextColor="#666"
               onChangeText={onChangePassword}
               value={password}
@@ -176,32 +186,34 @@ function SignUp({navigation} : SignUpScreenProps) {
               clearButtonMode="while-editing"
               ref={passwordRef}
               onSubmitEditing={() => emailRef.current?.focus()}
+              autoCapitalize= 'none'
             />
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>생일</Text>
-            <Button title='open' onPress={() => setOpen(true)} />
-            <DatePicker
-                modal
-                locale="ko"
-                open={open}
-                date={date}
-                mode="date"
-                onConfirm={(date) => {
-                    setOpen(false)
-                    setDate(date)
-                }}
-                onCancel={() => {
-                    setOpen(false)
-                }}
-            />
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>이메일</Text>
-            <TextInput
-              style={styles.textInput}
+            <View style={styles.inputWrapper}>
+              <Text style={styles.label}>생일</Text>
+              <Button title='open'
+                color={'#00aeff'} 
+                onPress={() => setOpen(true)} />
+              <DatePicker
+                  modal
+                  locale="ko"
+                  open={open}
+                  date={date}
+                  mode="date"
+                  onConfirm={(date) => {
+                      setOpen(false)
+                      setDate(date)
+                  }}
+                  onCancel={() => {
+                      setOpen(false)
+                  }}
+              />
+            </View>
+            <FormItem 
+              label = "이메일"
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
               onChangeText={onChangeEmail}
-              placeholder="이메일을 입력해주세요"
+              placeholder="이메일을 입력해주세요."
               placeholderTextColor="#666"
               textContentType="emailAddress"
               value={email}
@@ -210,14 +222,15 @@ function SignUp({navigation} : SignUpScreenProps) {
               ref={emailRef}
               onSubmitEditing={() => nameRef.current?.focus()}
               blurOnSubmit={false}
+              autoCapitalize= 'none'
+              // keyboardType="email-address"  // 빨간 에러 발생 시 못 생겨서 보류
             />
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>이름</Text>
-            <TextInput
-              style={styles.textInput}
+            <FormItem 
+              label = "이름"
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
               onChangeText={onChangeName}
-              placeholder="이름을 입력해주세요"
+              placeholder="이름을 입력해주세요."
               placeholderTextColor="#666"
               textContentType="name"
               value={name}
@@ -226,14 +239,14 @@ function SignUp({navigation} : SignUpScreenProps) {
               ref={nameRef}
               onSubmitEditing={() => nickNameRef.current?.focus()}
               blurOnSubmit={false}
+              autoCapitalize= 'none'
             />
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>닉네임</Text>
-            <TextInput
-              style={styles.textInput}
+            <FormItem 
+              label = "닉네임"
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
               onChangeText={onChangeNickName}
-              placeholder="닉네임을 입력해주세요"
+              placeholder="닉네임을 입력해주세요."
               placeholderTextColor="#666"
               textContentType="username"
               value={nickName}
@@ -242,14 +255,14 @@ function SignUp({navigation} : SignUpScreenProps) {
               ref={nickNameRef}
               onSubmitEditing={() => numberRef.current?.focus()}////
               blurOnSubmit={false}
+              autoCapitalize= 'none'
             />
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>전화번호</Text>
-            <TextInput
-              style={styles.textInput}
+            <FormItem 
+              label = "전화번호"
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
               onChangeText={onChangeNumber}
-              placeholder="전화번호를 입력해주세요"
+              placeholder="전화번호를 입력해주세요."
               placeholderTextColor="#666"
               textContentType="telephoneNumber"
               value={number}
@@ -258,14 +271,15 @@ function SignUp({navigation} : SignUpScreenProps) {
               ref={numberRef}
               onSubmitEditing={() => genderRef.current?.focus()}
               blurOnSubmit={false}
+              autoCapitalize= 'none'
+              // keyboardType="numeric"  //  빨간 에러 발생 시 못생겨서 보류
             />
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>성별</Text>
-            <TextInput
-              style={styles.textInput}
+            <FormItem 
+              label = "성별"
+              labelStyle= {styles.labelForm}
+              style={styles.textInputForm}
               onChangeText={onChangeGender}
-              placeholder="성별을 입력해주세요"
+              placeholder="성별을 입력해주세요."
               placeholderTextColor="#666"
               textContentType="none"
               value={gender}
@@ -273,26 +287,10 @@ function SignUp({navigation} : SignUpScreenProps) {
               clearButtonMode="while-editing"
               ref={genderRef}
               onSubmitEditing={onSubmit}
+              autoCapitalize= 'none'
             />
-          </View>
-         
+          </Form>
 
-          <View style={styles.buttonZone}>
-            <Pressable
-              style={
-                canGoNext
-                  ? StyleSheet.compose(styles.loginButton, styles.loginButtonActive)
-                  : styles.loginButton
-              }
-              disabled={!canGoNext || loading}
-              onPress={onSubmit}>
-              {loading ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text style={styles.loginButtonText}>회원가입</Text>
-              )}
-            </Pressable>
-          </View>
         </DismissKeyboardView>
       );
     }
@@ -303,12 +301,16 @@ function SignUp({navigation} : SignUpScreenProps) {
         borderBottomWidth: StyleSheet.hairlineWidth,
       },
       inputWrapper: {
-        padding: 20,
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingBottom: 20,
       },
       label: {
-        fontWeight: 'bold',
+        fontWeight: '600',
         fontSize: 16,
-        marginBottom: 20,
+        color : 'black',
+        marginBottom: 10,
+        marginLeft: 10,
       },
       buttonZone: {
         alignItems: 'center',
@@ -327,7 +329,35 @@ function SignUp({navigation} : SignUpScreenProps) {
         color: 'white',
         fontSize: 16,
       },
+      textInputForm: {
+        padding: 5,
+        borderWidth: 1,
+        marginLeft: 20,
+        marginRight: 20,
+        marginBottom: 10,
+        marginTop: 10,
+        borderRadius: 5,
+      },
+      loginButtonForm: {
+        backgroundColor: '#acd5e8',
+        paddingVertical: 10,
+        borderRadius: 5,
+        marginLeft: 20,
+        marginRight: 20,
+        marginBottom: 10,
+        marginTop: 10,
+      },
+      loginButtonActiveForm: {
+        backgroundColor: '#00aeff',
+      },
+      labelForm : {
+        fontWeight: 'bold',
+        fontSize: 16,
+        marginLeft: 30,
+      },
+      viewTop :{
+        marginTop: 25,
+      }
     });
     
     export default SignUp;
-    

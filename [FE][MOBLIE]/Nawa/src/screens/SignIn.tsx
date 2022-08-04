@@ -17,8 +17,10 @@ import {RootStackParamList} from '../../AppInner';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import {Form, FormItem} from 'react-native-form-component';
+import AsyncStorage from '@react-native-community/async-storage';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
+
 
 function SignIn({navigation}: SignInScreenProps) {
   const dispatch = useAppDispatch();
@@ -28,6 +30,7 @@ function SignIn({navigation}: SignInScreenProps) {
   const userIdRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
 
+  
   const onChangeuserId = useCallback(text => {
     setuserId(text.trim());
   }, []);
@@ -44,6 +47,7 @@ function SignIn({navigation}: SignInScreenProps) {
     if (!password || !password.trim()) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
+
     try {
       setLoading(true);
       const response = await axios.post(`http://i7d205.p.ssafy.io:8080/user/login`, {
@@ -53,23 +57,30 @@ function SignIn({navigation}: SignInScreenProps) {
       Alert.alert('알림', '로그인 되었습니다.');
       dispatch(
         userSlice.actions.setUser({ // 이 액션이 dispatch 되면 
-          accessToken: response.data.data.accessToken,
-          refreshToken : response.data.data.refreshToken
+          userId : userId,
+          nickname : '',
+          accessToken : response.data.accessToken,
         }),
       );
-      await EncryptedStorage.setItem(
+      await AsyncStorage.setItem(
+        'userId',
+        userId
+      );
+      await AsyncStorage.setItem(
         'accessToken',
-        response.data.data.accessToken,
+        response.data.accessToken
       );
       await EncryptedStorage.setItem(
         'refreshToken',
-        response.data.data.refreshToken,
+        response.data.refreshToken,
       );
+
     } catch (error) {
       const errorResponse = (error as AxiosError).response;
       if (errorResponse) {
-        Alert.alert('알림', errorResponse.data.message);
+        Alert.alert('알림', 'errorResponse.data.message');
       }
+      
     } finally {
       setLoading(false);
     }
@@ -82,68 +93,8 @@ function SignIn({navigation}: SignInScreenProps) {
   const canGoNext = userId && password;
   return (
     <DismissKeyboardView>
-      {/* <View style={styles.inputWrapper}>
-        <Image
-                source={require('../assets/nawa_white.png')}
-                style={styles.logoImage}
-            /> 
-      </View>
-      <View style={styles.inputWrapper}>
-        <Text style={styles.label}>아이디</Text>
-        <TextInput
-          style={styles.textInput}
-          onChangeText={onChangeuserId}
-          placeholder="아이디를 입력해주세요"
-          placeholderTextColor="#666"
-          importantForAutofill="yes"
-          autoComplete="username"
-          textContentType="username"
-          value={userId}
-          returnKeyType="next"
-          clearButtonMode="while-editing"
-          ref={userIdRef}
-          onSubmitEditing={() => passwordRef.current?.focus()}
-          blurOnSubmit={false}
-        />
-      </View>
-      <View style={styles.inputWrapper}>
-        <Text style={styles.label}>비밀번호</Text>
-        <TextInput
-          style={styles.textInput}
-          placeholder="비밀번호를 입력해주세요(영문,숫자,특수문자)"
-          placeholderTextColor="#666"
-          importantForAutofill="yes"
-          onChangeText={onChangePassword}
-          value={password}
-          autoComplete="password"
-          textContentType="password"
-          secureTextEntry
-          returnKeyType="send"
-          clearButtonMode="while-editing"
-          ref={passwordRef}
-          onSubmitEditing={onSubmit}
-        />
-      </View>
-      <View style={styles.buttonZone}>
-        <Pressable
-          style={
-            canGoNext
-              ? StyleSheet.compose(styles.loginButton, styles.loginButtonActive)
-              : styles.loginButton
-          }
-          disabled={!canGoNext || loading}
-          onPress={onSubmit}>
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text style={styles.loginButtonText}>로그인</Text>
-          )}
-        </Pressable>
-        <Pressable onPress={toSignUp}>
-          <Text>회원가입하기</Text>
-        </Pressable>
-      </View> */}
-      <View style={styles.logoWrap}>
+     
+     <View style={styles.logoWrap}>
         <Image
           source={require('../assets/nawa_black.png')}
           style={styles.logoImage}
@@ -157,56 +108,55 @@ function SignIn({navigation}: SignInScreenProps) {
             ? StyleSheet.compose(styles.loginButtonForm, styles.loginButtonActiveForm)
             : styles.loginButtonForm
           }
-        style = {styles.inputWrapperForm}
         >
-          <View style = {styles.inputWrapperForm}>
-            <FormItem 
-              // label = "아이디"
-              // labelStyle= {styles.labelForm}
-              textInputStyle={styles.textInputForm}
-              // isRequired  // 넣으면 칸 안이쁘게깨짐
-              onChangeText={onChangeuserId}
-              placeholder="아이디"
-              placeholderTextColor="#666"
-              importantForAutofill="yes"
-              autoComplete="username"
-              textContentType="username"
-              value={userId}
-              returnKeyType="next"
-              clearButtonMode="while-editing"
-              ref={userIdRef}
-              onSubmitEditing={() => passwordRef.current?.focus()}
-              blurOnSubmit={false}
-              underneathText= "아이디"
-            />
-          </View>
-          <View style = {styles.inputWrapperFormPassword}>
-          <FormItem
-            // label = "비밀번호"
-            // labelStyle={styles.labelForm}
-            textInputStyle={styles.textInputForm}
-            onChangeText={onChangePassword}
-            placeholder="비밀번호"
+          <FormItem 
+            // label = "아이디"
+            // labelStyle= {styles.labelForm}
+            style={styles.textInputForm}
+            // isRequired  // 넣으면 칸 안이쁘게 깨짐
+            onChangeText={onChangeuserId}
+            placeholder="아이디"
             placeholderTextColor="#666"
-            importantForAutofill="yes"  
-            autoComplete="password"
-            textContentType="password"
-            secureTextEntry
-            value = {password}
-            returnKeyType="send"
+            importantForAutofill="yes"
+            autoComplete="username"
+            textContentType="username"
+            // keyboardType="default"
+            value={userId}
+            returnKeyType="next"
             clearButtonMode="while-editing"
-            ref={passwordRef}
-            onSubmitEditing={onSubmit}
+            ref={userIdRef}
+            onSubmitEditing={() => passwordRef.current?.focus()}
+            blurOnSubmit={false}
+            underneathText= "아이디"
+            autoCapitalize= 'none'
           />
-          </View>
+        <FormItem
+          // label = "비밀번호"
+          // labelStyle={styles.labelForm}
+          style={styles.textInputForm}
+          onChangeText={onChangePassword}
+          value = {password}
+          placeholder="비밀번호"
+          placeholderTextColor="#666"
+          importantForAutofill="yes"  
+          autoComplete="password"
+          textContentType="password"
+          secureTextEntry
+          returnKeyType="send"
+          clearButtonMode="while-editing"
+          ref={passwordRef}
+          onSubmitEditing={onSubmit}
+          autoCapitalize= 'none'
+        />
       </Form>
       <Form 
         onButtonPress={toSignUp}
         buttonText = '회원가입하기'
         buttonStyle={styles.signUpButtonForm}
-        style = {styles.inputWrapperForm}
+        // style = {styles.inputWrapperForm}
         >
       </Form>
+
     </DismissKeyboardView>
   );
 }
@@ -279,12 +229,14 @@ const styles = StyleSheet.create({
   },
   textInputForm: {
     padding: 5,
-    borderWidth: StyleSheet.hairlineWidth,
-    marginLeft: 10,
-    marginRight: 10,
+    borderWidth: 1,
+    marginLeft: 20,
+    marginRight: 20,
     marginBottom: 10,
     marginTop: 10,
     borderRadius: 5,
+    autoCapitalize: "none"
+    
   },
   labelForm : {
     fontWeight: 'bold',
@@ -292,8 +244,6 @@ const styles = StyleSheet.create({
     marginLeft: 30,
   },
   inputWrapperForm: {
-    paddingLeft: 20,
-    paddingRight: 20,
     backgroundColor: '#F5F5F5'
   },
   inputWrapperFormPassword: {

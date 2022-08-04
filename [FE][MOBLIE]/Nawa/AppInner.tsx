@@ -22,6 +22,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, { AxiosError } from 'axios';
 import userSlice from './src/slices/user';
 import SplashScreen from 'react-native-splash-screen';
+import AsyncStorage from '@react-native-community/async-storage';
 
 
 export type LoggedInParamList = {  //다른 곳에서도 쓸꺼니까 export
@@ -45,43 +46,44 @@ const Stack = createNativeStackNavigator();
 
 function AppInner() {
   const dispatch = useAppDispatch()
-  const isLoggedIn = useSelector((state : RootState) => !!state.user.userId)
-
-
+  const isLoggedIn = useSelector((state : RootState) => !!state.user.accessToken)
+  const nickname = useSelector((state : RootState) => state.user.nickname)
+  
   // 자동 로그인
   useEffect(() => {
+
+
     const getTokenAndRefresh = async () => {
       try {
-        const token = await EncryptedStorage.getItem('refreshToken');
-        if (!token) {
+        const userId = await AsyncStorage.getItem('userId')
+        const accessToken = await AsyncStorage.getItem('accessToken')
+        const refreshToken = await EncryptedStorage.getItem('refreshToken')
+        if (!accessToken) {
           SplashScreen.hide();
           return;
         }
-        const response = await axios.post(
-          'http://10.0.2.2:3105/refreshToken',/////////////////////
-          {},
+        const response = await axios.put(
+          'http://i7d205.p.ssafy.io:8080/user/reissue',/////////////////////
           {
-            headers : {
-              authorization : `Bearer ${token}`,//////////////////
-            },
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            userId: userId
           },
         );
         dispatch(
           userSlice.actions.setUser({ // redux state는 값이 변하면, useselector로 참조하고 있는 모든 컴포넌트가 다시 렌더링.
-            userId : response.data.data.userId,
-            nickname : response.data.data.email,
-            accessToken : response.data.data.accessToken
+            userId : userId,
+            nickname : nickname,
+            accessToken : accessToken,
           }),
-        );
-        await EncryptedStorage.setItem(
-          'accessToken',
-          response.data.data.accessToken,
         );
 
       } catch (error) {
-        if ((error as AxiosError).response?.data.code === 'expired') {
-          Alert.alert('알림', '다시 로그인 해주세요');
-        }
+        console.log('error : ', error)
+        Alert.alert('알림', '다시 로그인 해주세요');
+
+        const accessToken = await AsyncStorage.getItem('accessToken')
+        console.log(accessToken)
       } finally {
         SplashScreen.hide();
       }
@@ -89,13 +91,12 @@ function AppInner() {
     getTokenAndRefresh();
   }, [dispatch]);
   
-  
   return (
     <>
       <NavigationContainer>
         {/* <Drawer.Navigator>
         </Drawer.Navigator> */}
-        {!isLoggedIn ? (
+        {isLoggedIn ? (
           <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
