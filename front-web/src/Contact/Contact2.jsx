@@ -31,7 +31,7 @@ function Contact2 () {
               <CorporateFareIcon></CorporateFareIcon> address:
             </div>
             <div>경상북도 구미시</div>
-            <div>3공단 3로 302 창의동 대강의장</div>
+            <div>3공단 3로 302 창의동 404호</div>
             <div>D205 Team 심플팀플</div>
           </div>
         </div>
