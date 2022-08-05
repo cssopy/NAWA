@@ -16,6 +16,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,12 +25,20 @@ public class SmsController {
 
     private final SmsService smsService;
 
+    // 인증번호 전송
     @PostMapping("/user/sms")
-    public ResponseEntity<SmsResponse> sendSms(@RequestBody PhoneNumReqDto phoneNumReqDto) throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException{
+    public ResponseEntity<?> sendSms(@RequestBody PhoneNumReqDto phoneNumReqDto) throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException{
         SmsResponse data = smsService.sendSms(phoneNumReqDto.getRecipientPhoneNumber());
+        if(data == null){
+            Map<String, String> map = new HashMap<>();
+            map.put("message", "이미 등록된 번호입니다.");
+            map.put("result", "false");
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+        }
         return ResponseEntity.ok().body(data);
     }
 
+    // 인증번호 검사
     @PostMapping("/user/sms/check")
     public boolean validSms(@RequestBody SmsReqDto smsReqDto) {
         if(smsService.checkNumber(smsReqDto.getRecipientPhoneNumber(), smsReqDto.getCertNumber())){

@@ -6,7 +6,9 @@ import com.ssafy.five.controller.dto.MessageDto;
 import com.ssafy.five.controller.dto.req.SmsRequest;
 import com.ssafy.five.controller.dto.res.SmsResponse;
 import com.ssafy.five.domain.entity.Messages;
+import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.SmsRepository;
+import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +38,8 @@ public class SmsService {
 
     private final SmsRepository smsRepository;
 
+    private final UserRepository userRepository;
+
     @Value("${sms.serviceId}")
     private String serviceId;
 
@@ -46,6 +50,10 @@ public class SmsService {
     private String secretKey;
 
     public SmsResponse sendSms(String recipientPhoneNumber) throws JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
+        Users userByNum = userRepository.findByNumber(recipientPhoneNumber);
+        if(userByNum!=null){
+            return null;
+        }
         Long time = System.currentTimeMillis();
         List<MessageDto> messages = new ArrayList<>();
 
