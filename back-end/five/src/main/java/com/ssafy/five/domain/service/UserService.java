@@ -3,7 +3,9 @@ package com.ssafy.five.domain.service;
 import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
 import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
 import com.ssafy.five.controller.dto.req.SignUpReqDto;
+import com.ssafy.five.domain.entity.Messages;
 import com.ssafy.five.domain.entity.Users;
+import com.ssafy.five.domain.repository.SmsRepository;
 import com.ssafy.five.domain.repository.UserRepository;
 import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private final SmsRepository smsRepository;
 
     // 회원가입 폼을 받아서 회원가입
     // 성공하면 return true
@@ -50,6 +53,14 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+
+        System.out.println("number : " + user.getNumber());
+        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
+
+        if(!msg.isAuth()){
+            return false;
+        }
+        smsRepository.delete(msg);
         return true;
     }
 

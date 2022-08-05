@@ -5,28 +5,28 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Builder
-@Entity(name = "messages")
+@Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "messages")
 public class Messages {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "receiver", nullable = false, columnDefinition = "varchar(11)")
+    private String receiver;
 
-    private String to;
-
+    @Column(name = "content", nullable = false, columnDefinition = "varchar(100)")
     private String content;
 
-    public Messages(String to, String content) {
-        this.to = to;
-        this.content = content;
+    @Column(name = "isAuth", nullable = false, columnDefinition = "boolean")
+    private boolean isAuth;
+
+    public void setAuth(boolean auth) {
+        isAuth = auth;
     }
+
 }

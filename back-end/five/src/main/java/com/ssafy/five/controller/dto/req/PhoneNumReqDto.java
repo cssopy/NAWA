@@ -9,8 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SmsReqDto {
+public class PhoneNumReqDto {
     private String recipientPhoneNumber;
-
-    private String certNumber;
 }

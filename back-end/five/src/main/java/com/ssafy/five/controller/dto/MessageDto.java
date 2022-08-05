@@ -1,4 +1,4 @@
-package com.ssafy.five.controller.dto.req;
+package com.ssafy.five.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SmsReqDto {
-    private String recipientPhoneNumber;
-
-    private String certNumber;
+public class MessageDto {
+    private String to;
+    private String content;
 }
