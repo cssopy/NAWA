@@ -42,4 +42,9 @@ public class ChatService {
         return allChatByRoomId.stream().map(ChatResDto::new).collect(Collectors.toList());
     }
 
+    public List<ChatResDto> findAllMessageByUser(String userId) {
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("잘못된 요청입니다."));
+        List<Chat> allChatByUserId = chatRepository.findAllByUserId(user);
+        return allChatByUserId.stream().map(ChatResDto::new).collect(Collectors.toList());
+    }
 }
