@@ -29,4 +29,9 @@ public class ChatController {
         return new ResponseEntity<List<ChatResDto>>(chatService.findAllMessageByRoom(roomId), HttpStatus.OK);
     }
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> findAllMessageByUser(@PathVariable String userId) {
+        return new ResponseEntity<List<ChatResDto>>(chatService.findAllMessageByUser(userId), HttpStatus.OK);
+    }
+
 }
