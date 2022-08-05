@@ -64,6 +64,14 @@ public class UserService {
         return true;
     }
 
+    public boolean availableUserId(String userId){
+        Users user = userRepository.findByUserId(userId);
+        if(user != null){
+            return false;
+        }
+        return true;
+    }
+
     public Users findUserByUserId(String userId) {
         Users user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
 

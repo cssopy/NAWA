@@ -24,8 +24,8 @@ public class SmsController {
     private final SmsService smsService;
 
     @PostMapping("/user/sms")
-    public ResponseEntity<SmsResponse> sendSms(@RequestBody PhoneNumReqDto request) throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException{
-        SmsResponse data = smsService.sendSms(request.getRecipientPhoneNumber());
+    public ResponseEntity<SmsResponse> sendSms(@RequestBody PhoneNumReqDto phoneNumReqDto) throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException{
+        SmsResponse data = smsService.sendSms(phoneNumReqDto.getRecipientPhoneNumber());
         return ResponseEntity.ok().body(data);
     }
 

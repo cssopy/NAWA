@@ -27,6 +27,15 @@ public class UserController {
         return false;
     }
 
+    // 아이디 중복 체크
+    @GetMapping("/user/userId/{userId}")
+    public boolean availableUserId(@PathVariable String userId){
+        if(userService.availableUserId(userId)){
+            return true;
+        }
+        return false;
+    }
+
     // 회원 한명 조회
     @GetMapping("/user/{userId}")
     public FindUserResDto findUser(@PathVariable String userId) {
