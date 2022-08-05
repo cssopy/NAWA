@@ -24,6 +24,7 @@ public class MateService {
 
     private final MateRepository mateRepository;
     private final UserRepository userRepository;
+    private final RoomService roomService;
 
     public List<MateResDto> findAllMate(String userId) {
         Users user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("잘못된 입력입니다."));
@@ -36,6 +37,7 @@ public class MateService {
         Optional<Mate> mate = mateRepository.findById(mateId);
         Map<String, String> response = new HashMap<>();
         if (mate.isPresent()) {
+            roomService.deleteRoom(mate.get().getMateUserId1(), mate.get().getMateUserId2());
             mateRepository.delete(mate.get());
             response.put("result", "SUCCESS");
             response.put("detail", "삭제되었습니다.");

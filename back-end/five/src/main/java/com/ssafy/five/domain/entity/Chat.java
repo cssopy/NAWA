@@ -37,7 +37,7 @@ public class Chat {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @JoinColumn(name = "userId")
     @NotNull
-    private Users users;
+    private Users userId;
 
 
     @Column(name = "chatContent", nullable = false, columnDefinition = "text")
@@ -47,4 +47,7 @@ public class Chat {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "chatDate", nullable = false, columnDefinition = "timestamp")
     private Date chatDate;
+
+    @Column(name = "isRead", nullable = false, columnDefinition = "int")
+    private int isRead;
 }
