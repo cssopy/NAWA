@@ -1,5 +1,6 @@
 package com.ssafy.five.controller;
 
+import com.ssafy.five.controller.dto.req.EvalUserReqDto;
 import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
 import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
 import com.ssafy.five.controller.dto.req.SignUpReqDto;
@@ -96,5 +97,11 @@ public class UserController {
     public boolean availableNickname(@PathVariable String nickname) {
         System.out.println(nickname);
         return userService.availableNickname(nickname);
+    }
+
+    // 사용자 평가
+    @PostMapping("/user/point")
+    public void evalUser(@RequestBody EvalUserReqDto evalUserReqDto) {
+        userService.evalUser(evalUserReqDto);
     }
 }
