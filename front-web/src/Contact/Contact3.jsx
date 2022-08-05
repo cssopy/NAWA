@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import { Container } from "@mui/material";
 
 function Contact3 () {
   const [ values, setValues ] = useState({
@@ -54,7 +55,7 @@ function Contact3 () {
   }
 
   return (
-    <div style={style}>
+    <Container style={style}>
       <form onSubmit={sendRequest}>
         <Stack direction="row" spacing={2}>
           <TextField
@@ -118,7 +119,7 @@ function Contact3 () {
           <Button variant="contained" type="submit">전송</Button>
         </Stack>
       </form>
-    </div>
+    </Container>
   )
 }
 

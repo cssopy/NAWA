@@ -53,15 +53,15 @@ function Intro2 () {
     >
       <Container>
         <br />
-        <Grid container spacing={4} data={coDevelopers}>
+        <Grid container alignItems="stretch" spacing={4} data={coDevelopers}>
           { coDevelopers.map((Dev) => (
             <Grid key={Dev.name} item xs={4}>
-              <Card sx={{ maxWidth: 345 }}>
+              <Card sx={{ maxWidth: 345 }} style={{height: '100%'}}>
                 <CardMedia
                   component="img"
                   height="500px"
                   image={Dev.image}
-                  alt="green iguana"
+                  alt={Dev.name}
                   style={{
                     objectFit: "cover",
                   }}

@@ -1,11 +1,20 @@
 import React from "react";
 import Stack from '@mui/material/Stack';
-import { Container } from "@mui/material";
+import { Container, useMediaQuery } from "@mui/material";
 
 function Intro3 () {
+  const isMobile = useMediaQuery("(max-width: 1279px)")
+
   const styles = {
-    width: "200px",
-    height: "200px",
+    web: {
+      width: "200px",
+      height: "200px",
+    },
+
+    mobile: {
+      width: '15vw',
+      height: '15vw',
+    }
   }
   
   return (
@@ -22,19 +31,19 @@ function Intro3 () {
         }}
       >
         <img
-          style={styles}
+          style={ isMobile ? styles.mobile : styles.web}
           src={`${process.env.PUBLIC_URL}/img/Intro/tech_stack/java.png`} alt="java" />
 
         <img
-          style={styles}
+          style={ isMobile ? styles.mobile : styles.web}
           src={`${process.env.PUBLIC_URL}/img/Intro/tech_stack/spring.png`} alt="java" />
         
         <img
-        style={styles}
+        style={ isMobile ? styles.mobile : styles.web}
         src={`${process.env.PUBLIC_URL}/img/Intro/tech_stack/tomcat.png`} alt="java" />
         
         <img
-        style={styles}
+        style={ isMobile ? styles.mobile : styles.web}
         src={`${process.env.PUBLIC_URL}/img/Intro/tech_stack/mysql.png`} alt="java" />
       </Stack>
       <br />
@@ -46,16 +55,15 @@ function Intro3 () {
         }}
       >
         <img
-          style={styles}
-          src={`${process.env.PUBLIC_URL}/img/Intro/tech_stack/react.png`} alt="react & react-native" />
-
+        style={ isMobile ? styles.mobile : styles.web}
+        src={`${process.env.PUBLIC_URL}/img/Intro/tech_stack/react.png`} alt="react & react-native" />
         
         <img
-        style={styles}
+        style={ isMobile ? styles.mobile : styles.web}
         src={`${process.env.PUBLIC_URL}/img/Intro/tech_stack/js.png`} alt="javascript" />
         
         <img
-        style={styles}
+        style={ isMobile ? styles.mobile : styles.web}
         src={`${process.env.PUBLIC_URL}/img/Intro/tech_stack/ts.png`} alt="typescript" />
       </Stack>
     </Container>
