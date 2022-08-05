@@ -31,6 +31,7 @@ public class AddMateService {
     private final UserRepository userRepository;
     private final MateRepository mateRepository;
     private final BlockRepository blockRepository;
+    private final RoomService roomService;
 
     @Transactional
     public Map<String, String> addMate(AddMateReqDto addMateReqDto) {
@@ -125,6 +126,7 @@ public class AddMateService {
                 response.put("result", "SUCCESS");
                 response.put("detail", "메이트로 등록되었습니다.");
                 mateRepository.save(Mate.builder().mateUserId1(user1).mateUserId2(user2).build());
+                roomService.createRoom(user1, user2);
             }
             addMateRepository.delete(addMate.get());
         }
