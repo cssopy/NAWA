@@ -11,18 +11,18 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/room")
+@RequestMapping("/chat")
 public class RoomController {
 
     private final RoomService roomService;
 
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<?> findAllRooms(@PathVariable String userId) {
         List<RoomResDto> allRooms = roomService.findAllRooms(userId);
         return new ResponseEntity<List<RoomResDto>>(allRooms, HttpStatus.OK);
     }
 
-    @GetMapping("/{roomId}")
+    @GetMapping("room/{roomId}")
     public ResponseEntity<?> roomDetail(@PathVariable Long roomId) {
         return new ResponseEntity<RoomResDto>(roomService.findByRoomId(roomId), HttpStatus.OK);
     }

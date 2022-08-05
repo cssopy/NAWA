@@ -31,7 +31,7 @@ public class ChatService {
     @Transactional
     public void sendMessage(ChatReqDto chatReqDto) {
         Room room = roomRepository.findById(chatReqDto.getRoomId()).orElseThrow(()-> new RuntimeException());
-        Users user = userRepository.findById(chatReqDto.getUserId()).orElseThrow(() -> new UserNotFoundException("잘못된 요청입니다."));
+        Users user = userRepository.findByNickname(chatReqDto.getUserName());
         Chat chat = chatReqDto.saveChat(room, user);
         messaging.convertAndSend("sub/chat/room/"+ chat.getRoomId(), new ChatResDto(chat));
     }

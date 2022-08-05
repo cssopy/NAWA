@@ -14,16 +14,17 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/chat/message")
 public class ChatController {
 
     private final ChatService chatService;
 
-    @MessageMapping("/chat/message")
+    @MessageMapping
     public void sendMessage(@RequestBody ChatReqDto chatReqDto) {
         chatService.sendMessage(chatReqDto);
     }
 
-    @GetMapping("chat/message/{roomId}")
+    @GetMapping("/{roomId}")
     public ResponseEntity<?> findAllMessageByRoom(@PathVariable Long roomId) {
         return new ResponseEntity<List<ChatResDto>>(chatService.findAllMessageByRoom(roomId), HttpStatus.OK);
     }
