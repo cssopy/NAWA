@@ -57,7 +57,7 @@ public class Users implements UserDetails {
     private String ment;
 
     // 전화번호
-    @Column(name = "number", nullable = false, columnDefinition = "varchar(13)")
+    @Column(name = "number", nullable = false, columnDefinition = "varchar(11)")
     private String number;
 
     // 성별

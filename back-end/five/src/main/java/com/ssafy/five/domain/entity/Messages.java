@@ -21,4 +21,12 @@ public class Messages {
 
     @Column(name = "content", nullable = false, columnDefinition = "varchar(100)")
     private String content;
+
+    @Column(name = "isAuth", nullable = false, columnDefinition = "boolean")
+    private boolean isAuth;
+
+    public void setAuth(boolean auth) {
+        isAuth = auth;
+    }
+
 }

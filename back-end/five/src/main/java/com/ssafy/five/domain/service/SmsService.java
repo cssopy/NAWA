@@ -6,6 +6,8 @@ import com.ssafy.five.controller.dto.MessageDto;
 import com.ssafy.five.controller.dto.req.SmsRequest;
 import com.ssafy.five.controller.dto.res.SmsResponse;
 import com.ssafy.five.domain.entity.Messages;
+import com.ssafy.five.domain.repository.SmsRepository;
+import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -29,7 +31,11 @@ import java.util.Random;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class SmsService {
+
+    private final SmsRepository smsRepository;
+
     @Value("${sms.serviceId}")
     private String serviceId;
 
@@ -49,10 +55,12 @@ public class SmsService {
         messages.add(new MessageDto(recipientPhoneNumber, ctt));
 
         // db에 저장
-        Messages.builder()
+        Messages msg = Messages.builder()
                 .receiver(recipientPhoneNumber)
                 .content(numStr)
+                .isAuth(false)
                 .build();
+        smsRepository.save(msg);
 
         SmsRequest smsRequest = new SmsRequest("SMS", "COMM", "82", "01099136810", "NAWA", messages);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -72,6 +80,15 @@ public class SmsService {
         SmsResponse smsResponse = restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/" + this.serviceId + "/messages"), body, SmsResponse.class);
 
         return smsResponse;
+    }
+
+    public boolean checkNumber(String recipientPhoneNumber, String certNumber){
+        Messages messages = smsRepository.findById(recipientPhoneNumber).orElseThrow(()->new RuntimeException("해당 번호에 전송된 인증번호가 없습니다."));
+        if(messages.getReceiver().equals(recipientPhoneNumber) && messages.getContent().equals(certNumber)){
+            messages.setAuth(true);
+            return true;
+        }
+        return false;
     }
 
     private String makeRandNum() {
