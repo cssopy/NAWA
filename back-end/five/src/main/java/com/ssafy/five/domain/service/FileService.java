@@ -32,7 +32,7 @@ public class FileService {
         // Files 엔티티 정보를 토대로 로컬에서 파일 가져와 리스트 생성
         List<FileResDto> fileResDtos = new ArrayList<>();
         for (Files file : files) {
-            fileResDtos.add(new FileResDto(file, bpath));
+            fileResDtos.add(new FileResDto(file));
         }
 
         return fileResDtos;

@@ -10,13 +10,11 @@ public class FileResDto {
     private Long fileId;
     private String fileName;
     private FileType fileType;
-    private String fileFullPath;
 
-    public FileResDto(Files filesEntity, String bpath) {
+    public FileResDto(Files filesEntity) {
         this.fileId = filesEntity.getFileId();
         this.fileName = filesEntity.getFileName();
         this.fileType = filesEntity.getFileType();
-        this.fileFullPath = bpath + "/" + filesEntity.getFileType() + "/" + filesEntity.getFileName();
     }
 
 }
