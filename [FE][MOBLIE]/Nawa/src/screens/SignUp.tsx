@@ -17,6 +17,9 @@ import DismissKeyboardView from '../components/DismissKeyboardView';
 import axios, {AxiosError} from 'axios';
 import {RootStackParamList} from '../../AppInner';
 import DatePicker from 'react-native-date-picker';
+import AsyncStorage from '@react-native-community/async-storage';
+import {useAppDispatch} from '../store';
+import userSlice from '../slices/user';
 
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>
 
@@ -24,6 +27,10 @@ type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>
 
 
 function SignUp({navigation} : SignUpScreenProps) {
+    const dispatch = useAppDispatch();
+
+
+
     // 임시 저장공간 생성
     const [loading, setLoading] = useState(false);
     const [userId, setUserId] = useState('');
@@ -130,6 +137,16 @@ function SignUp({navigation} : SignUpScreenProps) {
                 genderType : gender,
             }).then(() =>console.log(response));
             Alert.alert('Welcome !', '회원가입 되었습니다.')
+            await AsyncStorage.setItem(
+              'nickname',
+              nickName
+            );
+            dispatch(
+              userSlice.actions.setUser({
+                nickname : nickName,
+              }),
+            )
+            
             navigation.navigate('SignIn')
         } catch (error) {
             const errorResponse = (error as AxiosError).response;
@@ -190,6 +207,9 @@ function SignUp({navigation} : SignUpScreenProps) {
             />
             <View style={styles.inputWrapper}>
               <Text style={styles.label}>생일</Text>
+              <View style={{ flexDirection:"row" }}>
+                <Text style={styles.label}>{date.getFullYear()} . {date.getMonth()} . {date.getDate()}</Text>
+              
               <Button title='open'
                 color={'#00aeff'} 
                 onPress={() => setOpen(true)} />
@@ -207,6 +227,7 @@ function SignUp({navigation} : SignUpScreenProps) {
                       setOpen(false)
                   }}
               />
+              </View>
             </View>
             <FormItem 
               label = "이메일"

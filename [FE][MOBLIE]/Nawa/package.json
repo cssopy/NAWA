@@ -7,10 +7,13 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "postinstall": "patch-package"
   },
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "@react-native-community/async-storage": "^1.12.1",
+    "@react-native-firebase/app": "^15.2.0",
     "@react-navigation/bottom-tabs": "^6.3.2",
     "@react-navigation/drawer": "^6.4.3",
     "@react-navigation/native": "^6.0.11",
@@ -18,10 +21,13 @@
     "@reduxjs/toolkit": "^1.8.3",
     "@rneui/base": "^4.0.0-rc.5",
     "@rneui/themed": "^4.0.0-rc.5",
+    "@stomp/stompjs": "^6.1.2",
     "axios": "^0.27.2",
+    "deprecated-react-native-prop-types": "^2.2.0",
     "fbjs": "^3.0.4",
-    "react": "17.0.2",
-    "react-native": "0.66.4",
+    "patch-package": "^6.4.7",
+    "react": "^18.0.0",
+    "react-native": "^0.69.3",
     "react-native-date-picker": "^4.2.5",
     "react-native-encrypted-storage": "^4.0.2",
     "react-native-form-component": "^2.4.0",
@@ -38,7 +44,11 @@
     "react-native-tab-view": "^3.1.1",
     "react-native-vector-icons": "^9.2.0",
     "react-native-video": "^5.2.0",
-    "react-redux": "^8.0.2"
+    "react-native-webrtc": "^1.100.1",
+    "react-redux": "^8.0.2",
+    "sockjs-client": "^1.6.1",
+    "text-encoding": "^0.7.0",
+    "text-encoding-polyfill": "^0.6.7"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
