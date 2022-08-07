@@ -1,201 +1,322 @@
 import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, Button, View } from 'react-native';
-
-import { RTCPeerConnection, RTCView, mediaDevices, RTCIceCandidate, RTCSessionDescription } from 'react-native-webrtc';
+import { Text, StyleSheet, Button, View, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-const db = firestore();
+const test1 = firestore().collection('rooms')
+console.log(test1)
+import {
+  ScreenCapturePickerView,
+	RTCPeerConnection,
+	RTCIceCandidate,
+	RTCSessionDescription,
+	RTCView,
+	MediaStream,
+	MediaStreamTrack,
+	mediaDevices,
+	registerGlobals,
+  
+} from 'react-native-webrtc';
 
 
+// // 카메라 개방
+// async function openUserMedia(e) {
+//   const stream = await navigator.mediaDevices.getUserMedia(
+//       {video: {frameRate: 30, facingMode: 'user'}, audio: true});
+//   document.querySelector('#localVideo').srcObject = stream;
+//   localStream = stream;
+//   remoteStream = new MediaStream();
+//   document.querySelector('#remoteVideo').srcObject = remoteStream;
 
-// 연결할 기본 stun 설정 (구글 기본 꺼 쓸거)
+
+// }
+
+// function registerPeerConnectionListeners() {
+//   peerConnection.addEventListener('icegatheringstatechange', () => {
+//     console.log(
+//         `ICE gathering state changed: ${peerConnection.iceGatheringState}`);
+//   });
+
+//   peerConnection.addEventListener('connectionstatechange', () => {
+//     console.log(`Connection state change: ${peerConnection.connectionState}`);
+//   });
+
+//   peerConnection.addEventListener('signalingstatechange', () => {
+//     console.log(`Signaling state change: ${peerConnection.signalingState}`);
+//   });
+
+//   peerConnection.addEventListener('iceconnectionstatechange ', () => {
+//     console.log(
+//         `ICE connection state change: ${peerConnection.iceConnectionState}`);
+//   });
+// }
+
+
+// // let localStream = null;
+
+
+// export default CallScreen = () => {
+//   const [stream, setStream] = useState(null);
+
+
+//   return (
+//     <View style={{ flexDirection:'row' }}>
+//       {/* <RTCView
+//       streamURL={}
+//       style={{felx:1}} /> */}
+//     </View>
+//   )
+// }
+
+
 const configuration = {
   iceServers: [
     {
-      urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
+      urls: [
+        'stun:stun1.l.google.com:19302',
+        'stun:stun2.l.google.com:19302',
+      ],
     },
   ],
   iceCandidatePoolSize: 10,
 };
 
-// 메인 화면 단
-export default function CallScreen({ setScreen, screens, roomId }) {
-  const [localStream, setLocalStream] = useState();
-  const [remoteStream, setRemoteStream] = useState();
-  const [cachedLocalPC, setCachedLocalPC] = useState();
-  const [isMuted, setIsMuted] = useState(false);
+let peerConnection = null;
+let localStream = null;
+let remoteStream = null;
+let roomDialog = null;
+let roomId = null;
 
 
+async function createRoom() {
+  // document.querySelector('#createBtn').disabled = true;
+  // document.querySelector('#joinBtn').disabled = true;
+  fire
+  const roomRef = await db.collection('rooms').doc();
 
-  function onBackPress() {
-    if (cachedLocalPC) {
-      cachedLocalPC.removeStream(localStream);
-      cachedLocalPC.close();
+  console.log('Create PeerConnection with configuration: ', configuration);
+  peerConnection = new RTCPeerConnection(configuration);
+
+  registerPeerConnectionListeners();
+
+  localStream.getTracks().forEach(track => {
+    peerConnection.addTrack(track, localStream);
+  });
+
+  // Code for collecting ICE candidates below
+  const callerCandidatesCollection = roomRef.collection('callerCandidates');
+
+  peerConnection.addEventListener('icecandidate', event => {
+    if (!event.candidate) {
+      console.log('Got final candidate!');
+      return;
     }
-    setLocalStream();
-    setRemoteStream();
-    setCachedLocalPC();
-    // 지우기
-    setScreen(screens.ROOM);
-  }
+    console.log('Got candidate: ', event.candidate);
+    callerCandidatesCollection.add(event.candidate.toJSON());
+  });
+  // Code for collecting ICE candidates above
 
+  // Code for creating a room below
+  const offer = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offer);
+  console.log('Created offer:', offer);
 
-  useEffect(() => {
-    startLocalStream();
-  }, []);
-
-  const startLocalStream = async () => {
-    // isFront will determine if the initial camera should face user or environment
-    const isFront = true;
-    const devices = await mediaDevices.enumerateDevices();
-
-    const facing = isFront ? 'front' : 'environment';
-    const videoSourceId = devices.find(device => device.kind === 'videoinput' && device.facing === facing);
-    const facingMode = isFront ? 'user' : 'environment';
-    const constraints = {
-      audio: true,
-      video: {
-        mandatory: {
-          minWidth: 500, // Provide your own width, height and frame rate here
-          minHeight: 300,
-          minFrameRate: 30,
-        },
-        facingMode,
-        optional: videoSourceId ? [{ sourceId: videoSourceId }] : [],
-      },
-    };
-    const newStream = await mediaDevices.getUserMedia(constraints);
-    setLocalStream(newStream);
+  const roomWithOffer = {
+    'offer': {
+      type: offer.type,
+      sdp: offer.sdp,
+    },
   };
+  await roomRef.set(roomWithOffer);
+  roomId = roomRef.id;
+  console.log(`New room created with SDP offer. Room ID: ${roomRef.id}`);
+  document.querySelector(
+      '#currentRoom').innerText = `Current room is ${roomRef.id} - You are the caller!`;
+  // Code for creating a room above
 
-  const startCall = async id => {
-    const localPC = new RTCPeerConnection(configuration);
-    localPC.addStream(localStream);
-    const roomRef = await db.collection('rooms').doc(id);
-    const callerCandidatesCollection = roomRef.collection('callerCandidates');
-    localPC.onicecandidate = e => {
-      if (!e.candidate) {
+  peerConnection.addEventListener('track', event => {
+    console.log('Got remote track:', event.streams[0]);
+    event.streams[0].getTracks().forEach(track => {
+      console.log('Add a track to the remoteStream:', track);
+      remoteStream.addTrack(track);
+    });
+  });
+
+  // Listening for remote session description below
+  roomRef.onSnapshot(async snapshot => {
+    const data = snapshot.data();
+    if (!peerConnection.currentRemoteDescription && data && data.answer) {
+      console.log('Got remote description: ', data.answer);
+      const rtcSessionDescription = new RTCSessionDescription(data.answer);
+      await peerConnection.setRemoteDescription(rtcSessionDescription);
+    }
+  });
+  // Listening for remote session description above
+
+  // Listen for remote ICE candidates below
+  roomRef.collection('calleeCandidates').onSnapshot(snapshot => {
+    snapshot.docChanges().forEach(async change => {
+      if (change.type === 'added') {
+        let data = change.doc.data();
+        console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
+        await peerConnection.addIceCandidate(new RTCIceCandidate(data));
+      }
+    });
+  });
+  // Listen for remote ICE candidates above
+}
+
+function joinRoom() {
+  document.querySelector('#createBtn').disabled = true;
+  document.querySelector('#joinBtn').disabled = true;
+
+  document.querySelector('#confirmJoinBtn').
+      addEventListener('click', async () => {
+        roomId = document.querySelector('#room-id').value;
+        console.log('Join room: ', roomId);
+        document.querySelector(
+            '#currentRoom').innerText = `Current room is ${roomId} - You are the callee!`;
+        await joinRoomById(roomId);
+      }, {once: true});
+  roomDialog.open();
+}
+
+async function joinRoomById(roomId) {
+  const db = firebase.firestore();
+  const roomRef = db.collection('rooms').doc(`${roomId}`);
+  const roomSnapshot = await roomRef.get();
+  console.log('Got room:', roomSnapshot.exists);
+
+  if (roomSnapshot.exists) {
+    console.log('Create PeerConnection with configuration: ', configuration);
+    peerConnection = new RTCPeerConnection(configuration);
+    registerPeerConnectionListeners();
+    localStream.getTracks().forEach(track => {
+      peerConnection.addTrack(track, localStream);
+    });
+
+    // Code for collecting ICE candidates below
+    const calleeCandidatesCollection = roomRef.collection('calleeCandidates');
+    peerConnection.addEventListener('icecandidate', event => {
+      if (!event.candidate) {
         console.log('Got final candidate!');
         return;
       }
-      callerCandidatesCollection.add(e.candidate.toJSON());
-    };
-
-    localPC.onaddstream = e => {
-      if (e.stream && remoteStream !== e.stream) {
-        console.log('RemotePC received the stream call', e.stream);
-        setRemoteStream(e.stream);
-      }
-    };
-
-    const offer = await localPC.createOffer();
-    await localPC.setLocalDescription(offer);
-
-    const roomWithOffer = { offer };
-    await roomRef.set(roomWithOffer);
-
-    roomRef.onSnapshot(async snapshot => {
-      const data = snapshot.data();
-      if (!localPC.currentRemoteDescription && data.answer) {
-        const rtcSessionDescription = new RTCSessionDescription(data.answer);
-        await localPC.setRemoteDescription(rtcSessionDescription);
-      }
+      console.log('Got candidate: ', event.candidate);
+      calleeCandidatesCollection.add(event.candidate.toJSON());
     });
+    // Code for collecting ICE candidates above
 
-    roomRef.collection('calleeCandidates').onSnapshot(snapshot => {
-      snapshot.docChanges().forEach(async change => {
-        if (change.type === 'added') {
-          let data = change.doc.data();
-          await localPC.addIceCandidate(new RTCIceCandidate(data));
-        }
+    peerConnection.addEventListener('track', event => {
+      console.log('Got remote track:', event.streams[0]);
+      event.streams[0].getTracks().forEach(track => {
+        console.log('Add a track to the remoteStream:', track);
+        remoteStream.addTrack(track);
       });
     });
 
-    setCachedLocalPC(localPC);
-  };
+    // Code for creating SDP answer below
+    const offer = roomSnapshot.data().offer;
+    console.log('Got offer:', offer);
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await peerConnection.createAnswer();
+    console.log('Created answer:', answer);
+    await peerConnection.setLocalDescription(answer);
 
+    const roomWithAnswer = {
+      answer: {
+        type: answer.type,
+        sdp: answer.sdp,
+      },
+    };
+    await roomRef.update(roomWithAnswer);
+    // Code for creating SDP answer above
 
-  // 전면 or 후면 카메라 설정
-  const switchCamera = () => {
-    localStream.getVideoTracks().forEach(track => track._switchCamera());
-  };
-
-  // 음소거 토글 ㄱㄱ
-  const toggleMute = () => {
-    if (!remoteStream) {
-      return;
-    }
-    localStream.getAudioTracks().forEach(track => {
-      // console.log(track.enabled ? 'muting' : 'unmuting', ' local track', track);
-      track.enabled = !track.enabled;
-      setIsMuted(!track.enabled);
+    // Listening for remote ICE candidates below
+    roomRef.collection('callerCandidates').onSnapshot(snapshot => {
+      snapshot.docChanges().forEach(async change => {
+        if (change.type === 'added') {
+          let data = change.doc.data();
+          console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
+          await peerConnection.addIceCandidate(new RTCIceCandidate(data));
+        }
+      });
     });
-  };
-
-
-  return (
-    <>
-      <Text style={styles.heading} >Call Screen</Text>
-      <Text style={styles.heading} >방정보 : {roomId}</Text>
-
-      <View style={styles.callButtons} >
-        <View styles={styles.buttonContainer} >
-          <Button title="통화 종료하기" onPress={onBackPress} />
-        </View>
-        <View styles={styles.buttonContainer} >
-          {!localStream && <Button title='스트리밍 시작' onPress={startLocalStream} />}
-          {localStream && <Button title='전화 시작' onPress={() => startCall(roomId)} disabled={!!remoteStream} />}
-        </View>
-      </View>
-
-      {localStream && (
-        <View style={styles.toggleButtons}>
-          <Button title='전면 / 후면 바꾸기' onPress={switchCamera} />
-          <Button title={`${isMuted ? '영상 키기' : '영상 끄기'}`} onPress={toggleMute} disabled={!remoteStream} />
-        </View>
-      )}
-
-      <View style={{ display: 'flex', flex: 1, padding: 10 }} >
-        <View style={styles.rtcview}>
-          {localStream && <RTCView style={styles.rtc} streamURL={localStream && localStream.toURL()} />}
-        </View>
-        <View style={styles.rtcview}>
-          {remoteStream && <RTCView style={styles.rtc} streamURL={remoteStream && remoteStream.toURL()} />}
-        </View>
-      </View>
-
-    </>
-  )
+    // Listening for remote ICE candidates above
+  }
 }
 
-const styles = StyleSheet.create({
-  heading: {
-    alignSelf: 'center',
-    fontSize: 30,
-  },
-  rtcview: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'black',
-    margin: 5,
-  },
-  rtc: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
-  toggleButtons: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  callButtons: {
-    padding: 10,
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  buttonContainer: {
-    margin: 5,
+async function openUserMedia(e) {
+  const stream = await navigator.mediaDevices.getUserMedia(
+      {video: true, audio: true});
+  document.querySelector('#localVideo').srcObject = stream;
+  localStream = stream;
+  remoteStream = new MediaStream();
+  document.querySelector('#remoteVideo').srcObject = remoteStream;
+
+  console.log('Stream:', document.querySelector('#localVideo').srcObject);
+  document.querySelector('#cameraBtn').disabled = true;
+  document.querySelector('#joinBtn').disabled = false;
+  document.querySelector('#createBtn').disabled = false;
+  document.querySelector('#hangupBtn').disabled = false;
+}
+
+async function hangUp(e) {
+  const tracks = document.querySelector('#localVideo').srcObject.getTracks();
+  tracks.forEach(track => {
+    track.stop();
+  });
+
+  if (remoteStream) {
+    remoteStream.getTracks().forEach(track => track.stop());
   }
-});
+
+  if (peerConnection) {
+    peerConnection.close();
+  }
+
+  document.querySelector('#localVideo').srcObject = null;
+  document.querySelector('#remoteVideo').srcObject = null;
+  document.querySelector('#cameraBtn').disabled = false;
+  document.querySelector('#joinBtn').disabled = true;
+  document.querySelector('#createBtn').disabled = true;
+  document.querySelector('#hangupBtn').disabled = true;
+  document.querySelector('#currentRoom').innerText = '';
+
+  // Delete room on hangup
+  if (roomId) {
+    const db = firebase.firestore();
+    const roomRef = db.collection('rooms').doc(roomId);
+    const calleeCandidates = await roomRef.collection('calleeCandidates').get();
+    calleeCandidates.forEach(async candidate => {
+      await candidate.ref.delete();
+    });
+    const callerCandidates = await roomRef.collection('callerCandidates').get();
+    callerCandidates.forEach(async candidate => {
+      await candidate.ref.delete();
+    });
+    await roomRef.delete();
+  }
+
+  document.location.reload(true);
+}
+
+function registerPeerConnectionListeners() {
+  peerConnection.addEventListener('icegatheringstatechange', () => {
+    console.log(
+        `ICE gathering state changed: ${peerConnection.iceGatheringState}`);
+  });
+
+  peerConnection.addEventListener('connectionstatechange', () => {
+    console.log(`Connection state change: ${peerConnection.connectionState}`);
+  });
+
+  peerConnection.addEventListener('signalingstatechange', () => {
+    console.log(`Signaling state change: ${peerConnection.signalingState}`);
+  });
+
+  peerConnection.addEventListener('iceconnectionstatechange ', () => {
+    console.log(
+        `ICE connection state change: ${peerConnection.iceConnectionState}`);
+  });
+}
+
+init();

@@ -11,7 +11,7 @@ const configuration = {
       urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
     },
   ],
-  iceCandidatePoolSize: 10,
+  iceCandidatePoolSize: 12,
 };
 
 export default function JoinScreen({ setScreen, screens, roomId }) {
@@ -35,7 +35,7 @@ export default function JoinScreen({ setScreen, screens, roomId }) {
   const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
-    // startLocalStream();
+    startLocalStream();
   }, []);
 
   const startLocalStream = async () => {
@@ -71,6 +71,7 @@ export default function JoinScreen({ setScreen, screens, roomId }) {
     localPC.addStream(localStream);
 
     const calleeCandidatesCollection = roomRef.collection('calleeCandidates');
+    console.log(calleeCandidatesCollection)
     localPC.onicecandidate = e => {
       if (!e.candidate) {
         console.log('Got final candidate!');
@@ -83,10 +84,12 @@ export default function JoinScreen({ setScreen, screens, roomId }) {
       if (e.stream && remoteStream !== e.stream) {
         console.log('RemotePC received the stream join', e.stream);
         setRemoteStream(e.stream);
+        console.log('remote:', e.stream)
       }
     };
 
     const offer = roomSnapshot.data().offer;
+    console.log(1111, offer)
     await localPC.setRemoteDescription(new RTCSessionDescription(offer));
 
     const answer = await localPC.createAnswer();
@@ -103,7 +106,6 @@ export default function JoinScreen({ setScreen, screens, roomId }) {
         }
       });
     });
-
     setCachedLocalPC(localPC);
   };
 

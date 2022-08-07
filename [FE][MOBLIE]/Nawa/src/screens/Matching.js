@@ -21,7 +21,7 @@ const MatingScreen = () => {
         <Stack.Screen name='Mate2' component={Mate2} />
         <Stack.Screen name='Mate3' component={Mate3} />
         <Stack.Screen name='Mate4' component={Mate4} />
-        <Stack.Screen name='CallScreen' component={MainScreen} />
+        <Stack.Screen name='MainScreen' component={MainScreen} />
       </Stack.Navigator>
     </Provider>
     );

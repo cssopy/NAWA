@@ -92,15 +92,26 @@ const ChattingScreen = () => {
 
     const Stack = createNativeStackNavigator()
     return (
-        <Provider store={store}>
-            <Stack.Navigator
-                screenOptions={{headerShown:false}}
-            >
-                <Stack.Screen name='Main' component={ChattingMain} />
-                <Stack.Screen name='room' component={ChattingRoom} />
+        <View>
+            <Text>{ room.name } | {userId}</Text>
+
+
+        </View>
+
+
+
+
+
+
+        // <Provider store={store}>
+        //     <Stack.Navigator
+        //         screenOptions={{headerShown:false}}
+        //     >
+        //         <Stack.Screen name='Main' component={ChattingMain} />
+        //         <Stack.Screen name='room' component={ChattingRoom} />
                 
-            </Stack.Navigator>
-        </Provider>
+        //     </Stack.Navigator>
+        // </Provider>
     )
 }
 

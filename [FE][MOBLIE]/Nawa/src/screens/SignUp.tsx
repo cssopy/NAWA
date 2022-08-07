@@ -151,7 +151,8 @@ function SignUp({navigation} : SignUpScreenProps) {
         } catch (error) {
             const errorResponse = (error as AxiosError).response;
             if (errorResponse) {
-              Alert.alert('알림', errorResponse.data.message);
+              console.log(errorResponse.data)
+              // Alert.alert('알림', errorResponse);
             }
           } finally {
             setLoading(false);
