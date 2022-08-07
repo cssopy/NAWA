@@ -11,7 +11,7 @@ import java.util.Date;
 public class ChatReqDto {
 
     private Long roomId;
-    private String userId;
+    private String userName;
     private String chatContent;
 
     public Chat saveChat(Room room, Users user) {
@@ -20,7 +20,7 @@ public class ChatReqDto {
                 .userId(user)
                 .chatContent(this.chatContent)
                 .chatDate(new Date())
-                .isRead(0)
+                .isRead(1)
                 .build();
     }
 }
