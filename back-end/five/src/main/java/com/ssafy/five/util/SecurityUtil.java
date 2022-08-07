@@ -14,12 +14,20 @@ import java.util.Optional;
 @NoArgsConstructor
 public class SecurityUtil {
 
-    public static String getCurrentUserId(){
-        Object object = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public static Optional<String> getCurrentUserId(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(object != null && !(object instanceof String) && object instanceof Users){
-            return ((Users) object).getUserId();
+        if(authentication == null){
+            return Optional.empty();
         }
-        throw new AuthenticationEntryPointException();
+
+        String userId = null;
+        if(authentication.getPrincipal() instanceof UserDetails){
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            userId = userDetails.getUsername();
+        } else if(authentication.getPrincipal() instanceof String){
+            userId = (String) authentication.getPrincipal();
+        }
+        return Optional.ofNullable(userId);
     }
 }

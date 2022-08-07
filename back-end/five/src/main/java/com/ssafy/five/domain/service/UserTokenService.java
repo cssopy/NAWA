@@ -14,7 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -42,17 +44,9 @@ public class UserTokenService {
         // acc, ref 토큰 생성
         TokenResDto tokenResDto = jwtTokenProvider.createToken(user.getUserId(), list);
 
-        System.out.println("============" + user.getRefreshToken() + "=============");
-        // 기존 ref 토큰이 없으면 ref 테이블 생성
-        if(user.getRefreshToken() == null){
-            user.updateRefreshToken(tokenResDto.getRefreshToken());
-        }
+        user.updateRefreshToken(tokenResDto.getRefreshToken());
 
-        System.out.println("============" + user.getRefreshToken() + "=============");
-        System.out.println("============" + user.getRefreshToken().getRefreshToken() + "=============");
-
-
-        // token 반환
+        // acc, ref 반환
         return tokenResDto;
     }
 
@@ -73,10 +67,31 @@ public class UserTokenService {
     }
 
     @Transactional
-    public TokenResDto reissue(TokenReqDto tokenReqDto) throws Exception{
-        //accesstoken 주고
-        //valid?
-        //
+    public Map<String, String> validateRefreshToken(String refreshToken) throws Exception{
+        String accessToken = jwtTokenProvider.validateRefreshToken(refreshToken);
+
+        return createRefreshJson(accessToken);
+    }
+
+    public Map<String, String> createRefreshJson(String accessToken) {
+        Map<String, String> map = new HashMap<>();
+        if(accessToken == null){
+            map.put("errortype", "Forbidden");
+            map.put("status", "402");
+            map.put("message", "RefreshToken이 만료되었습니다. 다시 로그인하여 주세요.");
+
+            return map;
+        }
+        map.put("status", "200");
+        map.put("message", "accessToken 재생성하였습니다.");
+        map.put("accessToken", accessToken);
+
+        return map;
+    }
+
+    @Transactional
+    public TokenResDto autoLogin(TokenReqDto tokenReqDto) throws Exception{
+
         if(!jwtTokenProvider.validateToken(tokenReqDto.getRefreshToken())){
             throw new Exception("refreshToken이 유효하지 않습니다."); //401 로그인다시
         }
