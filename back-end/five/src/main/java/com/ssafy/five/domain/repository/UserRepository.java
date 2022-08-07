@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<Users, String> {
 
     Users findByNumber(String recipientPhoneNumber);
 
+    Users findByRefreshTokenId(Long id);
+
 }

@@ -56,8 +56,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        System.out.println("number : " + user.getNumber());
-        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(() -> new RuntimeException("인증되지 않은 휴대폰"));
+        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
 
         if (!msg.isAuth()) {
             return false;
@@ -81,18 +80,21 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUser(Users user) {
+    public boolean updateUser(Users user) {
         Users user1 = userRepository.findByUserId(user.getUserId());
-        user1.updatePassword(passwordEncoder.encode(user.getPassword()));
-//        user1.updatePassword(user.getPassword());
-        user1.updateEmailId(user.getEmailId());
-        user1.updateEmailDomain(user.getEmailDomain());
-        user1.updateNickname(user.getNickname());
-        user1.updateMent(user.getMent());
-        user1.updateGender(user.getGenderType());
+        if(user1 != null) {
+            user1.updatePassword(passwordEncoder.encode(user.getPassword()));
+            user1.updateEmailId(user.getEmailId());
+            user1.updateEmailDomain(user.getEmailDomain());
+            user1.updateNickname(user.getNickname());
+            user1.updateMent(user.getMent());
+            user1.updateGender(user.getGenderType());
 //        user1.updatePicture(user.getPicture());
 
-        userRepository.save(user1);
+            userRepository.save(user1);
+            return true;
+        }
+        return false;
     }
 
     @Transactional

@@ -1,5 +1,6 @@
 package com.ssafy.five.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.five.domain.entity.EnumType.GenderType;
 import com.ssafy.five.domain.entity.EnumType.StateType;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class Users implements UserDetails {
     private String userId;
 
     // 비밀번호
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password", nullable = false, columnDefinition = "varchar(255)")
     private String password;
 
@@ -145,26 +147,31 @@ public class Users implements UserDetails {
     }
 
     @Override
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String getUsername() {
         return this.userId;
     }
 
     @Override
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public boolean isEnabled() {
         return true;
     }

@@ -5,6 +5,7 @@ import com.ssafy.five.controller.dto.req.PhoneNumReqDto;
 import com.ssafy.five.controller.dto.req.SmsReqDto;
 import com.ssafy.five.controller.dto.res.SmsResponse;
 import com.ssafy.five.domain.service.SmsService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,8 @@ public class SmsController {
 
     private final SmsService smsService;
 
-    // 인증번호 전송
-    @PostMapping("/user/sms")
+    @Operation(summary = "인증번호 전송", description = "인증번호 전송, 이미 가입된 전화번호는 사용 불가")
+    @PostMapping("/sms")
     public ResponseEntity<?> sendSms(@RequestBody PhoneNumReqDto phoneNumReqDto) throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException{
         SmsResponse data = smsService.sendSms(phoneNumReqDto.getRecipientPhoneNumber());
         if(data == null){
@@ -38,8 +39,8 @@ public class SmsController {
         return ResponseEntity.ok().body(data);
     }
 
-    // 인증번호 검사
-    @PostMapping("/user/sms/check")
+    @Operation(summary = "인증번호 검사", description = "인증번호 검사")
+    @PostMapping("/sms/check")
     public boolean validSms(@RequestBody SmsReqDto smsReqDto) {
         if(smsService.checkNumber(smsReqDto.getRecipientPhoneNumber(), smsReqDto.getCertNumber())){
             return true;
