@@ -129,7 +129,7 @@ const MainScreen = () => {
 
   const joinCall = async () => {
     const channelDoc = firestore().collection('rooms').doc(channelId);
-    const offerCandidates = channelDoc.collection('callerCandidates');
+    const offerCandidates = channelDoc.collection('offerCandidates');
     const answerCandidates = channelDoc.collection('answerCandidates');
 
     pc.current.onicecandidate = async event => {
