@@ -7,6 +7,7 @@ import Mate1 from './Mate1';
 import Mate2 from './Mate2';
 import Mate3 from './Mate3';
 import Mate4 from './Mate4';
+import CallScreen from "../RtcScreens/CallScreen";
 
 
 const Stack = createNativeStackNavigator()
@@ -21,6 +22,7 @@ const MatingScreen = () => {
         <Stack.Screen name='Mate2' component={Mate2} />
         <Stack.Screen name='Mate3' component={Mate3} />
         <Stack.Screen name='Mate4' component={Mate4} />
+        <Stack.Screen name='CallScreen' component={CallScreen} />
       </Stack.Navigator>
     </Provider>
     );

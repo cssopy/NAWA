@@ -26,6 +26,7 @@ const Mate2 = ( {navigation} ) => {
         <View style={{ backgroundColor:'lightgrey', width:constants.width, height:constants.height }}>
           <Button
             title="Click"
+            onPress={() => navigation.navigate('CallScreen')}
           />
         </View>
       </>
