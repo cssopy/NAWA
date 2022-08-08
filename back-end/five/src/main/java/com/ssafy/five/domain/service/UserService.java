@@ -5,7 +5,6 @@ import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
 import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
 import com.ssafy.five.controller.dto.req.SignUpReqDto;
 import com.ssafy.five.domain.entity.EnumType.EvalType;
-import com.ssafy.five.domain.entity.Messages;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.SmsRepository;
 import com.ssafy.five.domain.repository.UserRepository;
@@ -81,7 +80,7 @@ public class UserService {
     @Transactional
     public boolean updateUser(Users user) {
         Users user1 = userRepository.findByUserId(user.getUserId());
-        if(user1 != null) {
+        if (user1 != null) {
             user1.updatePassword(passwordEncoder.encode(user.getPassword()));
             user1.updateEmailId(user.getEmailId());
             user1.updateEmailDomain(user.getEmailDomain());
@@ -105,7 +104,7 @@ public class UserService {
 
     public String findUserId(FindUserIdReqDto findUserIdReqDto) {
 
-        String userId = userRepository.findUserIdByNameAndEmail(findUserIdReqDto.getName(), findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
+        String userId = userRepository.findUserIdByNameAndEmail(findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
 
         if (userId != null) {
             return userId;
