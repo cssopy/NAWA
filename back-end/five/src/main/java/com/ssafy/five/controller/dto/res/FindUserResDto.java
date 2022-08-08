@@ -21,8 +21,6 @@ public class FindUserResDto {
 
     private String emailDomain;
 
-    private String name;
-
     private String nickname;
 
     private String ment;

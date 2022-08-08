@@ -13,9 +13,6 @@ import javax.validation.constraints.NotBlank;
 public class FindUserIdReqDto {
 
     @NotBlank
-    private String name;
-
-    @NotBlank
     private String emailId;
 
     @NotBlank
