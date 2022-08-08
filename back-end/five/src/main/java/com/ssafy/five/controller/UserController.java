@@ -60,30 +60,14 @@ public class UserController {
         if(user != null){
             return user;
         }
-//        FindUserResDto findUserResDto = FindUserResDto.builder()
-//                .userId(user.getUserId())
-//                .password(user.getPassword())
-//                .birth(user.getBirth())
-//                .emailId(user.getEmailId())
-//                .emailDomain(user.getEmailDomain())
-//                .nickname(user.getNickname())
-//                .ment(user.getMent())
-//                .number(user.getNumber())
-//                .genderType(user.getGenderType())
-////                .picture(user.getPicture())
-//                .point(user.getPoint())
-//                .build();
 
         return null;
     }
 
     @Operation(summary = "회원 정보 수정", description = "유저가 없을 경우 false, 있을 경우 수정하고자 하는 회원 정보 수정 후 db에 저장 및 true 반환")
     @PutMapping("/user")
-    public boolean updateUser(@Valid @RequestBody Users user) {
-        if (userService.updateUser(user)) {
-            return true;
-        }
-        return false;
+    public ResponseEntity<?> updateUser(@Valid @RequestBody Users user) {
+        return userService.updateUser(user);
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 정보 삭제")

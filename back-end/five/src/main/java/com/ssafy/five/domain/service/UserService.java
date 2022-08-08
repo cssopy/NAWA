@@ -103,7 +103,8 @@ public class UserService {
     }
 
     @Transactional
-    public boolean updateUser(Users user) {
+    public ResponseEntity<?> updateUser(Users user) {
+        Map<String, String> map = new HashMap<>();
         Users user1 = userRepository.findByUserId(user.getUserId());
         if (user1 != null) {
             user1.updatePassword(passwordEncoder.encode(user.getPassword()));
@@ -112,19 +113,13 @@ public class UserService {
             user1.updateNickname(user.getNickname());
             user1.updateMent(user.getMent());
             user1.updateGender(user.getGenderType());
-//        user1.updatePicture(user.getPicture());
-
-//            userRepository.save(user1);
-            return true;
+            map.put("result", "true");
+            map.put("message", "수정 완료되었습니다.");
+            return new ResponseEntity<>(map, HttpStatus.OK);
         }
-        return false;
-    }
-
-    @Transactional
-    public void deleteUser(String userId) {
-        if (userRepository.findByUserId(userId) != null) {
-            userRepository.deleteById(userId);
-        }
+        map.put("result", "false");
+        map.put("message", "해당 사용자를 찾을 수 없습니다.");
+        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 
     public String findUserId(FindUserIdReqDto findUserIdReqDto) {
@@ -136,6 +131,13 @@ public class UserService {
         }
         return null;
 
+    }
+
+    @Transactional
+    public void deleteUser(String userId) {
+        if (userRepository.findByUserId(userId) != null) {
+            userRepository.deleteById(userId);
+        }
     }
 
     @Transactional
