@@ -1,8 +1,10 @@
 package com.ssafy.five.domain.service;
 
+import com.ssafy.five.controller.dto.req.EvalUserReqDto;
 import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
 import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
 import com.ssafy.five.controller.dto.req.SignUpReqDto;
+import com.ssafy.five.domain.entity.EnumType.EvalType;
 import com.ssafy.five.domain.entity.Messages;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.SmsRepository;
@@ -63,9 +65,9 @@ public class UserService {
         return true;
     }
 
-    public boolean availableUserId(String userId){
+    public boolean availableUserId(String userId) {
         Users user = userRepository.findByUserId(userId);
-        if(user != null){
+        if (user != null) {
             return false;
         }
         return true;
@@ -142,5 +144,22 @@ public class UserService {
             return false;
         }
         return true;
+    }
+
+    @Transactional
+    public void evalUser(EvalUserReqDto evalUserReqDto) {
+        Users userEntity = userRepository.findByUserId(evalUserReqDto.getUserId());
+
+        int dp;
+        if (evalUserReqDto.getEvalType().equals(EvalType.GOOD)) {
+            dp = 10;
+        } else if (evalUserReqDto.getEvalType().equals(EvalType.BAD)) {
+            dp = -15;
+        } else {
+            dp = 0;
+        }
+        userEntity.updatePoint(dp);
+
+        userRepository.save(userEntity);
     }
 }

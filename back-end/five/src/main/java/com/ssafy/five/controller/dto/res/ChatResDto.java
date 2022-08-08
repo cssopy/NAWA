@@ -10,7 +10,7 @@ public class ChatResDto {
     private Long roomId;
     private String chatContent;
     private Date chatDate;
-    private String userId;
+    private String userName;
     private int isRead;
 
     public ChatResDto(Chat chat) {
@@ -18,7 +18,7 @@ public class ChatResDto {
         this.roomId = chat.getRoomId().getRoomId();
         this.chatContent = chat.getChatContent();
         this.chatDate = chat.getChatDate();
-        this.userId = chat.getUserId().getUserId();
+        this.userName = chat.getUserId().getNickname();
         this.isRead = chat.getIsRead();
     }
 

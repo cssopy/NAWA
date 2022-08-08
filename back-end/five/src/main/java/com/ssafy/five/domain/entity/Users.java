@@ -3,16 +3,18 @@ package com.ssafy.five.domain.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.five.domain.entity.EnumType.GenderType;
 import com.ssafy.five.domain.entity.EnumType.StateType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.io.File;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,32 +101,36 @@ public class Users implements UserDetails {
         this.refreshToken = refreshToken;
     }
 
-    public void updateRefreshToken(String refreshToken){
+    public void updateRefreshToken(String refreshToken) {
         this.refreshToken = new RefreshTable(refreshToken);
     }
 
-    public void updatePassword(String password){
+    public void updatePassword(String password) {
         this.password = password;
     }
 
-    public void updateEmailId(String emailId){
+    public void updateEmailId(String emailId) {
         this.emailId = emailId;
     }
 
-    public void updateEmailDomain(String emailDomain){
+    public void updateEmailDomain(String emailDomain) {
         this.emailDomain = emailDomain;
     }
 
-    public void updateNickname(String nickname){
+    public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 
-    public void updateMent(String ment){
+    public void updateMent(String ment) {
         this.ment = ment;
     }
 
-    public void updateGender(GenderType genderType){
+    public void updateGender(GenderType genderType) {
         this.genderType = genderType;
+    }
+
+    public void updatePoint(int dp) {
+        this.point += dp;
     }
 
 //    public void updatePicture(File picture){
@@ -169,4 +175,5 @@ public class Users implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

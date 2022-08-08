@@ -5,12 +5,12 @@ import com.ssafy.five.domain.entity.Room;
 public class RoomResDto {
 
     private Long roomId;
-    private String roomUserId1;
-    private String roomUserId2;
+    private String roomUserNickName1;
+    private String roomUserNickName2;
 
     public RoomResDto(Room room) {
         this.roomId = room.getRoomId();
-        this.roomUserId1 = room.getRoomUserId1().getUserId();
-        this.roomUserId2 = room.getRoomUserId2().getUserId();
+        this.roomUserNickName1 = room.getRoomUserId1().getNickname();
+        this.roomUserNickName2 = room.getRoomUserId2().getNickname();
     }
 }
