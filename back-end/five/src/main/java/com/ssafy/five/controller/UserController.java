@@ -49,7 +49,6 @@ public class UserController {
                 .birth(user.getBirth())
                 .emailId(user.getEmailId())
                 .emailDomain(user.getEmailDomain())
-                .name(user.getName())
                 .nickname(user.getNickname())
                 .ment(user.getMent())
                 .number(user.getNumber())
