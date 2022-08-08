@@ -45,7 +45,6 @@ public class UserService {
                 .birth(signUpReqDto.getBirth())
                 .emailId(signUpReqDto.getEmailId())
                 .emailDomain(signUpReqDto.getEmailDomain())
-                .name(signUpReqDto.getName())
                 .nickname(signUpReqDto.getNickname())
                 .ment(signUpReqDto.getMent())
                 .number(signUpReqDto.getNumber())
