@@ -37,7 +37,6 @@ public class BoardService {
 
     @Value("${spring.servlet.multipart.location}")
     private String bpath;
-
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final FileRepository fileRepository;
@@ -156,19 +155,49 @@ public class BoardService {
         return boards.stream().map(GetBoardResDto::new).collect(Collectors.toList());
     }
 
+    @Transactional
     public void onOffBoardLike(OnOffBoardLikeReqDto onOffBoardLikeReqDto) {
         Users users = userRepository.findById(onOffBoardLikeReqDto.getUserId()).orElseThrow(() -> new UserNotFoundException());
         Board board = boardRepository.findById(onOffBoardLikeReqDto.getBoardId()).orElseThrow(() -> new BoardNotFoundException());
         LikeBoard likeBoard = likeBoardRepository.findByUserAndBoard(users, board);
 
+        // 해당 유저가 해당 게시글을 좋아요를 한 상태라면 OFF
         if (likeBoard != null) {
             likeBoardRepository.delete(likeBoard);
-        } else {
+
+            // 게시글 좋아요 수 감소
+            boardRepository.save(Board.builder()
+                    .user(users)
+                    .boardId(board.getBoardId())
+                    .boardTitle(board.getBoardTitle())
+                    .boardContent(board.getBoardContent())
+                    .boardType(board.getBoardType())
+                    .boardHit(board.getBoardHit())
+                    .boardLikes(board.getBoardLikes() - 1)
+                    .boardDate(board.getBoardDate())
+                    .boardUpdate(board.getBoardUpdate())
+                    .build());
+        }
+        // 해당 유저가 해당 게시글을 좋아요를 안한 상태라면 ON
+        else {
             likeBoard = LikeBoard.builder()
                     .users(users)
                     .board(board)
                     .build();
             likeBoardRepository.save(likeBoard);
+
+            // 게시글 좋아요 수 증가
+            boardRepository.save(Board.builder()
+                    .user(users)
+                    .boardId(board.getBoardId())
+                    .boardTitle(board.getBoardTitle())
+                    .boardContent(board.getBoardContent())
+                    .boardType(board.getBoardType())
+                    .boardHit(board.getBoardHit())
+                    .boardLikes(board.getBoardLikes() + 1)
+                    .boardDate(board.getBoardDate())
+                    .boardUpdate(board.getBoardUpdate())
+                    .build());
         }
     }
 

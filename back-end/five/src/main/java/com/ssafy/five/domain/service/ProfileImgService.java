@@ -6,6 +6,7 @@ import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -25,6 +26,7 @@ public class ProfileImgService {
         return users.getProfileImg();
     }
 
+    @Transactional
     public void save(String userId, MultipartFile profileImg) throws Exception {
         if (profileImg != null) {
             Users users = userRepository.findByUserId(userId);
