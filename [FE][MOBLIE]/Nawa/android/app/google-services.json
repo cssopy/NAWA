@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "818076543611",
+    "project_id": "nawa-firebase-webrtc",
+    "storage_bucket": "nawa-firebase-webrtc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:818076543611:android:b8dd90ccba054814abd0de",
+        "android_client_info": {
+          "package_name": "com.nawa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "818076543611-tmuqs53rki1gej6e1pkubmiig1bg6054.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nawa",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "818076543611-6ikmkhavv6mtbuaumjad7vjjhuangr3d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwVOD_k__m8CBm2ng3Uc9WiUnB8UMg0cE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "818076543611-6ikmkhavv6mtbuaumjad7vjjhuangr3d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
