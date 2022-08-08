@@ -11,6 +11,8 @@ public interface UserRepository extends JpaRepository<Users, String> {
     @Query("select userId from Users where emailId = :emailId and emailDomain = :emailDomain")
     String findUserIdByNameAndEmail(String emailId, String emailDomain);
 
+    boolean existsByNickname(String nickname);
+
     Users findByNickname(String nickname);
 
     Users findByNumber(String recipientPhoneNumber);

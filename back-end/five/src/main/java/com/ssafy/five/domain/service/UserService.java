@@ -37,12 +37,10 @@ public class UserService {
 
     private final SmsRepository smsRepository;
 
-    // 회원가입 폼을 받아서 회원가입
-    // 성공하면 return true
     @Transactional
     public ResponseEntity<?> signUp(SignUpReqDto signUpReqDto) {
         Map<String, String> map = new HashMap<>();
-        if (userRepository.existsById(signUpReqDto.getUserId())) {
+        if (userRepository.existsById(signUpReqDto.getUserId()) || userRepository.existsByNickname(signUpReqDto.getNickname())) {
             map.put("result", "false");
             map.put("message", "이미 가입된 사용자입니다.");
             return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
@@ -78,6 +76,7 @@ public class UserService {
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
+    @Transactional
     public ResponseEntity<?> availableUserId(String userId) {
         Map<String, String> map = new HashMap<>();
 
@@ -94,6 +93,7 @@ public class UserService {
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
+    @Transactional
     public Users findUser(String userId) {
         Users user = userRepository.findByUserId(userId);
         if(user != null){
@@ -122,6 +122,7 @@ public class UserService {
         return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 
+    @Transactional
     public String findUserId(FindUserIdReqDto findUserIdReqDto) {
 
         String userId = userRepository.findUserIdByNameAndEmail(findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
