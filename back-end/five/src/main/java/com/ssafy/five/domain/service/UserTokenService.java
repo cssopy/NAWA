@@ -102,7 +102,11 @@ public class UserTokenService {
             return tokenResDto;
         }
 
+        Users user = userRepository.findByUserId(jwtTokenProvider.getUserId(tokenReqDto.getAccessToken()));
+        System.out.println("user = " + user);
+
         TokenResDto tokenResDto = TokenResDto.builder()
+                .userId(user.getUserId())
                 .accessToken(tokenReqDto.getAccessToken())
                 .refreshToken(tokenReqDto.getRefreshToken())
                 .build();
