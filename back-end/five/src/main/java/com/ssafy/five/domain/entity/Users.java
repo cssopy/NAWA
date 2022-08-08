@@ -48,10 +48,6 @@ public class Users implements UserDetails {
     @Column(name = "emailDomain", nullable = false, columnDefinition = "varchar(20)")
     private String emailDomain;
 
-    // 이름
-    @Column(name = "name", nullable = false, columnDefinition = "varchar(40)")
-    private String name;
-
     // 닉네임
     @Column(name = "nickname", nullable = false, columnDefinition = "varchar(40)")
     private String nickname;
