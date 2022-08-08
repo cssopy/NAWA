@@ -57,7 +57,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        return TokenResDto.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+        return TokenResDto.builder().userId(userId).accessToken(accessToken).refreshToken(refreshToken).build();
     }
 
     // token 인증 정보 조회
