@@ -123,6 +123,20 @@ public class UserService {
     }
 
     @Transactional
+    public ResponseEntity<?> deleteUser(String userId) {
+        Map<String, String> map = new HashMap<>();
+        if (userRepository.findByUserId(userId) != null) {
+            map.put("result", "true");
+            map.put("message", "정상적으로 탈퇴되었습니다.");
+            userRepository.deleteById(userId);
+            return new ResponseEntity<>(map, HttpStatus.OK);
+        }
+        map.put("result", "false");
+        map.put("message", "해당 사용자를 찾을 수 없습니다.");
+        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+    }
+
+    @Transactional
     public String findUserId(FindUserIdReqDto findUserIdReqDto) {
 
         String userId = userRepository.findUserIdByNameAndEmail(findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
@@ -132,13 +146,6 @@ public class UserService {
         }
         return null;
 
-    }
-
-    @Transactional
-    public void deleteUser(String userId) {
-        if (userRepository.findByUserId(userId) != null) {
-            userRepository.deleteById(userId);
-        }
     }
 
     @Transactional

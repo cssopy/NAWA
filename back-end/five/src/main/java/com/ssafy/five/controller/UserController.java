@@ -72,8 +72,8 @@ public class UserController {
 
     @Operation(summary = "회원 탈퇴", description = "회원 정보 삭제")
     @DeleteMapping("/user/{userId}")
-    public void deleteUser(@PathVariable String userId) {
-        userService.deleteUser(userId);
+    public ResponseEntity<?> deleteUser(@PathVariable String userId) {
+        return userService.deleteUser(userId);
     }
 
     @Operation(summary = "아이디 찾기", description = "유저 아이디 있으면 유저 아이디 반환, 없으면 null 반환")
