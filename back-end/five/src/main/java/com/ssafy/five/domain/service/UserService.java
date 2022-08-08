@@ -13,12 +13,16 @@ import com.ssafy.five.domain.repository.UserRepository;
 import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,12 +37,13 @@ public class UserService {
 
     private final SmsRepository smsRepository;
 
-    // 회원가입 폼을 받아서 회원가입
-    // 성공하면 return true
     @Transactional
-    public boolean signUp(SignUpReqDto signUpReqDto) {
-        if (userRepository.existsById(signUpReqDto.getUserId())) {
-            return false;
+    public ResponseEntity<?> signUp(SignUpReqDto signUpReqDto) {
+        Map<String, String> map = new HashMap<>();
+        if (userRepository.existsById(signUpReqDto.getUserId()) || userRepository.existsByNickname(signUpReqDto.getNickname())) {
+            map.put("result", "false");
+            map.put("message", "이미 가입된 사용자입니다.");
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
 
         Users user = Users.builder()
@@ -66,25 +71,40 @@ public class UserService {
 //            return false;
 //        }
 //        smsRepository.delete(msg);
-        return true;
-    }
-
-    public boolean availableUserId(String userId) {
-        Users user = userRepository.findByUserId(userId);
-        if (user != null) {
-            return false;
-        }
-        return true;
-    }
-
-    public Users findUserByUserId(String userId) {
-        Users user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
-
-        return user;
+        map.put("result", "true");
+        map.put("message", "회원가입 완료되었습니다.");
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
     @Transactional
-    public boolean updateUser(Users user) {
+    public ResponseEntity<?> availableUserId(String userId) {
+        Map<String, String> map = new HashMap<>();
+
+        Users user = userRepository.findByUserId(userId);
+
+        if (user != null) {
+            map.put("result", "false");
+            map.put("message", "사용 불가능한 아이디입니다.");
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+        }
+        map.put("result", "true");
+        map.put("message", "사용 가능한 아이디입니다.");
+
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
+    @Transactional
+    public Users findUser(String userId) {
+        Users user = userRepository.findByUserId(userId);
+        if(user != null){
+            return user;
+        }
+        return null;
+    }
+
+    @Transactional
+    public ResponseEntity<?> updateUser(Users user) {
+        Map<String, String> map = new HashMap<>();
         Users user1 = userRepository.findByUserId(user.getUserId());
         if (user1 != null) {
             user1.updatePassword(passwordEncoder.encode(user.getPassword()));
@@ -93,21 +113,30 @@ public class UserService {
             user1.updateNickname(user.getNickname());
             user1.updateMent(user.getMent());
             user1.updateGender(user.getGenderType());
-//        user1.updatePicture(user.getPicture());
-
-//            userRepository.save(user1);
-            return true;
+            map.put("result", "true");
+            map.put("message", "수정 완료되었습니다.");
+            return new ResponseEntity<>(map, HttpStatus.OK);
         }
-        return false;
+        map.put("result", "false");
+        map.put("message", "해당 사용자를 찾을 수 없습니다.");
+        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 
     @Transactional
-    public void deleteUser(String userId) {
+    public ResponseEntity<?> deleteUser(String userId) {
+        Map<String, String> map = new HashMap<>();
         if (userRepository.findByUserId(userId) != null) {
+            map.put("result", "true");
+            map.put("message", "정상적으로 탈퇴되었습니다.");
             userRepository.deleteById(userId);
+            return new ResponseEntity<>(map, HttpStatus.OK);
         }
+        map.put("result", "false");
+        map.put("message", "해당 사용자를 찾을 수 없습니다.");
+        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 
+    @Transactional
     public String findUserId(FindUserIdReqDto findUserIdReqDto) {
 
         String userId = userRepository.findUserIdByNameAndEmail(findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
@@ -120,7 +149,8 @@ public class UserService {
     }
 
     @Transactional
-    public boolean giveUserTempPass(GiveTempPwReqDto giveTempPwReqDto) {
+    public ResponseEntity<?> giveUserTempPass(GiveTempPwReqDto giveTempPwReqDto) {
+        Map<String, String> map = new HashMap<>();
         Users user = userRepository.findByUserId(giveTempPwReqDto.getUserId());
         if (user != null) {
             // 랜덤 비밀번호 생성 (영소문자, 10자리)
@@ -131,23 +161,31 @@ public class UserService {
 
             // DB에 새비밀번호 업데이트
             user.updatePassword(passwordEncoder.encode(newPwd));
-            userRepository.save(user);
 
             // 메일 전송
             mailService.snedMailWithNewPwd(user.getEmailId() + "@" + user.getEmailDomain(), newPwd);
 
-            return true;
+            map.put("result", "true");
+            map.put("message", "이메일로 임시 비밀번호가 전송되었습니다.");
+            return new ResponseEntity<>(map, HttpStatus.OK);
         }
-        return false;
+        map.put("result", "false");
+        map.put("message", "해당 사용자를 찾을 수 없습니다.");
+        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 
     @Transactional
-    public boolean availableNickname(String nickname) {
+    public ResponseEntity<?> availableNickname(String nickname) {
+        Map<String, String> map = new HashMap<>();
         Users user = userRepository.findByNickname(nickname);
         if (user != null) {
-            return false;
+            map.put("result", "false");
+            map.put("message", "사용 불가능한 닉네임입니다.");
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
-        return true;
+        map.put("result", "true");
+        map.put("message", "사용 가능한 닉네임입니다.");
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
     @Transactional
