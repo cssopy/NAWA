@@ -12,9 +12,7 @@ import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,28 +25,26 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class SmsService {
 
-    private final SmsRepository smsRepository;
-
-    private final UserRepository userRepository;
-
-    @Value("${sms.serviceId}")
-    private String serviceId;
-
-    @Value("${sms.accessKey}")
-    private String accessKey;
-
-    @Value("${sms.secretKey}")
-    private String secretKey;
-
+//    private final SmsRepository smsRepository;
+//
+//    private final UserRepository userRepository;
+//
+//    @Value("${sms.serviceId}")
+//    private String serviceId;
+//
+//    @Value("${sms.accessKey}")
+//    private String accessKey;
+//
+//    @Value("${sms.secretKey}")
+//    private String secretKey;
+//
 //    public SmsResponse sendSms(String recipientPhoneNumber) throws JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
 //        Users userByNum = userRepository.findByNumber(recipientPhoneNumber);
 //        if(userByNum!=null){
@@ -90,13 +86,20 @@ public class SmsService {
 //        return smsResponse;
 //    }
 //
-//    public boolean checkNumber(String recipientPhoneNumber, String certNumber){
-//        Messages messages = smsRepository.findById(recipientPhoneNumber).orElseThrow(()->new RuntimeException("해당 번호에 전송된 인증번호가 없습니다."));
-//        if(messages.getReceiver().equals(recipientPhoneNumber) && messages.getContent().equals(certNumber)){
-//            messages.setAuth(true);
-//            return true;
+//    public ResponseEntity<?> checkNumber(String recipientPhoneNumber, String certNumber){
+//        Map<String, String> map = new HashMap<>();
+//        Messages messages = smsRepository.findByReceiver(recipientPhoneNumber);
+//        if(messages != null) {
+//            if (messages.getReceiver().equals(recipientPhoneNumber) && messages.getContent().equals(certNumber)) {
+//                messages.setAuth(true);
+//                map.put("result", "true");
+//                map.put("message", "인증에 성공하였습니다.");
+//                return new ResponseEntity<>(map, HttpStatus.OK);
+//            }
 //        }
-//        return false;
+//        map.put("result", "false");
+//        map.put("message", "인증에 실패하였습니다.");
+//        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
 //    }
 //
 //    private String makeRandNum() {
