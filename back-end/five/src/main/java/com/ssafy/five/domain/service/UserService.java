@@ -13,12 +13,16 @@ import com.ssafy.five.domain.repository.UserRepository;
 import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,9 +40,12 @@ public class UserService {
     // 회원가입 폼을 받아서 회원가입
     // 성공하면 return true
     @Transactional
-    public boolean signUp(SignUpReqDto signUpReqDto) {
+    public ResponseEntity<?> signUp(SignUpReqDto signUpReqDto) {
+        Map<String, String> map = new HashMap<>();
         if (userRepository.existsById(signUpReqDto.getUserId())) {
-            return false;
+            map.put("result", "false");
+            map.put("message", "이미 가입된 사용자입니다.");
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
 
         Users user = Users.builder()
@@ -66,21 +73,33 @@ public class UserService {
 //            return false;
 //        }
 //        smsRepository.delete(msg);
-        return true;
+        map.put("result", "true");
+        map.put("message", "회원가입 완료되었습니다.");
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
-    public boolean availableUserId(String userId) {
+    public ResponseEntity<?> availableUserId(String userId) {
+        Map<String, String> map = new HashMap<>();
+
         Users user = userRepository.findByUserId(userId);
+
         if (user != null) {
-            return false;
+            map.put("result", "false");
+            map.put("message", "사용 불가능한 아이디입니다.");
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
-        return true;
+        map.put("result", "true");
+        map.put("message", "사용 가능한 아이디입니다.");
+
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
-    public Users findUserByUserId(String userId) {
-        Users user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
-
-        return user;
+    public Users findUser(String userId) {
+        Users user = userRepository.findByUserId(userId);
+        if(user != null){
+            return user;
+        }
+        return null;
     }
 
     @Transactional
