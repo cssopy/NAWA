@@ -125,13 +125,12 @@ function SignUp({navigation} : SignUpScreenProps) {
         try {
             setLoading(true);
             console.log(`${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`)
-            const response = await axios.post('http://i7d205.p.ssafy.io:8080/user', {
+            const response = await axios.post('http://i7d205.p.ssafy.io:8080/signup', {
                 userId : userId,
                 password : password,
                 birth : `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`,
                 emailId : email.split('@')[0],
                 emailDomain : email.split('@')[1],
-                name : name,
                 nickname : nickName,
                 number : number,
                 genderType : gender,
