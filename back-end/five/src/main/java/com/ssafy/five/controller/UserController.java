@@ -95,7 +95,7 @@ public class UserController {
 
     @Operation(summary = "닉네임 중복 확인", description = "이미 있는 닉네임이면 false, 없으면(사용 가능) 하면 true 반환")
     @GetMapping("/nickname/{nickname}")
-    public boolean availableNickname(@PathVariable String nickname) {
+    public ResponseEntity<?> availableNickname(@PathVariable String nickname) {
         return userService.availableNickname(nickname);
     }
 

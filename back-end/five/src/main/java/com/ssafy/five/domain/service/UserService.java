@@ -175,12 +175,17 @@ public class UserService {
     }
 
     @Transactional
-    public boolean availableNickname(String nickname) {
+    public ResponseEntity<?> availableNickname(String nickname) {
+        Map<String, String> map = new HashMap<>();
         Users user = userRepository.findByNickname(nickname);
         if (user != null) {
-            return false;
+            map.put("result", "false");
+            map.put("message", "사용 불가능한 닉네임입니다.");
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
-        return true;
+        map.put("result", "true");
+        map.put("message", "사용 가능한 닉네임입니다.");
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
     @Transactional
