@@ -149,7 +149,8 @@ public class UserService {
     }
 
     @Transactional
-    public boolean giveUserTempPass(GiveTempPwReqDto giveTempPwReqDto) {
+    public ResponseEntity<?> giveUserTempPass(GiveTempPwReqDto giveTempPwReqDto) {
+        Map<String, String> map = new HashMap<>();
         Users user = userRepository.findByUserId(giveTempPwReqDto.getUserId());
         if (user != null) {
             // 랜덤 비밀번호 생성 (영소문자, 10자리)
@@ -160,14 +161,17 @@ public class UserService {
 
             // DB에 새비밀번호 업데이트
             user.updatePassword(passwordEncoder.encode(newPwd));
-            userRepository.save(user);
 
             // 메일 전송
             mailService.snedMailWithNewPwd(user.getEmailId() + "@" + user.getEmailDomain(), newPwd);
 
-            return true;
+            map.put("result", "true");
+            map.put("message", "이메일로 임시 비밀번호가 전송되었습니다.");
+            return new ResponseEntity<>(map, HttpStatus.OK);
         }
-        return false;
+        map.put("result", "false");
+        map.put("message", "해당 사용자를 찾을 수 없습니다.");
+        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 
     @Transactional
