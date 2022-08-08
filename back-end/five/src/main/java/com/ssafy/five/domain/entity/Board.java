@@ -25,7 +25,7 @@ public class Board {
     @Column(name = "boardId", columnDefinition = "int")
     private Long boardId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
     @NotNull
     private Users user;

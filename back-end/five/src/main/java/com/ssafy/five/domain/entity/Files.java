@@ -37,4 +37,6 @@ public class Files {
     @Column(name = "fileType", nullable = false)
     private FileType fileType;
 
+    @Column(name = "fileSize", nullable = false, columnDefinition = "int")
+    private int fileSize;
 }

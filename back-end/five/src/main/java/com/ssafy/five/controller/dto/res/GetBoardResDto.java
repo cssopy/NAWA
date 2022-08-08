@@ -21,7 +21,7 @@ public class GetBoardResDto {
     @Setter
     private List<GetCmtResDto> comments;
     @Setter
-    private List<FileResDto> fileResDtos;
+    private List<FileResDto> files;
 
     public GetBoardResDto(Board entity) {
         this.boardId = entity.getBoardId();

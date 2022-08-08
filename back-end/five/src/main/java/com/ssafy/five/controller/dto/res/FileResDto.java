@@ -11,10 +11,13 @@ public class FileResDto {
     private String fileName;
     private FileType fileType;
 
+    private int fileSize;
+
     public FileResDto(Files filesEntity) {
         this.fileId = filesEntity.getFileId();
         this.fileName = filesEntity.getFileName();
         this.fileType = filesEntity.getFileType();
+        this.fileSize = filesEntity.getFileSize();
     }
 
 }

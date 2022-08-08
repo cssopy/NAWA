@@ -1,5 +1,6 @@
 package com.ssafy.five.domain.service;
 
+import com.ssafy.five.controller.dto.FileDto;
 import com.ssafy.five.controller.dto.req.GetUserTypeBoardReqDto;
 import com.ssafy.five.controller.dto.req.OnOffBoardLikeReqDto;
 import com.ssafy.five.controller.dto.req.RegistBoardReqDto;
@@ -24,12 +25,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
+
+    @Value("${spring.servlet.multipart.location}")
+    private String bpath;
 
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
@@ -44,40 +51,36 @@ public class BoardService {
         boolean existVideo = false;
 
         // 파일 정보 저장 리스트
-        List<Map<String, FileType>> list = new ArrayList<>();
+        List<FileDto> list = new ArrayList<>();
 
         // 파일을 서버 로컬에 저장
         if (multipartFiles != null) {
             for (MultipartFile file : multipartFiles) {
                 if (!file.isEmpty()) {
                     String newFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-
                     String uploadpath;
+                    FileType fileType;
 
                     // 파일 중 비디오 타입이 있다면
                     if (file.getContentType().split("/")[0].equals("video")) {
                         existVideo = true;
                         uploadpath = "VIDEO/";
 
-                        Map<String, FileType> map = new HashMap<>();
-                        map.put(newFileName, FileType.VIDEO);
-                        list.add(map);
+                        fileType = FileType.VIDEO;
                     }
                     // 파일 중 이미지 타입이 있다면
                     else if (file.getContentType().split("/")[0].equals("image")) {
                         existImage = true;
                         uploadpath = "IMAGE/";
 
-                        Map<String, FileType> map = new HashMap<>();
-                        map.put(newFileName, FileType.IMAGE);
-                        list.add(map);
+                        fileType = FileType.IMAGE;
                     } else {
                         uploadpath = "GENERAL/";
 
-                        Map<String, FileType> map = new HashMap<>();
-                        map.put(newFileName, FileType.GENERAL);
-                        list.add(map);
+                        fileType = FileType.GENERAL;
                     }
+
+                    list.add(new FileDto(newFileName, fileType, (int) file.getSize()));
 
                     // UUID+파일원본이름을 가진 새로운 파일 객체를 생성하여 로컬에 저장
                     File newFile = new File(uploadpath, newFileName);
@@ -101,11 +104,12 @@ public class BoardService {
         }
 
         // db에 파일 정보 저장
-        for (Map<String, FileType> map : list) {
+        for (FileDto item : list) {
             fileRepository.save(Files.builder()
                     .board(boardEntity)
-                    .fileName(map.keySet().iterator().next())
-                    .fileType(map.get(map.keySet().iterator().next()))
+                    .fileName(item.getFileName())
+                    .fileType(item.getFileType())
+                    .fileSize(item.getFileSize())
                     .build());
         }
     }
@@ -123,9 +127,6 @@ public class BoardService {
                 new Date());
         return (result > 0 ? true : false);
     }
-
-    @Value("${spring.servlet.multipart.location}")
-    private String bpath;
 
     @Transactional
     public void deleteById(Long boardId) {
