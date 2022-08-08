@@ -88,6 +88,10 @@ public class Users implements UserDetails {
     @JoinColumn(name = "refreshTokenId")
     private RefreshTable refreshToken;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "profileImg")
+    private ProfileImg profileImg;
+
 //    // 역할
 //    @Column(name = "role", nullable = false, columnDefinition = "varchar(15)")
 //    private String role;
@@ -127,6 +131,10 @@ public class Users implements UserDetails {
 
     public void updatePoint(int dp) {
         this.point += dp;
+    }
+
+    public void updateProfileImg(ProfileImg profileImg) {
+        this.profileImg = profileImg;
     }
 
 //    public void updatePicture(File picture){
@@ -171,5 +179,4 @@ public class Users implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }

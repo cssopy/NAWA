@@ -5,6 +5,8 @@ import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
 import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
 import com.ssafy.five.controller.dto.req.SignUpReqDto;
 import com.ssafy.five.domain.entity.EnumType.EvalType;
+import com.ssafy.five.domain.entity.Messages;
+import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.SmsRepository;
 import com.ssafy.five.domain.repository.UserRepository;
@@ -38,6 +40,7 @@ public class UserService {
         if (userRepository.existsById(signUpReqDto.getUserId())) {
             return false;
         }
+
         Users user = Users.builder()
                 .userId(signUpReqDto.getUserId())
                 .password(passwordEncoder.encode(signUpReqDto.getPassword()))
@@ -50,6 +53,9 @@ public class UserService {
                 .genderType(signUpReqDto.getGenderType())
 //                .picture(signUpReqDto.getPicture())
                 .roles(Collections.singletonList("ROLE_USER"))
+                .profileImg(ProfileImg.builder()
+                        .fileName("defaultProfileImg.png")
+                        .build())
                 .build();
 
         userRepository.save(user);

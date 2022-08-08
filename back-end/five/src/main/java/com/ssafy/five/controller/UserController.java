@@ -5,19 +5,38 @@ import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
 import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
 import com.ssafy.five.controller.dto.req.SignUpReqDto;
 import com.ssafy.five.controller.dto.res.FindUserResDto;
+import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
+import com.ssafy.five.domain.service.ProfileImgService;
 import com.ssafy.five.domain.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
+    @Value("${spring.servlet.multipart.location}")
+    private String bpath;
+
     private final UserService userService;
+
+    private final ProfileImgService profileImgService;
 
     @Operation(summary = "회원가입", description = "회원가입된 아이디로 회원가입 시도할시 false, 휴대폰 인증이 안되있을 경우 false, 휴대폰 인증 완료시 휴대폰번호와 인증번호를 저장한 DB 삭제 후 true 반환")
     @PostMapping("/signup")
@@ -106,4 +125,27 @@ public class UserController {
     public void evalUser(@RequestBody EvalUserReqDto evalUserReqDto) {
         userService.evalUser(evalUserReqDto);
     }
+
+    // 프로필 이미지 다운로드
+    @GetMapping("/user/profile-img/{userId}")
+    public ResponseEntity<?> getProfileImg(@PathVariable String userId) throws Exception {
+        ProfileImg profileImg = profileImgService.findByUserId(userId);
+
+        Path path = Paths.get(bpath + "/PROFILE/" + profileImg.getFileName());
+        String contentType = Files.probeContentType(path);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDisposition(ContentDisposition.builder("attachment").filename(profileImg.getFileName(), StandardCharsets.UTF_8).build());
+        headers.add(HttpHeaders.CONTENT_TYPE, contentType);
+
+        Resource resource = new InputStreamResource(Files.newInputStream(path));
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+    }
+
+    // 프로필 이미지 업데이트
+    @PutMapping("/user/profile-img/{userId}")
+    public void updateProfileImg(@PathVariable String userId, @RequestParam(name = "profileImg") MultipartFile profileImg) throws Exception {
+        profileImgService.save(userId, profileImg);
+    }
+
+
 }

@@ -34,7 +34,7 @@ public class Comment {
     private String cmtContent;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
     @NotNull
     private Users user;

@@ -66,7 +66,7 @@ public class BoardController {
     public ResponseEntity<?> getBoardById(@PathVariable(name = "boardId") Long boardId) {
         GetBoardResDto board = boardService.findById(boardId);
         board.setComments(cmtService.findALLByBoardId(boardId));
-        board.setFileResDtos(fileService.getFilesByBoardId(boardId));
+        board.setFiles(fileService.getFilesByBoardId(boardId));
         return new ResponseEntity<>(board, HttpStatus.OK);
     }
 
