@@ -9,6 +9,7 @@ import com.ssafy.five.domain.repository.UserRepository;
 import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,8 @@ public class UserTokenService {
     }
 
     @Transactional
-    public boolean logout(String userId){
+    public ResponseEntity<?> logout(String userId){
+        Map<String, String> map = new HashMap<>();
         // 현재 유저 아이디로 Users 가져오기
         Users user = userRepository.findByUserId(userId);
         // RefreshTable 가져오기
@@ -61,9 +63,13 @@ public class UserTokenService {
 //            user.updateRefreshToken(null);
             user.setRefreshToken(null);
 
-            return true;
+            map.put("result", "true");
+            map.put("message", "로그아웃 성공");
+            return new ResponseEntity<>(map, HttpStatus.OK);
         }
-        return false;
+        map.put("result", "false");
+        map.put("message", "로그아웃 실패");
+        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 
     @Transactional

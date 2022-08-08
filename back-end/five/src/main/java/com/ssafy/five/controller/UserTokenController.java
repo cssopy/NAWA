@@ -34,11 +34,8 @@ public class UserTokenController {
 
     @Operation(summary = "로그아웃", description = "유저 아이디를 통해 유저가 없으면 false 반환, 있으면 db에 저장된 refreshToken 삭제")
     @PostMapping("/user/logout")
-    public boolean logout(@RequestBody String userId) throws Exception {
-        if(userTokenService.logout(userId)) {
-            return true;
-        }
-        return false;
+    public ResponseEntity<?> logout(@RequestBody String userId) throws Exception {
+        return userTokenService.logout(userId);
     }
 
     @Operation(summary = "refresh 토큰 유효성 검사", description = "refresh 토큰이 만료 되었으면 재로그인, 만료되지 않았으면 access 토큰 재생성 후 보냄")
