@@ -121,7 +121,7 @@ function SignUp({navigation} : SignUpScreenProps) {
             );
         }
         // 유효성 검사 추가 필요
-
+//////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
         try {
             setLoading(true);
             console.log(`${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`)
@@ -157,7 +157,7 @@ function SignUp({navigation} : SignUpScreenProps) {
             setLoading(false);
           }
     }, [loading, navigation, userId, password, date, email, name, nickName, number, gender]);
-
+//////////////////////////////////////////////////////////////////// 끝 //////////////////////////////////////////
 
     const canGoNext = userId && password && date && email && name && nickName && number && gender;
     return (

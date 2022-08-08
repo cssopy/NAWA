@@ -47,7 +47,7 @@ function SignIn({navigation}: SignInScreenProps) {
     if (!password || !password.trim()) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
-
+//////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
     try {
       setLoading(true);
       const response = await axios.post(`http://i7d205.p.ssafy.io:8080/token/login`, {
@@ -85,6 +85,7 @@ function SignIn({navigation}: SignInScreenProps) {
       setLoading(false);
     }
   }, [loading, dispatch, userId, password]);
+  //////////////////////////////////////////////////////////////////// 끝 //////////////////////////////////////////
 
   const toSignUp = useCallback(() => {
     navigation.navigate('SignUp');

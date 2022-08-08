@@ -45,6 +45,7 @@ const Stack = createNativeStackNavigator();
 
 
 function AppInner() {
+  //////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
   const dispatch = useAppDispatch()
   const userId = useSelector((state : RootState) => state.user.userId)
   const isLoggedIn = !!userId
@@ -61,7 +62,7 @@ function AppInner() {
           return;
         }
         const response = await axios.put(
-          'http://i7d205.p.ssafy.io:8080/user/autoLogin',/////////////////////
+          'http://i7d205.p.ssafy.io:8080/user/autoLogin',
           {
             userId: userId,
             accessToken: accessToken,
@@ -92,7 +93,7 @@ function AppInner() {
     };
     getTokenAndRefresh();
   }, [dispatch]);
-  
+  //////////////////////////////////////////////////////////////////// 끝//////////////////////////////////////////
   return (
     <>
       <NavigationContainer>
