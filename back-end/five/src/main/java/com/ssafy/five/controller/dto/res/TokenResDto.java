@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TokenResDto {
+    private String userId;
 
     private String accessToken;
 
