@@ -25,6 +25,7 @@ public class UserController {
         if (userService.signUp(signUpReqDto)) {
             return true;
         }
+
         return false;
     }
 
