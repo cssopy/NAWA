@@ -1,9 +1,11 @@
 import React, { useRef, useEffect, useState } from "react";
-import { SafeAreaView, Text, Animated, View, StyleSheet, Image } from "react-native";
+import { SafeAreaView, Text, Animated, View, StyleSheet, Image, Keyboard } from "react-native";
 
 import FeedItem from '../components/FeedItem';
 import Search from "../components/Search";
 import constants from '../constants';
+
+import DismissKeyboardView from "../components/DismissKeyboardView";
 
 const HEADER_HEIGHT = 60;
 
@@ -12,6 +14,7 @@ const HomeScreen = () => {
   const [scrollUp, setScrollUp] = useState(true);
 
   const animationRef = useRef(new Animated.Value(0)).current;
+  
 
   const translateY = animationRef.interpolate({
     inputRange: [0, 1],
@@ -20,11 +23,13 @@ const HomeScreen = () => {
 
   const onScroll = (event) => {
     const currentOffset = event.nativeEvent.contentOffset.y;
+    if (currentOffset < 0) return;
     setScrollUp(offset >= currentOffset);
     setOffset(currentOffset);
   };
 
   useEffect(() => {
+    Keyboard.dismiss()
     Animated.timing(animationRef, {
       toValue: scrollUp ? 0 : 1,
       duration: 300,
@@ -56,7 +61,7 @@ const HomeScreen = () => {
             /> 
           </View>
           <View style={{ flex:4, backgroundColor:'rgb(0, 197, 145)', justifyContent:'center', alignItems:'center'}}>
-            <Search />
+            <Search width={constants.width * 0.65} />
           </View>
           <View style={{ flex:1, backgroundColor:'rgb(0, 197, 145)', justifyContent:'center', alignItems:'center' }}>
           <Image
