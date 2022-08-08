@@ -55,7 +55,7 @@ public class ReportService {
                 date.add(Calendar.DATE, 7);
                 endDate = new Date(date.getTimeInMillis());
                 userStateType = StateType.STOP;
-            } else if (reportCount == 10){
+            } else if (reportCount == 10) {
                 date.add(Calendar.YEAR, 10);
                 endDate = new Date(date.getTimeInMillis());
                 userStateType = StateType.STOP;
@@ -68,7 +68,6 @@ public class ReportService {
                     .birth(user.getBirth())
                     .emailId(user.getEmailId())
                     .emailDomain(user.getEmailDomain())
-                    .name(user.getName())
                     .nickname(user.getNickname())
                     .ment(user.getMent())
                     .number(user.getNumber())
