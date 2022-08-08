@@ -24,8 +24,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SmsController {
 
-    private final SmsService smsService;
-
+//    private final SmsService smsService;
+//
 //    @Operation(summary = "인증번호 전송", description = "인증번호 전송, 이미 가입된 전화번호는 사용 불가")
 //    @PostMapping("/sms")
 //    public ResponseEntity<?> sendSms(@RequestBody PhoneNumReqDto phoneNumReqDto) throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException{
@@ -38,13 +38,10 @@ public class SmsController {
 //        }
 //        return ResponseEntity.ok().body(data);
 //    }
-
+//
 //    @Operation(summary = "인증번호 검사", description = "인증번호 검사")
 //    @PostMapping("/sms/check")
-//    public boolean validSms(@RequestBody SmsReqDto smsReqDto) {
-//        if(smsService.checkNumber(smsReqDto.getRecipientPhoneNumber(), smsReqDto.getCertNumber())){
-//            return true;
-//        }
-//        return false;
+//    public ResponseEntity<?> validSms(@RequestBody SmsReqDto smsReqDto) {
+//        return smsService.checkNumber(smsReqDto.getRecipientPhoneNumber(), smsReqDto.getCertNumber());
 //    }
 }
