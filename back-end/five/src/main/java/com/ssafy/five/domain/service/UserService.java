@@ -56,12 +56,12 @@ public class UserService {
 
         userRepository.save(user);
 
-        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
-
-        if (!msg.isAuth()) {
-            return false;
-        }
-        smsRepository.delete(msg);
+//        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
+//
+//        if(!msg.isAuth()){
+//            return false;
+//        }
+//        smsRepository.delete(msg);
         return true;
     }
 
@@ -91,7 +91,7 @@ public class UserService {
             user1.updateGender(user.getGenderType());
 //        user1.updatePicture(user.getPicture());
 
-            userRepository.save(user1);
+//            userRepository.save(user1);
             return true;
         }
         return false;
