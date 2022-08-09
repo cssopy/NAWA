@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
       android:name=".MainApplication"
@@ -20,7 +22,11 @@
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
-      android:theme="@style/AppTheme">
+      android:theme="@style/AppTheme"
+      android:largeHeap="true">
+      <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="2urxj03koo" />
       <service
         android:name="app.notifee.core.ForegroundService"
         android:foregroundServiceType="mediaProjection|camera|microphone"
