@@ -53,7 +53,6 @@ public class UserTokenService {
 
     @Transactional
     public ResponseEntity<?> logout(String userId){
-        Map<String, String> map = new HashMap<>();
         // 현재 유저 아이디로 Users 가져오기
         Users user = userRepository.findByUserId(userId);
         // RefreshTable 가져오기
@@ -62,14 +61,9 @@ public class UserTokenService {
             // refreshtable 삭제
 //            user.updateRefreshToken(null);
             user.setRefreshToken(null);
-
-            map.put("result", "true");
-            map.put("message", "로그아웃 성공");
-            return new ResponseEntity<>(map, HttpStatus.OK);
+            return new ResponseEntity<>(true, HttpStatus.OK);
         }
-        map.put("result", "false");
-        map.put("message", "로그아웃 실패");
-        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
     }
 
     @Transactional

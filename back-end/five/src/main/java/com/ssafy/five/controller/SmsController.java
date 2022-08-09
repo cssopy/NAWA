@@ -31,10 +31,7 @@ public class SmsController {
 //    public ResponseEntity<?> sendSms(@RequestBody PhoneNumReqDto phoneNumReqDto) throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException{
 //        SmsResponse data = smsService.sendSms(phoneNumReqDto.getRecipientPhoneNumber());
 //        if(data == null){
-//            Map<String, String> map = new HashMap<>();
-//            map.put("message", "이미 등록된 번호입니다.");
-//            map.put("result", "false");
-//            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+//            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
 //        }
 //        return ResponseEntity.ok().body(data);
 //    }
