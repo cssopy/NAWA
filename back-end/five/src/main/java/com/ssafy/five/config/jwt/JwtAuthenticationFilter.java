@@ -17,14 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
-    private JwtTokenProvider jwtTokenProvider;
-
-    // Jwt Provider 주입
-    public JwtAuthenticationFilter(@Lazy JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 토큰의 인증정보를 SecurityContext에 저장하는 역할 수행
     @Override
