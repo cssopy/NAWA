@@ -2,14 +2,12 @@ package com.ssafy.five.controller;
 
 
 import com.ssafy.five.controller.dto.req.CalReqDto;
-import com.ssafy.five.controller.dto.res.CalResDto;
 import com.ssafy.five.domain.service.CalendarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,7 +30,7 @@ public class CalendarController {
     @GetMapping("/{userId}")
     public ResponseEntity<?> findTodo(@PathVariable String userId) {
         Map<String, ?> calendars = calendarService.findTodo(userId);
-        return new ResponseEntity<>(calendars.get("result"), calendars.get("result").equals(403)? HttpStatus.UNAUTHORIZED : HttpStatus.OK);
+        return new ResponseEntity<>(calendars.get("result"), calendars.get("result").equals(403) ? HttpStatus.UNAUTHORIZED : HttpStatus.OK);
     }
 
     @PutMapping
@@ -48,6 +46,6 @@ public class CalendarController {
     @DeleteMapping
     public ResponseEntity<?> deleteTodo(@RequestBody Long calendarId) {
         Map<String, ?> calendars = calendarService.deleteTodo(calendarId);
-        return new ResponseEntity<>(calendars.get("result"), calendars.get("result").equals(403)? HttpStatus.FORBIDDEN : HttpStatus.OK);
+        return new ResponseEntity<>(calendars.get("result"), calendars.get("result").equals(403) ? HttpStatus.FORBIDDEN : HttpStatus.OK);
     }
 }

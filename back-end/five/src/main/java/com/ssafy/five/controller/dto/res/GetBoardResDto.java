@@ -17,7 +17,6 @@ public class GetBoardResDto {
     private BoardType boardType;
     private int boardHit;
     private int boardLikes;
-
     @Setter
     private List<GetCmtResDto> comments;
     @Setter
