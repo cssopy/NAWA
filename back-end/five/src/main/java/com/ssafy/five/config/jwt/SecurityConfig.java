@@ -3,7 +3,6 @@ package com.ssafy.five.config.jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -22,6 +21,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -38,10 +42,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-//                .antMatchers("/user/**", "/board/**", "/loc-list/**", "/comment/**", "/add-mate/**", "/mate/**", "/block/**", "/calendar/**", "/location-list/**", "/chat/**", "/report/**")
-//                .access("hasRole('USER') or hasRole('ADMIN')")
-//                .antMatchers("/admin/**")
-//                .access("hasRole('ADMIN')")
+                .antMatchers("/user/**", "/board/**", "/loc-list/**", "/comment/**", "/add-mate/**", "/mate/**", "/block/**", "/calendar/**", "/location-list/**", "/chat/**", "/report/**")
+                .access("hasRole('USER') or hasRole('ADMIN')")
+                .antMatchers("/admin/**")
+                .access("hasRole('ADMIN')")
                 .anyRequest()
                 .permitAll()
 
