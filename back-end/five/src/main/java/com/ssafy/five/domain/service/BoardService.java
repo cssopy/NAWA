@@ -211,4 +211,21 @@ public class BoardService {
         Users userEntity = userRepository.findByUserId(getUserTypeBoardReqDto.getUserId());
         return boardRepository.findAllByUserAndType(userEntity, getUserTypeBoardReqDto.getBoardType());
     }
+
+    public List<GetBoardResDto> findRandomVideo() {
+        List<Board> boards = boardRepository.findRandomVideo();
+        return boards.stream().map(GetBoardResDto::new).collect(Collectors.toList());
+    }
+
+    public List<GetBoardResDto> findAllByUserLatest(String userId, String time) {
+        Users userEntity = userRepository.findByUserId(userId);
+
+        List<Board> boards = null;
+        if (time.equals("NEW")) {
+            boards = boardRepository.findAllByUserNEW(userEntity);
+        } else if (time.equals("OLD")) {
+            boards = boardRepository.findAllByUserOLD(userEntity);
+        }
+        return boards.stream().map(GetBoardResDto::new).collect(Collectors.toList());
+    }
 }

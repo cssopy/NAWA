@@ -27,6 +27,7 @@ public class CmtService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public boolean regist(RegistCmtReqDto registCmtReqDto) {
         if (registCmtReqDto == null) {
             return false;
@@ -51,6 +52,7 @@ public class CmtService {
         return (result > 0 ? true : false);
     }
 
+    @Transactional
     public void deleteByCmtId(Long cmtId) {
         cmtRepository.deleteById(cmtId);
     }
