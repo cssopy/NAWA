@@ -14,7 +14,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import MatingScreen from './src/screens/Matching';
 import ChattingScreen from './src/screens/ChattingScreen';
 import SettingScreen from './src/screens/SettingScreen';
-import ProfileScreen from './src/screens/profileScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 import SignUp from './src/screens/SignUp';
 import SignIn from './src/screens/SignIn';
 import { useAppDispatch } from './src/store';
@@ -45,14 +45,13 @@ const Stack = createNativeStackNavigator();
 
 
 function AppInner() {
+  //////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
   const dispatch = useAppDispatch()
-  const isLoggedIn = useSelector((state : RootState) => !!state.user.accessToken)
-  const nickname = useSelector((state : RootState) => state.user.nickname)
-  
+  const userId = useSelector((state : RootState) => state.user.userId)
+  const isLoggedIn = !!userId
+
   // 자동 로그인
   useEffect(() => {
-
-
     const getTokenAndRefresh = async () => {
       try {
         const userId = await AsyncStorage.getItem('userId')
@@ -63,34 +62,38 @@ function AppInner() {
           return;
         }
         const response = await axios.put(
-          'http://i7d205.p.ssafy.io:8080/user/reissue',/////////////////////
+          'http://i7d205.p.ssafy.io:8080/user/autoLogin',
           {
+            userId: userId,
             accessToken: accessToken,
-            refreshToken: refreshToken,
-            userId: userId
+            refreshToken: refreshToken
           },
         );
         dispatch(
           userSlice.actions.setUser({ // redux state는 값이 변하면, useselector로 참조하고 있는 모든 컴포넌트가 다시 렌더링.
-            userId : userId,
-            nickname : nickname,
-            accessToken : accessToken,
+            userId : response.data.userId,
+            accessToken : response.data.accessToken
           }),
         );
+        EncryptedStorage.setItem(
+          'accessToken',
+          response.data.accessToken
+        )
+        EncryptedStorage.setItem(
+          'refreshToken',
+          response.data.refreshToken
+        )
 
       } catch (error) {
-        console.log('error : ', error)
         Alert.alert('알림', '다시 로그인 해주세요');
 
-        const accessToken = await AsyncStorage.getItem('accessToken')
-        console.log(accessToken)
       } finally {
         SplashScreen.hide();
       }
     };
     getTokenAndRefresh();
   }, [dispatch]);
-  
+  //////////////////////////////////////////////////////////////////// 끝//////////////////////////////////////////
   return (
     <>
       <NavigationContainer>

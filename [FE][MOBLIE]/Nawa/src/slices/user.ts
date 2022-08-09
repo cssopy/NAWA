@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface User  {
-    userId : string,
+    userId : string | null,
     nickname : string,
     accessToken: string,
 }
@@ -17,7 +17,7 @@ const userSlice = createSlice({
     initialState,
     reducers : {
         setUser(state, action  : PayloadAction<User> ) {
-            state.userId = action.payload.userId;
+            state.userId = action.payload.userId!;
             state.nickname = action.payload.nickname;
             state.accessToken = action.payload.accessToken;
         },

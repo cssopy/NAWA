@@ -17,6 +17,9 @@ import DismissKeyboardView from '../components/DismissKeyboardView';
 import axios, {AxiosError} from 'axios';
 import {RootStackParamList} from '../../AppInner';
 import DatePicker from 'react-native-date-picker';
+import AsyncStorage from '@react-native-community/async-storage';
+import {useAppDispatch} from '../store';
+import userSlice from '../slices/user';
 
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>
 
@@ -24,6 +27,10 @@ type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>
 
 
 function SignUp({navigation} : SignUpScreenProps) {
+    const dispatch = useAppDispatch();
+
+
+
     // 임시 저장공간 생성
     const [loading, setLoading] = useState(false);
     const [userId, setUserId] = useState('');
@@ -114,33 +121,43 @@ function SignUp({navigation} : SignUpScreenProps) {
             );
         }
         // 유효성 검사 추가 필요
-
+//////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
         try {
             setLoading(true);
             console.log(`${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`)
-            const response = await axios.post('http://i7d205.p.ssafy.io:8080/user', {
+            const response = await axios.post('http://i7d205.p.ssafy.io:8080/signup', {
                 userId : userId,
                 password : password,
                 birth : `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`,
                 emailId : email.split('@')[0],
                 emailDomain : email.split('@')[1],
-                name : name,
                 nickname : nickName,
                 number : number,
                 genderType : gender,
             }).then(() =>console.log(response));
             Alert.alert('Welcome !', '회원가입 되었습니다.')
+            await AsyncStorage.setItem(
+              'nickname',
+              nickName
+            );
+            dispatch(
+              userSlice.actions.setUser({
+                nickname : nickName,
+              }),
+            )
+            
             navigation.navigate('SignIn')
         } catch (error) {
             const errorResponse = (error as AxiosError).response;
             if (errorResponse) {
-              Alert.alert('알림', errorResponse.data.message);
+              console.log(errorResponse.data)
+              // Alert.alert('알림', errorResponse);
             }
           } finally {
             setLoading(false);
           }
     }, [loading, navigation, userId, password, date, email, name, nickName, number, gender]);
-
+//////////////////////////////////////////////////////////////////// 끝 //////////////////////////////////////////
 
     const canGoNext = userId && password && date && email && name && nickName && number && gender;
     return (
@@ -190,6 +207,9 @@ function SignUp({navigation} : SignUpScreenProps) {
             />
             <View style={styles.inputWrapper}>
               <Text style={styles.label}>생일</Text>
+              <View style={{ flexDirection:"row" }}>
+                <Text style={styles.label}>{date.getFullYear()} . {date.getMonth()} . {date.getDate()}</Text>
+              
               <Button title='open'
                 color={'#00aeff'} 
                 onPress={() => setOpen(true)} />
@@ -207,6 +227,7 @@ function SignUp({navigation} : SignUpScreenProps) {
                       setOpen(false)
                   }}
               />
+              </View>
             </View>
             <FormItem 
               label = "이메일"

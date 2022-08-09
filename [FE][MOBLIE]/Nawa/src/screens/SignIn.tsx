@@ -47,17 +47,17 @@ function SignIn({navigation}: SignInScreenProps) {
     if (!password || !password.trim()) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
-
+//////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
     try {
       setLoading(true);
-      const response = await axios.post(`http://i7d205.p.ssafy.io:8080/user/login`, {
+      const response = await axios.post(`http://i7d205.p.ssafy.io:8080/token/login`, {
         userId,
         password,
       });
       Alert.alert('알림', '로그인 되었습니다.');
       dispatch(
         userSlice.actions.setUser({ // 이 액션이 dispatch 되면 
-          userId : userId,
+          userId : response.data.userId,
           nickname : '',
           accessToken : response.data.accessToken,
         }),
@@ -78,13 +78,14 @@ function SignIn({navigation}: SignInScreenProps) {
     } catch (error) {
       const errorResponse = (error as AxiosError).response;
       if (errorResponse) {
-        Alert.alert('알림', 'errorResponse.data.message');
+        Alert.alert('알림', errorResponse.data.message);
       }
       
     } finally {
       setLoading(false);
     }
   }, [loading, dispatch, userId, password]);
+  //////////////////////////////////////////////////////////////////// 끝 //////////////////////////////////////////
 
   const toSignUp = useCallback(() => {
     navigation.navigate('SignUp');
