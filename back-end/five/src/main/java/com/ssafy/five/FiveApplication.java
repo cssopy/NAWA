@@ -13,9 +13,6 @@ public class FiveApplication {
 		SpringApplication.run(FiveApplication.class, args);
 	}
 
-	@Bean
-	public PasswordEncoder passwordEncoder(){
-		return new BCryptPasswordEncoder();
-	}
+
 
 }

@@ -4,7 +4,6 @@ import com.ssafy.five.controller.dto.req.EvalUserReqDto;
 import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
 import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
 import com.ssafy.five.controller.dto.req.SignUpReqDto;
-import com.ssafy.five.controller.dto.res.FindUserResDto;
 import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.service.ProfileImgService;

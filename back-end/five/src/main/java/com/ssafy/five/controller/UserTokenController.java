@@ -39,7 +39,7 @@ public class UserTokenController {
     }
 
     @Operation(summary = "refresh 토큰 유효성 검사", description = "refresh 토큰이 만료 되었으면 재로그인, 만료되지 않았으면 access 토큰 재생성 후 보냄")
-    @PostMapping("/user/checktoken")
+    @PostMapping("/checktoken")
     public Map<String, String> refreshToken(@RequestBody HashMap<String, String> bodyJson) throws Exception{
         Map<String, String> map = userTokenService.validateRefreshToken(bodyJson.get("refreshToken"));
         if(map.get("status").equals("403")){
