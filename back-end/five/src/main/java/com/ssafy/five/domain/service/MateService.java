@@ -6,7 +6,6 @@ import com.ssafy.five.domain.entity.Mate;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.MateRepository;
 import com.ssafy.five.domain.repository.UserRepository;
-import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,25 +25,29 @@ public class MateService {
     private final UserRepository userRepository;
     private final RoomService roomService;
 
-    public List<MateResDto> findAllMate(String userId) {
-        Users user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("잘못된 입력입니다."));
-        List<Mate> allMate = mateRepository.findAllByMateUserId1OrMateUserId2(user, user);
-        return allMate.stream().map(MateResDto::new).collect(Collectors.toList());
+    public Map<String, ?> findAllMate(String userId) {
+        Optional<Users> user = userRepository.findById(userId);
+        if (user.isPresent()) {
+            List<Mate> allMate = mateRepository.findAllByMateUserId1OrMateUserId2(user.get(), user.get());
+            Map<String, List> response = new HashMap<>();
+            response.put("result", allMate.stream().map(MateResDto::new).collect(Collectors.toList()));
+            return response;
+        } else {
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("result", false);
+            return response;
+        }
     }
 
     @Transactional
-    public Map<String, String> deleteMate(Long mateId) {
+    public boolean deleteMate(Long mateId) {
         Optional<Mate> mate = mateRepository.findById(mateId);
-        Map<String, String> response = new HashMap<>();
         if (mate.isPresent()) {
             roomService.deleteRoom(mate.get().getMateUserId1(), mate.get().getMateUserId2());
             mateRepository.delete(mate.get());
-            response.put("result", "SUCCESS");
-            response.put("detail", "삭제되었습니다.");
+            return true;
         } else {
-            response.put("result", "FAIL");
-            response.put("detail", "메이트가 아닌 사용자입니다.");
+            return false;
         }
-        return response;
     }
 }

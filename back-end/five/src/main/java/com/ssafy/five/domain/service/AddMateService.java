@@ -11,7 +11,6 @@ import com.ssafy.five.domain.repository.AddMateRepository;
 import com.ssafy.five.domain.repository.BlockRepository;
 import com.ssafy.five.domain.repository.MateRepository;
 import com.ssafy.five.domain.repository.UserRepository;
-import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,70 +33,86 @@ public class AddMateService {
     private final RoomService roomService;
 
     @Transactional
-    public Map<String, String> addMate(AddMateReqDto addMateReqDto) {
-        Users user1 = userRepository.findById(addMateReqDto.getAddMateFrom()).orElseThrow(()-> new UserNotFoundException("잘못된 입력입니다."));
-        Users user2 = userRepository.findById(addMateReqDto.getAddMateTo()).orElseThrow(()-> new UserNotFoundException("존재하지 않는 사용자입니다."));
+    public int addMate(AddMateReqDto addMateReqDto) {
+        Users user1 = userRepository.findByUserId(addMateReqDto.getAddMateFrom());
+        Users user2 = userRepository.findByUserId(addMateReqDto.getAddMateTo());
 
-        // 차단 당한 경우
-        Optional<Block> isBlocked = blockRepository.findByBlockFromAndBlockTo(user2, user1);
+        int response = 200;
 
-        // 차단 한 경우
-        Optional<Block> isBlock = blockRepository.findByBlockFromAndBlockTo(user1, user2);
-
-        // 이미 친구인 경우
-        Optional<Mate> isMated1 = mateRepository.findByMateUserId1AndMateUserId2(user1, user2);
-        Optional<Mate> isMated2 = mateRepository.findByMateUserId1AndMateUserId2(user2, user1);
-
-        // 이미 친구 신청이 와있는 경우
-        Optional<AddMate> isAdded = addMateRepository.findByAddMateFromAndAddMateTo(user2, user1);
-
-        // 이미 친구 신청을 한 경우
-        Optional<AddMate> isAdd = addMateRepository.findByAddMateFromAndAddMateTo(user1, user2);
-
-        Map<String, String> response = new HashMap<>();
-
-        if (isBlocked.isPresent()) {
-            response.put("result", "SUCCESS");
-            response.put("detail", "메이트 요청을 보냈습니다.");
-        } else if (isBlock.isPresent()) {
-            response.put("result", "FAIL");
-            response.put("detail", "차단한 사용자입니다.");
-        } else if (isMated1.isPresent() || isMated2.isPresent()) {
-            response.put("result", "FAIL");
-            response.put("detail", "이미 메이트 등록된 사용자입니다.");
-        } else if (isAdd.isPresent()) {
-            response.put("result", "FAIL");
-            response.put("detail", "이미 메이트 신청한 사용자입니다.");
-        } else if (isAdded.isPresent()) {
-            response.put("result", "FAIL");
-            response.put("detail", "메이트 신청을 받은 사용자입니다.");
-        } else if (addMateReqDto.getAddMateFrom().equals(addMateReqDto.getAddMateTo())) {
-            response.put("result", "FAIL");
-            response.put("detail", "잘못된 요청입니다");
+        if (user1.equals(null)) {
+            // 내 아이디가 잘못된 경우
+            response = 401;
+        } else if (user2.equals(null)) {
+            // 상대방이 존재하지 않는 경우
+            response = 400;
         } else {
-            response.put("result", "SUCCESS");
-            response.put("detail", "메이트 요청을 보냈습니다.");
-            addMateRepository.save(addMateReqDto.addMate(user1, user2));
+
+            // 차단 당한 경우
+            Optional<Block> isBlocked = blockRepository.findByBlockFromAndBlockTo(user2, user1);
+
+            // 차단 한 경우
+            Optional<Block> isBlock = blockRepository.findByBlockFromAndBlockTo(user1, user2);
+
+            // 이미 친구인 경우
+            Optional<Mate> isMated1 = mateRepository.findByMateUserId1AndMateUserId2(user1, user2);
+            Optional<Mate> isMated2 = mateRepository.findByMateUserId1AndMateUserId2(user2, user1);
+
+            // 이미 친구 신청이 와있는 경우
+            Optional<AddMate> isAdded = addMateRepository.findByAddMateFromAndAddMateTo(user2, user1);
+
+            // 이미 친구 신청을 한 경우
+            Optional<AddMate> isAdd = addMateRepository.findByAddMateFromAndAddMateTo(user1, user2);
+
+
+            if (isBlocked.isPresent()) {
+                // 차단 당한 경우
+                response = 402;
+            } else if (isBlock.isPresent()) {
+                // 차단한 경우
+                response = 403;
+            } else if (isMated1.isPresent() || isMated2.isPresent()) {
+                // 이미 친구인 경우
+                response = 406;
+            } else if (isAdd.isPresent()) {
+                // 이미 친구 신청을 한 경우
+                response = 407;
+            } else if (isAdded.isPresent()) {
+                // 이미 친구 신청이 와있는 경우
+                response = 409;
+            } else if (addMateReqDto.getAddMateFrom().equals(addMateReqDto.getAddMateTo())) {
+                // 나 자신에 대한 친구 요청인 경우
+                response = 410;
+            } else {
+                addMateRepository.save(addMateReqDto.addMate(user1, user2));
+            }
         }
 
         return response;
 
     }
 
-    public List<AddMateResDto> findAllAddMate(String userId) {
-        Users user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("잘못된 입력입니다."));
-        List<AddMate> addMateList = addMateRepository.findAllByAddMateTo(user);
-        return addMateList.stream().map(AddMateResDto::new).collect(Collectors.toList());
+    public Map<String, ?> findAllAddMate(String userId) {
+        Users user = userRepository.findById(userId).get();
+        if (user.equals(null)) {
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("result", false);
+            return response;
+        } else {
+            List<AddMate> addMateList = addMateRepository.findAllByAddMateTo(user);
+            Map<String, List> response = new HashMap<>();
+            response.put("result", addMateList.stream().map(AddMateResDto::new).collect(Collectors.toList()));
+            return response;
+        }
     }
 
     @Transactional
-    public Map<String, String> acceptMate(Long mateId) {
+    public int acceptMate(Long mateId) {
         Optional<AddMate> addMate = addMateRepository.findById(mateId);
-        Map<String, String> response = new HashMap<>();
+        int response = 200;
 
         if (!addMate.isPresent()) {
-            response.put("result", "FAIL");
-            response.put("detail", "존재하지 않는 메이트 신청입니다");
+            // addmate 기록이 없는 경우
+            response = 401;
         } else {
             Users user1 = addMate.get().getAddMateFrom();
             Users user2 = addMate.get().getAddMateTo();
@@ -114,17 +129,15 @@ public class AddMateService {
 
 
             if (isMated1.isPresent() || isMated2.isPresent()) {
-                response.put("result", "FAIL");
-                response.put("detail", "이미 메이트인 사용자입니다.");
+                // 이미 친구인 경우
+                response = 406;
             } else if (isBlocked.isPresent()) {
-                response.put("result", "FAIL");
-                response.put("detail", "잘못된 입력입니다.");
+                // 차단당한 경우
+                response = 402;
             } else if (isBlock.isPresent()) {
-                response.put("result", "FAIL");
-                response.put("detail", "차단한 사용자입니다.");
+                // 차단한 경우
+                response = 403;
             } else {
-                response.put("result", "SUCCESS");
-                response.put("detail", "메이트로 등록되었습니다.");
                 mateRepository.save(Mate.builder().mateUserId1(user1).mateUserId2(user2).build());
                 roomService.createRoom(user1, user2);
             }
@@ -135,17 +148,14 @@ public class AddMateService {
     }
 
     @Transactional
-    public Map<String, String> rejectMate(Long mateId) {
+    public int rejectMate(Long mateId) {
         Optional<AddMate> addMate = addMateRepository.findById(mateId);
-        Map<String, String> response = new HashMap<>();
+        int response = 200;
 
         if (addMate.isPresent()) {
-            response.put("result", "SUCCESS");
-            response.put("detail", "메이트 신청을 거절하였습니다.");
             addMateRepository.delete(addMate.get());
         } else {
-            response.put("result", "FAIL");
-            response.put("detail", "잘못된 입력입니다.");
+            response = 409;
         }
         return response;
     }

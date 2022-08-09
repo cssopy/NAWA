@@ -7,14 +7,15 @@ import com.ssafy.five.domain.entity.Calendar;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.CalenderRepository;
 import com.ssafy.five.domain.repository.UserRepository;
-import com.ssafy.five.exception.CalendarNotFoundException;
-import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -27,39 +28,70 @@ public class CalendarService {
     private final UserRepository userRepository;
 
     @Transactional
-    public List<CalResDto> createTodo(CalReqDto calReqDto) {
-        Users user = userRepository.findById(calReqDto.getUserId()).orElseThrow(()-> new UserNotFoundException());
-        if (calenderRepository.findByCalDate(calReqDto.getCalDate()) == null) {
+    public Map<String, ?> createTodo(CalReqDto calReqDto) {
+        Users user = userRepository.findByUserId(calReqDto.getUserId());
+        if (user.equals(null)) {
+            Map<String, Integer> response = new HashMap<>();
+            response.put("result", 401);
+            return response;
+        } else if (calenderRepository.findByCalDate(calReqDto.getCalDate()).equals(null)) {
             calenderRepository.save(calReqDto.saveTodo(user));
+            Map<String, List> response = new HashMap<>();
+            response.put("result", calenderRepository.findByUsers(user).stream().map(CalResDto::new).collect(Collectors.toList()));
+            return response;
         } else {
-            throw new CalendarNotFoundException("잘못된 입력입니다");
+            Map<String, Integer> response = new HashMap<>();
+            response.put("result", 403);
+            return response;
         }
-        return calenderRepository.findByUsers(user).stream().map(CalResDto::new).collect(Collectors.toList());
     }
 
-    public List<CalResDto> findTodo(String userId) {
-        Users user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("잘못된 입력입니다"));
-        List<Calendar> Todos = calenderRepository.findByUsers(user);
-        return Todos.stream().map(CalResDto::new).collect(Collectors.toList());
+    public Map<String, ?> findTodo(String userId) {
+        Optional<Users> user = userRepository.findById(userId);
+        if (!user.isPresent()) {
+            Map<String, Integer> response = new HashMap<>();
+            response.put("result", 401);
+            return response;
+        } else {
+            Map<String, List> response = new HashMap<>();
+            List<Calendar> Todos = calenderRepository.findByUsers(user.get());
+            response.put("result", Todos);
+            return response;
+        }
     }
 
     @Transactional
-    public List<CalResDto> updateTodo(CalReqDto calReqDto) {
-        Users user = userRepository.findById(calReqDto.getUserId()).orElseThrow(()-> new UserNotFoundException("잘못된 입력입니다"));
+    public Map<String, ?> updateTodo(CalReqDto calReqDto) {
+        Optional<Users> user = userRepository.findById(calReqDto.getUserId());
         Calendar calendar = calenderRepository.findByCalDate(calReqDto.getCalDate());
-        if (calendar != null && calendar.getCalId().equals(calReqDto.getCalId())) {
-            calenderRepository.save(calReqDto.updateTodo(user));
+        if (!user.isPresent()) {
+            Map<String, Integer> response = new HashMap<>();
+            response.put("result", 401);
+            return response;
+        } else if (calendar != null && calendar.getCalId().equals(calReqDto.getCalId())) {
+            calenderRepository.save(calReqDto.updateTodo(user.get()));
+            Map<String, List> response = new HashMap<>();
+            response.put("result", calenderRepository.findByUsers(user.get()).stream().map(CalResDto::new).collect(Collectors.toList()));
+            return response;
         } else {
-            throw new CalendarNotFoundException("잘못된 입력입니다");
+            Map<String, Integer> response = new HashMap<>();
+            response.put("result", 403);
+            return response;
         }
-        return calenderRepository.findByUsers(user).stream().map(CalResDto::new).collect(Collectors.toList());
-
     }
 
     @Transactional
-    public List<CalResDto> deleteTodo(Long calId) {
-        Calendar Todo = calenderRepository.findById(calId).orElseThrow(()-> new CalendarNotFoundException("잘못된 입력입니다"));
-        calenderRepository.delete(Todo);
-        return calenderRepository.findByUsers(Todo.getUsers()).stream().map(CalResDto::new).collect(Collectors.toList());
+    public Map<String, ?> deleteTodo(Long calId) {
+        Optional<Calendar> Todo = calenderRepository.findById(calId);
+        if (!Todo.isPresent()) {
+            Map<String, Integer> response = new HashMap<>();
+            response.put("result", 403);
+            return response;
+        } else {
+            calenderRepository.delete(Todo.get());
+            Map<String, List> response = new HashMap<>();
+            response.put("result", calenderRepository.findByUsers(Todo.get().getUsers()).stream().map(CalResDto::new).collect(Collectors.toList()));
+            return response;
+        }
     }
 }

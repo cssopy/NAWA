@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -27,20 +24,20 @@ public class ReportService {
     private final UserRepository userRepository;
 
     @Transactional
-    public Map<String, String> reported(ReportReqDto reportReqDto) {
-        Users user = userRepository.findById(reportReqDto.getReportTo()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
+    public Map<String, Integer> reported(ReportReqDto reportReqDto) {
+        Users user = userRepository.findById(reportReqDto.getReportTo()).get();
+        Optional<Users> me = userRepository.findById(reportReqDto.getReportFrom());
 
-        Map<String, String> response = new HashMap<>();
+        Map<String, Integer> response = new HashMap<>();
 
-        if (reportReqDto.getReportTo().equals(reportReqDto.getReportFrom())) {
-            throw new UserNotFoundException("잘못된 입력입니다.");
-            // 신고 한 적 있으면
+        if (user.equals(null)) {
+            response.put("result", 400);
+        } else if (me.isEmpty()) {
+            response.put("result", 401);
+        } else if (reportReqDto.getReportTo().equals(reportReqDto.getReportFrom())) {
+            response.put("result", 410);
         } else if (reportRepositery.findByReportFromAndReportTo(reportReqDto.getReportFrom(), reportReqDto.getReportTo()).isPresent()) {
-            response.put("result", "FAIL");
-            response.put("detail", "이미 신고한 사용자입니다.");
-        } else if (reportReqDto.getReportFrom().equals(reportReqDto.getReportTo())) {
-            response.put("result", "FAIL");
-            response.put("detail", "잘못된 요청입니다.");
+            response.put("result", 403);
         } else {
             reportRepositery.save(reportReqDto.reported());
 
@@ -86,10 +83,8 @@ public class ReportService {
             BlockReqDto blockReqDto = new BlockReqDto(reportReqDto.getReportFrom(), reportReqDto.getReportTo(), "신고 차단");
             blockService.addBlock(blockReqDto);
 
-            response.put("result", "SUCCESS");
-            response.put("detail", "신고가 정상적으로 접수되었습니다.");
+            response.put("result", 200);
         }
-
         return response;
     }
 }

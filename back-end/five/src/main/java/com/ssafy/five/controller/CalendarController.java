@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,25 +21,33 @@ public class CalendarController {
 
     @PostMapping
     public ResponseEntity<?> createTodo(@RequestBody CalReqDto calReqDto) {
-        List<CalResDto> calendars = calendarService.createTodo(calReqDto);
-        return new ResponseEntity<List<CalResDto>>(calendars, HttpStatus.OK);
+        Map<String, ?> calendars = calendarService.createTodo(calReqDto);
+        if (calendars.get("result").equals(401) || calendars.get("result").equals(403)) {
+            return new ResponseEntity<>(false, HttpStatus.valueOf((int) calendars.get("result")));
+        } else {
+            return new ResponseEntity<>(calendars.get("result"), HttpStatus.OK);
+        }
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> findTodo(@PathVariable String userId) {
-        List<CalResDto> calendars = calendarService.findTodo(userId);
-        return new ResponseEntity<List<CalResDto>>(calendars, HttpStatus.OK);
+        Map<String, ?> calendars = calendarService.findTodo(userId);
+        return new ResponseEntity<>(calendars.get("result"), calendars.get("result").equals(403)? HttpStatus.UNAUTHORIZED : HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<?> updateTodo(@RequestBody CalReqDto calReqDto) {
-        List<CalResDto> calendars = calendarService.updateTodo(calReqDto);
-        return new ResponseEntity<List<CalResDto>>(calendars, HttpStatus.OK);
+        Map<String, ?> calendars = calendarService.updateTodo(calReqDto);
+        if (calendars.get("result").equals(401) || calendars.get("result").equals(403)) {
+            return new ResponseEntity<>(false, HttpStatus.valueOf((int) calendars.get("result")));
+        } else {
+            return new ResponseEntity<>(calendars.get("result"), HttpStatus.OK);
+        }
     }
 
     @DeleteMapping
     public ResponseEntity<?> deleteTodo(@RequestBody Long calendarId) {
-        List<CalResDto> calendars = calendarService.deleteTodo(calendarId);
-        return new ResponseEntity<List<CalResDto>>(calendars, HttpStatus.OK);
+        Map<String, ?> calendars = calendarService.deleteTodo(calendarId);
+        return new ResponseEntity<>(calendars.get("result"), calendars.get("result").equals(403)? HttpStatus.FORBIDDEN : HttpStatus.OK);
     }
 }

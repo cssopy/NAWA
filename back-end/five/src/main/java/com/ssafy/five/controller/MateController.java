@@ -19,12 +19,13 @@ public class MateController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> findAllMate(@PathVariable String userId) {
-        List<MateResDto> allMate = mateService.findAllMate(userId);
-        return new ResponseEntity<List<MateResDto>>(allMate, HttpStatus.OK);
+        Map<String, ?> allMate = mateService.findAllMate(userId);
+        return new ResponseEntity<>(allMate.get("result"), allMate.get("result").equals(false)? HttpStatus.UNAUTHORIZED : HttpStatus.OK);
     }
 
     @DeleteMapping("/{mateId}")
     public ResponseEntity<?> deleteMate(@PathVariable Long mateId) {
-        return new ResponseEntity<Map>(mateService.deleteMate(mateId), HttpStatus.OK);
+        boolean deleted = mateService.deleteMate(mateId);
+        return new ResponseEntity<>(deleted, deleted? HttpStatus.OK : HttpStatus.UNAUTHORIZED);
     }
 }
