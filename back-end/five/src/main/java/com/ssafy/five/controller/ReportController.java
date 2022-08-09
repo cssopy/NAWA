@@ -21,6 +21,7 @@ public class ReportController {
 
     @PostMapping
     public ResponseEntity<?> reported(@RequestBody ReportReqDto reportReqDto) {
-        return new ResponseEntity<Map>(reportService.reported(reportReqDto), HttpStatus.OK);
+        Map<String, Integer> reported = reportService.reported(reportReqDto);
+        return new ResponseEntity<>(reported.get("result").equals(200), HttpStatus.valueOf(reported.get("result")));
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,22 +21,26 @@ public class AddMateController {
 
     @PostMapping
     public ResponseEntity<?> addMate(@RequestBody AddMateReqDto addMateReqDto) {
-        return new ResponseEntity<Map>(addMateService.addMate(addMateReqDto), HttpStatus.OK);
+        int code = addMateService.addMate(addMateReqDto);
+        return new ResponseEntity<>(code == 200, HttpStatus.valueOf(code));
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> findAllAddMate(@PathVariable String userId) {
-        List<AddMateResDto> allMateRequest = addMateService.findAllAddMate(userId);
-        return new ResponseEntity<List<AddMateResDto>>(allMateRequest, HttpStatus.OK);
+        Map<String, ?> allMateRequest = addMateService.findAllAddMate(userId);
+        return new ResponseEntity<>(allMateRequest.get("result"), allMateRequest.get("result").equals(false)? HttpStatus.UNAUTHORIZED : HttpStatus.OK);
+
     }
 
     @PutMapping
     public ResponseEntity<?> acceptMate(@RequestBody Long addMateId) {
-        return new ResponseEntity<Map>(addMateService.acceptMate(addMateId), HttpStatus.OK);
+        int code = addMateService.acceptMate(addMateId);
+        return new ResponseEntity<>(code == 200, HttpStatus.valueOf(code));
     }
 
     @DeleteMapping("/{addMateId}")
     public ResponseEntity<?> rejectMate(@PathVariable Long addMateId) {
-        return new ResponseEntity<Map>(addMateService.rejectMate(addMateId), HttpStatus.OK);
+        int code = addMateService.rejectMate(addMateId);
+        return new ResponseEntity<>(code == 200, HttpStatus.valueOf(code));
     }
 }
