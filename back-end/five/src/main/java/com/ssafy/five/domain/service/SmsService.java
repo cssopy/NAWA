@@ -87,19 +87,14 @@ public class SmsService {
 //    }
 //
 //    public ResponseEntity<?> checkNumber(String recipientPhoneNumber, String certNumber){
-//        Map<String, String> map = new HashMap<>();
 //        Messages messages = smsRepository.findByReceiver(recipientPhoneNumber);
 //        if(messages != null) {
 //            if (messages.getReceiver().equals(recipientPhoneNumber) && messages.getContent().equals(certNumber)) {
 //                messages.setAuth(true);
-//                map.put("result", "true");
-//                map.put("message", "인증에 성공하였습니다.");
-//                return new ResponseEntity<>(map, HttpStatus.OK);
+//                return new ResponseEntity<>(true, HttpStatus.OK);
 //            }
 //        }
-//        map.put("result", "false");
-//        map.put("message", "인증에 실패하였습니다.");
-//        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+//        return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
 //    }
 //
 //    private String makeRandNum() {
