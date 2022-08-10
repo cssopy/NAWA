@@ -17,7 +17,7 @@ import SettingScreen from './src/screens/SettingScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import SignUp from './src/screens/SignUp';
 import SignIn from './src/screens/SignIn';
-import FindInfo from './src/screens/FindInfo'
+import FindInfo from './src/screens/FindInfo';
 import { useAppDispatch } from './src/store';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, { AxiosError } from 'axios';
@@ -37,6 +37,7 @@ export type LoggedInParamList = {  //다른 곳에서도 쓸꺼니까 export
 export type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
+  FindInfo: undefined;
 };
 
 
@@ -101,7 +102,7 @@ function AppInner() {
       <NavigationContainer>
         {/* <Drawer.Navigator>
         </Drawer.Navigator> */}
-        {isLoggedIn ? (
+        {!isLoggedIn ? (
           <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
