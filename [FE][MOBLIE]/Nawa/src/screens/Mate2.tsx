@@ -41,10 +41,11 @@ const Mate2 = ( {navigation} ) => {
 
   const [total, setTotal] = useState(0);
   const [selectedItems, setSelectedItem] = useState([]);
+  const where = useSelector((state:RootState) => state.matching.location)
+  const distance = useSelector((state:RootState) => state.matching.distance)
   // const first = useSelector((state : RootState) =>state.matching.category1)
   // const second = useSelector((state : RootState) =>state.matching.category2)
   // const third = useSelector((state : RootState) =>state.matching.category3)
-
 
   const count = () => {
     let countTrue = 0;
@@ -107,7 +108,7 @@ const Mate2 = ( {navigation} ) => {
     } else {setVisible(false)}
   }
   
-  const stored = () => {
+  const stored = async () => {
     dispatch(
       matchingSlice.actions.setC1({
         category1 : selectedItems[0],
@@ -121,6 +122,7 @@ const Mate2 = ( {navigation} ) => {
 
   useEffect(() => {
     count()
+    console.log(selectedItems)
   }, [check0, check1, check2, check3, check4, check5, check6, check7, check8, check9, check10, check11])
 
     return (
@@ -135,7 +137,9 @@ const Mate2 = ( {navigation} ) => {
         </View>  
 
         <View style={{ backgroundColor:'lightgrey', width:constants.width, height:constants.height }}>
-          <Text>{checkList[0]} : {check0 ? 'yes':''}</Text>
+          <Text>{where.longitude} {where.latitude}</Text>
+          <Text>{distance}</Text>
+          {/* <Text>{checkList[0]} : {check0 ? 'yes':''}</Text>
           <Text>{checkList[1]} : {check1 ? 'yes':''}</Text>
           <Text>{checkList[2]} : {check2 ? 'yes':''}</Text>
           <Text>{checkList[3]} : {check3 ? 'yes':''}</Text>
@@ -146,7 +150,7 @@ const Mate2 = ( {navigation} ) => {
           <Text>{checkList[8]} : {check8 ? 'yes':''}</Text>
           <Text>{checkList[9]} : {check9 ? 'yes':''}</Text>
           <Text>{checkList[10]} : {check10 ? 'yes':''}</Text>
-          <Text>{checkList[11]} : {check11 ? 'yes':''}</Text>
+          <Text>{checkList[11]} : {check11 ? 'yes':''}</Text> */}
           <Text style={{fontSize: 30, color:'black'}}>3개만 골라야 통과시켜줄거임</Text>
 
           

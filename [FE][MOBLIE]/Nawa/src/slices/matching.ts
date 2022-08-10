@@ -1,20 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Matching  {
-    location : string,
-    category1 : string,
-    category2 : string,
-    category3 : string,
+    location : object,
+    distance : number,
+    category1 : [],
     settings1 : string,
     settings2 : string,
     settings3 : string,
 }
 
 const initialState = {
-    location : '',
-    category1 : '',
-    category2 : '',
-    category3 : '',
+    location : {longitude:0, latitude:0},
+    distance : 0,
+    category : [],
     settings1 : '',
     settings2 : '',
     settings3 : '',
@@ -26,11 +24,11 @@ const matchingSlice = createSlice({
     reducers : {
         setL(state, action : PayloadAction<Matching> ) {
             state.location = action.payload.location;
+            state.distance = action.payload.distance;
         },
         setC1(state, action : PayloadAction<Matching> ) {
-            state.category1 = action.payload.category1;
-            state.category2 = action.payload.category2;
-            state.category3 = action.payload.category3;
+            state.category = action.payload.category;
+
         },
         setS1(state, action : PayloadAction<Matching> ) {
             state.settings1 = action.payload.settings1;
