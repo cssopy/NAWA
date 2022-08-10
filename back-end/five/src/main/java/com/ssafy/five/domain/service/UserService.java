@@ -1,9 +1,6 @@
 package com.ssafy.five.domain.service;
 
-import com.ssafy.five.controller.dto.req.EvalUserReqDto;
-import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
-import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
-import com.ssafy.five.controller.dto.req.SignUpReqDto;
+import com.ssafy.five.controller.dto.req.*;
 import com.ssafy.five.controller.dto.res.FindUserResDto;
 import com.ssafy.five.domain.entity.EnumType.EvalType;
 import com.ssafy.five.domain.entity.EnumType.StateType;
@@ -102,15 +99,15 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<?> updateUser(Users user) {
-        Users user1 = userRepository.findByUserId(user.getUserId());
+    public ResponseEntity<?> updateUser(UpdateUserReqDto updateUserReqDto) {
+        Users user1 = userRepository.findByUserId(updateUserReqDto.getUserId());
         if (user1 != null) {
-            user1.updatePassword(passwordEncoder.encode(user.getPassword()));
-            user1.updateEmailId(user.getEmailId());
-            user1.updateEmailDomain(user.getEmailDomain());
-            user1.updateNickname(user.getNickname());
-            user1.updateMent(user.getMent());
-            user1.updateGender(user.getGenderType());
+            user1.updatePassword(passwordEncoder.encode(updateUserReqDto.getPassword()));
+            user1.updateEmailId(updateUserReqDto.getEmailId());
+            user1.updateEmailDomain(updateUserReqDto.getEmailDomain());
+            user1.updateNickname(updateUserReqDto.getNickname());
+            user1.updateMent(updateUserReqDto.getMent());
+            user1.updateProfileImg(updateUserReqDto.getProfileImg());
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
         return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);

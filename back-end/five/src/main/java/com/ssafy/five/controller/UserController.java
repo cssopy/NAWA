@@ -1,9 +1,6 @@
 package com.ssafy.five.controller;
 
-import com.ssafy.five.controller.dto.req.EvalUserReqDto;
-import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
-import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
-import com.ssafy.five.controller.dto.req.SignUpReqDto;
+import com.ssafy.five.controller.dto.req.*;
 import com.ssafy.five.controller.dto.res.FindUserResDto;
 import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
@@ -64,8 +61,8 @@ public class UserController {
 
     @Operation(summary = "회원 정보 수정", description = "유저가 없을 경우 false, 있을 경우 수정하고자 하는 회원 정보 수정 후 db에 저장 및 true 반환")
     @PutMapping("/user")
-    public ResponseEntity<?> updateUser(@Valid @RequestBody Users user) {
-        return userService.updateUser(user);
+    public ResponseEntity<?> updateUser(@Valid @RequestBody UpdateUserReqDto updateUserReqDto) {
+        return userService.updateUser(updateUserReqDto);
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 정보 삭제")
