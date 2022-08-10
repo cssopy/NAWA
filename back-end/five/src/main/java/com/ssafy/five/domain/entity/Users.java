@@ -103,6 +103,10 @@ public class Users implements UserDetails {
         this.reportCount = reportCount;
     }
 
+    public void updateEndDate(Date endDate){
+        this.endDate = endDate;
+    }
+
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
@@ -113,6 +117,10 @@ public class Users implements UserDetails {
 
     public void updatePoint(int dp) {
         this.point += dp;
+    }
+
+    public void updateStateType(StateType stateType){
+        this.stateType = stateType;
     }
 
     public void updateProfileImg(ProfileImg profileImg) {
