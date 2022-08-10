@@ -29,7 +29,4 @@ public class UpdateUserReqDto {
 
     @ApiModelProperty(example = "자기소개")
     private String ment;
-
-    @ApiModelProperty(example = "프로필 이미지")
-    private ProfileImg profileImg;
 }

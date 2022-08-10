@@ -107,7 +107,6 @@ public class UserService {
             user1.updateEmailDomain(updateUserReqDto.getEmailDomain());
             user1.updateNickname(updateUserReqDto.getNickname());
             user1.updateMent(updateUserReqDto.getMent());
-            user1.updateProfileImg(updateUserReqDto.getProfileImg());
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
         return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);

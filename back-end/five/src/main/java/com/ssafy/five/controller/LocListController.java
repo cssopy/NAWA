@@ -1,6 +1,7 @@
 package com.ssafy.five.controller;
 
 import com.ssafy.five.controller.dto.req.LocListReqDto;
+import com.ssafy.five.controller.dto.res.LocListResDto;
 import com.ssafy.five.domain.service.LocListService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

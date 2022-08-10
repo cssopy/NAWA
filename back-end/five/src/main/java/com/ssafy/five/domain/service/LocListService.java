@@ -1,6 +1,6 @@
 package com.ssafy.five.domain.service;
 
-import com.ssafy.five.controller.LocListResDto;
+import com.ssafy.five.controller.dto.res.LocListResDto;
 import com.ssafy.five.controller.dto.req.LocListReqDto;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.LocListRepository;
