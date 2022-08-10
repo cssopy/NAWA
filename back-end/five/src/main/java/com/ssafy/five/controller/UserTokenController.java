@@ -6,7 +6,6 @@ import com.ssafy.five.controller.dto.res.TokenResDto;
 import com.ssafy.five.domain.service.UserTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;

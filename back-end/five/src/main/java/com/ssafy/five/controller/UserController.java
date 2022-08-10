@@ -4,6 +4,7 @@ import com.ssafy.five.controller.dto.req.EvalUserReqDto;
 import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
 import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
 import com.ssafy.five.controller.dto.req.SignUpReqDto;
+import com.ssafy.five.controller.dto.res.FindUserResDto;
 import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.service.ProfileImgService;
@@ -45,7 +46,7 @@ public class UserController {
 
     }
 
-    @Operation(summary = "아이디 중복 체크", description = "중복이면 false, 아니면 true 반환")
+    @Operation(summary = "아이디 중복 확인", description = "중복이면 false, 아니면 true 반환")
     @GetMapping("/userId/{userId}")
     public ResponseEntity<?> availableUserId(@PathVariable String userId) {
         return userService.availableUserId(userId);
@@ -54,12 +55,10 @@ public class UserController {
     @Operation(summary = "회원 한명 조회", description = "회원 한명 조회")
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> findUser(@PathVariable String userId) {
-        Users user = userService.findUser(userId);
-
-        if(user != null){
-            return new ResponseEntity<>(user, HttpStatus.OK);
+        FindUserResDto findUserResDto = userService.findUser(userId);
+        if(findUserResDto != null){
+            return new ResponseEntity<>(findUserResDto, HttpStatus.OK);
         }
-
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 

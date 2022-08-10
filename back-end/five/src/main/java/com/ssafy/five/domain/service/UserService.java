@@ -4,13 +4,13 @@ import com.ssafy.five.controller.dto.req.EvalUserReqDto;
 import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
 import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
 import com.ssafy.five.controller.dto.req.SignUpReqDto;
+import com.ssafy.five.controller.dto.res.FindUserResDto;
 import com.ssafy.five.domain.entity.EnumType.EvalType;
-import com.ssafy.five.domain.entity.Messages;
+import com.ssafy.five.domain.entity.EnumType.StateType;
 import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.SmsRepository;
 import com.ssafy.five.domain.repository.UserRepository;
-import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -53,7 +51,7 @@ public class UserService {
                 .ment(signUpReqDto.getMent())
                 .number(signUpReqDto.getNumber())
                 .genderType(signUpReqDto.getGenderType())
-//                .picture(signUpReqDto.getPicture())
+                .stateType(StateType.NORMAL)
                 .roles(Collections.singletonList("ROLE_USER"))
                 .profileImg(ProfileImg.builder()
                         .fileName("defaultProfileImg.png")
@@ -84,10 +82,21 @@ public class UserService {
     }
 
     @Transactional
-    public Users findUser(String userId) {
+    public FindUserResDto findUser(String userId) {
         Users user = userRepository.findByUserId(userId);
         if(user != null){
-            return user;
+            FindUserResDto findUserResDto = FindUserResDto.builder()
+                    .nickname(user.getNickname())
+                    .ment(user.getMent())
+                    .genderType(user.getGenderType())
+                    .point(user.getPoint())
+                    .stateType(user.getStateType())
+                    .reportCount(user.getReportCount())
+                    .endDate(user.getEndDate())
+                    .profileImg(user.getProfileImg())
+                    .roles(user.getRoles())
+                    .build();
+            return findUserResDto;
         }
         return null;
     }

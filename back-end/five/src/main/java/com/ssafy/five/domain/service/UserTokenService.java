@@ -3,7 +3,6 @@ package com.ssafy.five.domain.service;
 import com.ssafy.five.config.jwt.JwtTokenProvider;
 import com.ssafy.five.controller.dto.req.TokenReqDto;
 import com.ssafy.five.controller.dto.res.TokenResDto;
-import com.ssafy.five.domain.entity.RefreshTable;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.UserRepository;
 import com.ssafy.five.exception.UserNotFoundException;
@@ -58,8 +57,6 @@ public class UserTokenService {
         // RefreshTable 가져오기
         // 테이블이 있다면
         if(user.getRefreshToken() != null){
-            // refreshtable 삭제
-//            user.updateRefreshToken(null);
             user.setRefreshToken(null);
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
