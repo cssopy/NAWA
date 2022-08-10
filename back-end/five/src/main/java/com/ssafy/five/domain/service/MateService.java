@@ -10,11 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +25,19 @@ public class MateService {
         Optional<Users> user = userRepository.findById(userId);
         if (user.isPresent()) {
             List<Mate> allMate = mateRepository.findAllByMateUserId1OrMateUserId2(user.get(), user.get());
-            Map<String, List> response = new HashMap<>();
-            response.put("result", allMate.stream().map(MateResDto::new).collect(Collectors.toList()));
+
+            Map<String, Map> response = new HashMap<>();
+            Map<String, List> allMates = new HashMap<>();
+            List<MateResDto> mates = new ArrayList<>();
+            for (Mate mate : allMate) {
+                if (mate.getMateUserId1().equals(userId)) {
+                    mates.add(new MateResDto(mate.getMateId(), userRepository.findByUserId(mate.getMateUserId2().getUserId())));
+                } else {
+                    mates.add(new MateResDto(mate.getMateId(), userRepository.findByUserId(userId)));
+                }
+            }
+            allMates.put("mateList", mates);
+            response.put("result", allMates);
             return response;
         } else {
             Map<String, Boolean> response = new HashMap<>();
@@ -40,10 +47,15 @@ public class MateService {
     }
 
     @Transactional
-    public boolean deleteMate(Long mateId) {
+    public boolean deleteMate(Long mateId, String userId) {
         Optional<Mate> mate = mateRepository.findById(mateId);
         if (mate.isPresent()) {
-            roomService.deleteRoom(mate.get().getMateUserId1(), mate.get().getMateUserId2());
+            // 신청한 사람만 지우기
+            if (mate.get().getMateUserId1().getUserId().equals(userId)) {
+                roomService.deleteRoom(mate.get().getMateUserId1().getUserId(), mate.get().getMateUserId2().getUserId());
+            } else {
+                roomService.deleteRoom(mate.get().getMateUserId2().getUserId(), mate.get().getMateUserId1().getUserId());
+            }
             mateRepository.delete(mate.get());
             return true;
         } else {

@@ -1,12 +1,9 @@
 package com.ssafy.five.domain.entity;
 
-import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -20,21 +17,16 @@ public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "roomId", columnDefinition = "int")
+    @Column(name = "roomId", nullable = false, columnDefinition = "int")
     private Long roomId;
 
+    @Column(name = "roomUserId1", columnDefinition = "varchar(20)")
+    private String roomUserId1;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
-    @JoinColumn(name = "roomUserId1")
-    @NotNull
-    private Users roomUserId1;
+    @Column(name = "roomUserId2", columnDefinition = "varchar(20)")
+    private String roomUserId2;
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
-    @JoinColumn(name = "roomUserId2")
-    @NotNull
-    private Users roomUserId2;
+    @Column(name = "roomCount", nullable = false, columnDefinition = "int")
+    private int roomCount;
 
 }

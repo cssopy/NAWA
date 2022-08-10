@@ -2,7 +2,6 @@ package com.ssafy.five.controller;
 
 
 import com.ssafy.five.controller.dto.req.ChatReqDto;
-import com.ssafy.five.controller.dto.res.ChatResDto;
 import com.ssafy.five.domain.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,28 +9,37 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/chat/message")
 public class ChatController {
 
-    private final ChatService chatService;
+    public final ChatService chatService;
 
-    @MessageMapping
-    public void sendMessage(@RequestBody ChatReqDto chatReqDto) {
-        chatService.sendMessage(chatReqDto);
+
+    @MessageMapping("/chat/message")
+    public void message(@RequestBody ChatReqDto message) {
+        chatService.saveChat(message);
     }
 
-    @GetMapping("/{roomId}")
-    public ResponseEntity<?> findAllMessageByRoom(@PathVariable Long roomId) {
-        return new ResponseEntity<List<ChatResDto>>(chatService.findAllMessageByRoom(roomId), HttpStatus.OK);
+    @GetMapping("/chat/message/user/{userId}")
+    public ResponseEntity<?> findAllUserMessage(@PathVariable String userId) {
+        Map<String, ?> response = chatService.findByUserId(userId);
+        if (response.get("result").equals(false)) {
+            return new ResponseEntity<>(false, HttpStatus.valueOf(401));
+        } else {
+            return new ResponseEntity<>(response.get("result"), HttpStatus.OK);
+        }
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> findAllMessageByUser(@PathVariable String userId) {
-        return new ResponseEntity<List<ChatResDto>>(chatService.findAllMessageByUser(userId), HttpStatus.OK);
+    @GetMapping("/chat/message/{roomId}")
+    public ResponseEntity<?> findAllMessage(@PathVariable Long roomId) {
+        Map<String, ?> response = chatService.findByRoomId(roomId);
+        if (response.get("result").equals(false)) {
+            return new ResponseEntity<>(false, HttpStatus.valueOf(409));
+        } else {
+            return new ResponseEntity<>(response.get("result"), HttpStatus.OK);
+        }
     }
-
 }

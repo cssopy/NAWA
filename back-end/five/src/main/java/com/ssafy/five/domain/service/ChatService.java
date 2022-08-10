@@ -5,21 +5,18 @@ import com.ssafy.five.controller.dto.req.ChatReqDto;
 import com.ssafy.five.controller.dto.res.ChatResDto;
 import com.ssafy.five.domain.entity.Chat;
 import com.ssafy.five.domain.entity.Room;
-import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.ChatRepository;
 import com.ssafy.five.domain.repository.RoomRepository;
 import com.ssafy.five.domain.repository.UserRepository;
-import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
-
-@Service
 @RequiredArgsConstructor
+@Service
 @Transactional(readOnly = true)
 public class ChatService {
 
@@ -28,23 +25,68 @@ public class ChatService {
     private final UserRepository userRepository;
     private final SimpMessageSendingOperations messaging;
 
+
     @Transactional
-    public void sendMessage(ChatReqDto chatReqDto) {
-        Room room = roomRepository.findById(chatReqDto.getRoomId()).orElseThrow(()-> new RuntimeException());
-        Users user = userRepository.findByNickname(chatReqDto.getUserName());
-        Chat chat = chatReqDto.saveChat(room, user);
-        messaging.convertAndSend("sub/chat/room/"+ chat.getRoomId(), new ChatResDto(chat));
+    public void saveChat(ChatReqDto message) {
+        if (message.getUserId().equals("In")) {
+            for (Chat chat : chatRepository.findAllByRoomId(roomRepository.findById(message.getRoomId()).get())) {
+                if (chat.getIsRead() >= 1) {
+                    chatRepository.save(Chat.builder()
+                            .chatId(chat.getChatId())
+                            .chatContent(chat.getChatContent())
+                            .chatDate(chat.getChatDate())
+                            .isRead(chat.getIsRead()-1)
+                            .chatUserId(chat.getChatUserId())
+                            .roomId(chat.getRoomId())
+                            .build());
+                }
+            }
+            messaging.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
+        } else if (!message.getUserId().equals("Out")) {
+            Room room = roomRepository.findById(message.getRoomId()).get();
+            Chat save = chatRepository.save(message.saveChat(room));
+            messaging.convertAndSend("/sub/chat/room/" + message.getRoomId(), save);
+            if (room.getRoomCount() > 0) {
+                String userId = room.getRoomUserId1().equals(message.getUserId())? room.getRoomUserId2() : room.getRoomUserId1();
+                if (userId != null) {
+                    messaging.convertAndSend("/sub/chat/user/" + userId, save);
+                }
+            }
+        }
     }
 
-    public List<ChatResDto> findAllMessageByRoom(Long roomId) {
-        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException());
-        List<Chat> allChatByRoomId = chatRepository.findAllByRoomId(room);
-        return allChatByRoomId.stream().map(ChatResDto::new).collect(Collectors.toList());
+
+    public Map<String, ?> findByUserId(String userId) {
+        if (userRepository.findById(userId).isEmpty()) {
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("result", false);
+            return response;
+        } else {
+            List<ChatResDto> chats = new ArrayList<>();
+            for (Room room : roomRepository.findAllByRoomUserId1OrRoomUserId2(userId, userId)) {
+                chats.addAll(chatRepository.findAllByRoomId(room).stream().map(ChatResDto::new).collect(Collectors.toList()));
+            }
+            Map<String, Map> response = new HashMap<>();
+            Map<String, List> allChats = new HashMap<>();
+            allChats.put("allChats", chats);
+            response.put("result", allChats);
+            return response;
+        }
     }
 
-    public List<ChatResDto> findAllMessageByUser(String userId) {
-        Users user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("잘못된 요청입니다."));
-        List<Chat> allChatByUserId = chatRepository.findAllByUserId(user);
-        return allChatByUserId.stream().map(ChatResDto::new).collect(Collectors.toList());
+    public Map<String, ?> findByRoomId(Long roomId) {
+        Optional<Room> room = roomRepository.findById(roomId);
+        if (room.isEmpty()) {
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("result", false);
+            return response;
+        } else {
+            List<Chat> chats = chatRepository.findAllByRoomId(room.get());
+            Map<String, Map> response = new HashMap<>();
+            Map<String, List> chat = new HashMap<>();
+            chat.put("roomChats", chats.stream().map(ChatResDto::new).collect(Collectors.toList()));
+            response.put("result", chat);
+            return response;
+        }
     }
 }

@@ -2,14 +2,12 @@ package com.ssafy.five.controller;
 
 
 import com.ssafy.five.controller.dto.req.CalReqDto;
-import com.ssafy.five.controller.dto.res.CalResDto;
 import com.ssafy.five.domain.service.CalendarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController

@@ -1,15 +1,13 @@
 package com.ssafy.five.controller;
 
 import com.ssafy.five.controller.dto.req.AddMateReqDto;
-import com.ssafy.five.controller.dto.res.AddMateResDto;
 import com.ssafy.five.domain.service.AddMateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
+
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -29,7 +27,6 @@ public class AddMateController {
     public ResponseEntity<?> findAllAddMate(@PathVariable String userId) {
         Map<String, ?> allMateRequest = addMateService.findAllAddMate(userId);
         return new ResponseEntity<>(allMateRequest.get("result"), allMateRequest.get("result").equals(false)? HttpStatus.UNAUTHORIZED : HttpStatus.OK);
-
     }
 
     @PutMapping

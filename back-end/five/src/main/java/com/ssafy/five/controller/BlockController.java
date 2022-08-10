@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -23,10 +22,10 @@ public class BlockController {
         return new ResponseEntity<>(response.get("result").equals(200), HttpStatus.valueOf(response.get("result")));
     }
 
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<?> findAllBlockList(@RequestBody String userId) {
-        Map<String, ?> blocker = blockService.findAllBlockList(userId);
-        return new ResponseEntity<>(blocker.get("result"), blocker.get("result").equals(false)? HttpStatus.UNAUTHORIZED : HttpStatus.OK);
+        Map<String, ?> response = blockService.findAllBlockList(userId);
+        return new ResponseEntity<>(response.get("result"), response.get("result").equals(false)? HttpStatus.UNAUTHORIZED : HttpStatus.OK);
     }
 
     @DeleteMapping("/{blockId}")

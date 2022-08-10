@@ -30,14 +30,16 @@ public class CalendarService {
     @Transactional
     public Map<String, ?> createTodo(CalReqDto calReqDto) {
         Users user = userRepository.findByUserId(calReqDto.getUserId());
-        if (user.equals(null)) {
+        if (user == null) {
             Map<String, Integer> response = new HashMap<>();
             response.put("result", 401);
             return response;
-        } else if (calenderRepository.findByCalDate(calReqDto.getCalDate()).equals(null)) {
+        } else if (calenderRepository.findByCalDate(calReqDto.getCalDate()) == null) {
             calenderRepository.save(calReqDto.saveTodo(user));
-            Map<String, List> response = new HashMap<>();
-            response.put("result", calenderRepository.findByUsers(user).stream().map(CalResDto::new).collect(Collectors.toList()));
+            Map<String, Map> response = new HashMap<>();
+            Map<String, List> calendars = new HashMap<>();
+            calendars.put("calendars", calenderRepository.findByUsers(user).stream().map(CalResDto::new).collect(Collectors.toList()));
+            response.put("result", calendars);
             return response;
         } else {
             Map<String, Integer> response = new HashMap<>();
@@ -48,14 +50,16 @@ public class CalendarService {
 
     public Map<String, ?> findTodo(String userId) {
         Optional<Users> user = userRepository.findById(userId);
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             Map<String, Integer> response = new HashMap<>();
             response.put("result", 401);
             return response;
         } else {
-            Map<String, List> response = new HashMap<>();
+            Map<String, Map> response = new HashMap<>();
             List<Calendar> Todos = calenderRepository.findByUsers(user.get());
-            response.put("result", Todos);
+            Map<String, List> calendars = new HashMap<>();
+            calendars.put("calendars", Todos);
+            response.put("result", calendars);
             return response;
         }
     }
@@ -64,14 +68,16 @@ public class CalendarService {
     public Map<String, ?> updateTodo(CalReqDto calReqDto) {
         Optional<Users> user = userRepository.findById(calReqDto.getUserId());
         Calendar calendar = calenderRepository.findByCalDate(calReqDto.getCalDate());
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             Map<String, Integer> response = new HashMap<>();
             response.put("result", 401);
             return response;
         } else if (calendar != null && calendar.getCalId().equals(calReqDto.getCalId())) {
             calenderRepository.save(calReqDto.updateTodo(user.get()));
-            Map<String, List> response = new HashMap<>();
-            response.put("result", calenderRepository.findByUsers(user.get()).stream().map(CalResDto::new).collect(Collectors.toList()));
+            Map<String, Map> response = new HashMap<>();
+            Map<String, List> calendars = new HashMap<>();
+            calendars.put("calendars", calenderRepository.findByUsers(user.get()).stream().map(CalResDto::new).collect(Collectors.toList()));
+            response.put("result", calendars);
             return response;
         } else {
             Map<String, Integer> response = new HashMap<>();
@@ -89,8 +95,10 @@ public class CalendarService {
             return response;
         } else {
             calenderRepository.delete(Todo.get());
-            Map<String, List> response = new HashMap<>();
-            response.put("result", calenderRepository.findByUsers(Todo.get().getUsers()).stream().map(CalResDto::new).collect(Collectors.toList()));
+            Map<String, Map> response = new HashMap<>();
+            Map<String, List> calendars = new HashMap<>();
+            calendars.put("calendars", calenderRepository.findByUsers(Todo.get().getUsers()).stream().map(CalResDto::new).collect(Collectors.toList()));
+            response.put("result", calendars);
             return response;
         }
     }

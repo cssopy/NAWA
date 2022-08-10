@@ -1,13 +1,11 @@
 package com.ssafy.five.controller;
 
-import com.ssafy.five.controller.dto.res.MateResDto;
 import com.ssafy.five.domain.service.MateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -23,9 +21,10 @@ public class MateController {
         return new ResponseEntity<>(allMate.get("result"), allMate.get("result").equals(false)? HttpStatus.UNAUTHORIZED : HttpStatus.OK);
     }
 
-    @DeleteMapping("/{mateId}")
-    public ResponseEntity<?> deleteMate(@PathVariable Long mateId) {
-        boolean deleted = mateService.deleteMate(mateId);
+    @DeleteMapping("/{userId}/{mateId}")
+    public ResponseEntity<?> deleteMate(@PathVariable String userId, Long mateId) {
+        boolean deleted = mateService.deleteMate(mateId, userId);
         return new ResponseEntity<>(deleted, deleted? HttpStatus.OK : HttpStatus.UNAUTHORIZED);
     }
 }
+

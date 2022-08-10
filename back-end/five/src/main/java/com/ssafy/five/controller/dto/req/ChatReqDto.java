@@ -2,7 +2,6 @@ package com.ssafy.five.controller.dto.req;
 
 import com.ssafy.five.domain.entity.Chat;
 import com.ssafy.five.domain.entity.Room;
-import com.ssafy.five.domain.entity.Users;
 import lombok.Getter;
 
 import java.util.Date;
@@ -11,16 +10,18 @@ import java.util.Date;
 public class ChatReqDto {
 
     private Long roomId;
-    private String userName;
+
+    private String userId;
     private String chatContent;
 
-    public Chat saveChat(Room room, Users user) {
+    public Chat saveChat(Room room) {
+
         return Chat.builder()
                 .roomId(room)
-                .userId(user)
+                .chatUserId(this.userId)
                 .chatContent(this.chatContent)
                 .chatDate(new Date())
-                .isRead(1)
+                .isRead(room.getRoomCount())
                 .build();
     }
 }
