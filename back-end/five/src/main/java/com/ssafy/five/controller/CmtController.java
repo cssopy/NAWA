@@ -4,63 +4,58 @@ import com.ssafy.five.controller.dto.req.RegistCmtReqDto;
 import com.ssafy.five.controller.dto.req.UpdateCmtReqDto;
 import com.ssafy.five.controller.dto.res.GetCmtResDto;
 import com.ssafy.five.domain.service.CmtService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/cmt")
 public class CmtController {
     private final CmtService cmtService;
 
-
+    @Operation(summary = "댓글 등록", description = "댓글 등록 성공시 true, 실패시 false 반환")
     @PostMapping("/")
     public ResponseEntity<?> postCmt(@RequestBody RegistCmtReqDto registCmtReqDto) {
-        if (cmtService.regist(registCmtReqDto)) {
-            Map<String, String> map = new HashMap<>();
-            map.put("result", "SUCESS");
-            map.put("detail", "댓글 작성에 설공했습니다.");
-            return new ResponseEntity<>(map, HttpStatus.OK);
-        } else {
-            Map<String, String> map = new HashMap<>();
-            map.put("result", "FAIL");
-            map.put("detail", "댓글 작성에 실패했습니다.");
-            return new ResponseEntity<>(map, HttpStatus.OK);
+        try {
+            cmtService.regist(registCmtReqDto);
+            return new ResponseEntity<>(true, HttpStatus.valueOf(201));
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }
 
+    @Operation(summary = "댓글 조회", description = "댓글 리스트 또느 null 반환")
     @GetMapping("/{boardId}")
     public ResponseEntity<?> getCmt(@PathVariable Long boardId) {
         List<GetCmtResDto> getCmtResDto = cmtService.findALLByBoardId(boardId);
-        return new ResponseEntity<>(getCmtResDto, HttpStatus.OK);
+        return new ResponseEntity<>(getCmtResDto, HttpStatus.valueOf(200));
     }
 
+    @Operation(summary = "댓글 수정", description = "댓글 수정 성공시 true, 실패시 false 반환")
     @PutMapping("/")
     public ResponseEntity<?> putCmt(@RequestBody UpdateCmtReqDto updateCmtReqDto) {
-        if (cmtService.updateCmt(updateCmtReqDto)) {
-            Map<String, String> map = new HashMap<>();
-            map.put("result", "SUCESS");
-            map.put("detail", "댓글을 수정하는데 성공했습니다.");
-            return new ResponseEntity<>(map, HttpStatus.OK);
-        } else {
-            Map<String, String> map = new HashMap<>();
-            map.put("result", "FAIL");
-            map.put("detail", "댓글을 수정하는데 실패했습니다");
-            return new ResponseEntity<>(map, HttpStatus.OK);
+        try {
+            cmtService.updateCmt(updateCmtReqDto);
+            return new ResponseEntity<>(true, HttpStatus.valueOf(201));
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }
 
+    @Operation(summary = "댓글 삭제", description = "댓글 삭제 성공시 true, 실패시 false 반환")
     @DeleteMapping("/{cmtId}")
-    public void deleteCmt(@PathVariable Long cmtId) {
-        cmtService.deleteByCmtId(cmtId);
+    public ResponseEntity<?> deleteCmt(@PathVariable Long cmtId) {
+        try {
+            cmtService.deleteByCmtId(cmtId);
+            return new ResponseEntity<>(true, HttpStatus.valueOf(200));
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.valueOf(400));
+        }
     }
 
 }

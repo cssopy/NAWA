@@ -5,12 +5,10 @@ import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
 import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
 import com.ssafy.five.controller.dto.req.SignUpReqDto;
 import com.ssafy.five.domain.entity.EnumType.EvalType;
-import com.ssafy.five.domain.entity.Messages;
 import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.SmsRepository;
 import com.ssafy.five.domain.repository.UserRepository;
-import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,9 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -86,7 +83,7 @@ public class UserService {
     @Transactional
     public Users findUser(String userId) {
         Users user = userRepository.findByUserId(userId);
-        if(user != null){
+        if (user != null) {
             return user;
         }
         return null;
@@ -132,10 +129,14 @@ public class UserService {
     public ResponseEntity<?> giveUserTempPass(GiveTempPwReqDto giveTempPwReqDto) {
         Users user = userRepository.findByUserId(giveTempPwReqDto.getUserId());
         if (user != null) {
-            // 랜덤 비밀번호 생성 (영소문자, 10자리)
+            // ASCII 범위 – 영숫자(0-9, a-z, A-Z)
+            String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            // 랜덤 비밀번호 생성 (10자리)
             SecureRandom random = new SecureRandom();
-            String newPwd = random.ints(10, 97, 122 + 1)
-                    .mapToObj(i -> String.valueOf((char) i))
+            String newPwd = IntStream.range(0, 10)
+                    .map(i -> random.nextInt(chars.length()))
+                    .mapToObj(randomIndex -> String.valueOf(chars.charAt(randomIndex)))
                     .collect(Collectors.joining());
 
             // DB에 새비밀번호 업데이트

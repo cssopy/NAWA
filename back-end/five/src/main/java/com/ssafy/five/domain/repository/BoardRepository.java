@@ -20,7 +20,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Modifying
     @Query("UPDATE Board b SET b.boardHit = b.boardHit+1 WHERE b.boardId = :boardId")
-    void updateHit(Long boardId);
+    int updateHit(Long boardId);
 
     @Query("SELECT b from Board b WHERE b.boardType = :boardType")
     List<Board> findAllByBoardType(BoardType boardType);

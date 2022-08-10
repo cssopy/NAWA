@@ -26,7 +26,7 @@ public class ProfileImgService {
         return users.getProfileImg();
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class})
     public void save(String userId, MultipartFile profileImg) throws Exception {
         if (profileImg != null) {
             Users users = userRepository.findByUserId(userId);
@@ -35,20 +35,19 @@ public class ProfileImgService {
 
             File oldFile = new File(bpath + "/PROFILE", users.getProfileImg().getFileName());
             if (oldFile.exists() && !oldFile.getName().equals("defaultProfileImg.png")) {
-                if (oldFile.delete()) {
-
-                } else {
-
+                if (!oldFile.delete()) {
+                    throw new Exception("이전 파일 삭제 실패");
                 }
             }
 
+            // 새 프로필 이미지 로컬에 저장
             File newFile = new File(bpath + "/PROFILE", newFileName);
             profileImg.transferTo(newFile);
 
+            // DB에 반영
             users.updateProfileImg(ProfileImg.builder()
                     .fileName(newFileName)
                     .build());
-
             userRepository.save(users);
         }
     }
