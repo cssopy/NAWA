@@ -54,7 +54,6 @@ function SignIn({navigation}: SignInScreenProps) {
         userId,
         password,
       });
-      Alert.alert('알림', '로그인 되었습니다.');
       console.log("login pass")
       dispatch(
         userSlice.actions.setUser({ // 이 액션이 dispatch 되면 
@@ -62,7 +61,8 @@ function SignIn({navigation}: SignInScreenProps) {
           nickname : '',
           accessToken : response.data.accessToken,
         }),
-      );
+        );
+      Alert.alert('알림', '로그인 되었습니다.');
       await AsyncStorage.setItem(
         'userId',
         userId

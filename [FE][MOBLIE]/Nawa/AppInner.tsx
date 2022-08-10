@@ -51,8 +51,7 @@ function AppInner() {
   //////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
   const dispatch = useAppDispatch()
   const userId = useSelector((state : RootState) => state.user.userId)
-  const isLoggedIn = !!userId
-
+  
   // 자동 로그인
   useEffect(() => {
     const getTokenAndRefresh = async () => {
@@ -102,7 +101,7 @@ function AppInner() {
       <NavigationContainer>
         {/* <Drawer.Navigator>
         </Drawer.Navigator> */}
-        {!isLoggedIn ? (
+        {userId ? (
           <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
