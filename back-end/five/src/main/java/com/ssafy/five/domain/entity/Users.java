@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,64 +27,50 @@ import java.util.stream.Collectors;
 @Table(name = "users")
 public class Users implements UserDetails {
 
-    // 유저 아이디
     @Id
     @Column(name = "userId", nullable = false, columnDefinition = "varchar(20)")
     private String userId;
 
-    // 비밀번호
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password", nullable = false, columnDefinition = "varchar(255)")
     private String password;
 
-    // 생년월일
     @Column(name = "birth", nullable = false, columnDefinition = "varchar(10)")
     private String birth;
 
-    // 이메일 아이디
     @Column(name = "emailId", nullable = false, columnDefinition = "varchar(20)")
     private String emailId;
 
-    // 이메일 도메인
     @Column(name = "emailDomain", nullable = false, columnDefinition = "varchar(20)")
     private String emailDomain;
 
-    // 닉네임
     @Column(name = "nickname", nullable = false, columnDefinition = "varchar(40)")
     private String nickname;
 
-    // 자기소개
     @Column(name = "ment", columnDefinition = "varchar(255)")
     private String ment;
 
-    // 전화번호
     @Column(name = "number", nullable = false, columnDefinition = "varchar(11)")
     private String number;
 
-    // 성별
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
     private GenderType genderType;
 
-    // 인기점수
     @Column(name = "point", nullable = false, columnDefinition = "float")
     private float point;
 
-    // 사용자 상태
     @Enumerated(EnumType.STRING)
-//    @Column(name = "state", nullable = false)
+    @Column(name = "state")
     private StateType stateType;
 
-    // 신고 횟수
     @Column(name = "reportCount", nullable = false, columnDefinition = "int")
     private int reportCount;
 
-    // 정지 해제일
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "endDate", columnDefinition = "timestamp")
     private Date endDate;
 
-    // refreshToken
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "refreshTokenId")
     private RefreshTable refreshToken;
@@ -91,11 +78,6 @@ public class Users implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profileImg")
     private ProfileImg profileImg;
-
-//    // 역할
-//    @Column(name = "role", nullable = false, columnDefinition = "varchar(15)")
-//    private String role;
-
 
     public void setRefreshToken(RefreshTable refreshToken) {
         this.refreshToken = refreshToken;
@@ -117,16 +99,16 @@ public class Users implements UserDetails {
         this.emailDomain = emailDomain;
     }
 
+    public void updateReportCount(int reportCount){
+        this.reportCount = reportCount;
+    }
+
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 
     public void updateMent(String ment) {
         this.ment = ment;
-    }
-
-    public void updateGender(GenderType genderType) {
-        this.genderType = genderType;
     }
 
     public void updatePoint(int dp) {
@@ -136,10 +118,6 @@ public class Users implements UserDetails {
     public void updateProfileImg(ProfileImg profileImg) {
         this.profileImg = profileImg;
     }
-
-//    public void updatePicture(File picture){
-//        this.picture = picture;
-//    }
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default

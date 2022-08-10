@@ -27,4 +27,13 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("SELECT b from Board b WHERE b.user=:user AND b.boardType=:boardType")
     List<GetBoardResDto> findAllByUserAndType(Users user, BoardType boardType);
+
+    @Query(value = "SELECT * FROM Board WHERE boardType='VIDEO' ORDER BY RAND() LIMIT 1", nativeQuery = true)
+    List<Board> findRandomVideo();
+
+    @Query("SELECT b FROM Board b WHERE b.user=:user ORDER BY b.boardDate")
+    List<Board> findAllByUserOLD(Users user);
+
+    @Query("SELECT b FROM Board b WHERE b.user=:user ORDER BY b.boardId DESC, b.boardDate DESC")
+    List<Board> findAllByUserNEW(Users user);
 }

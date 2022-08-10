@@ -1,9 +1,6 @@
 package com.ssafy.five.controller;
 
-import com.ssafy.five.controller.dto.req.EvalUserReqDto;
-import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
-import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
-import com.ssafy.five.controller.dto.req.SignUpReqDto;
+import com.ssafy.five.controller.dto.req.*;
 import com.ssafy.five.controller.dto.res.FindUserResDto;
 import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
@@ -46,7 +43,7 @@ public class UserController {
 
     }
 
-    @Operation(summary = "아이디 중복 체크", description = "중복이면 false, 아니면 true 반환")
+    @Operation(summary = "아이디 중복 확인", description = "중복이면 false, 아니면 true 반환")
     @GetMapping("/userId/{userId}")
     public ResponseEntity<?> availableUserId(@PathVariable String userId) {
         return userService.availableUserId(userId);
@@ -54,20 +51,18 @@ public class UserController {
 
     @Operation(summary = "회원 한명 조회", description = "회원 한명 조회")
     @GetMapping("/user/{userId}")
-    public Users findUser(@PathVariable String userId) {
-        Users user = userService.findUser(userId);
-
-        if(user != null){
-            return user;
+    public ResponseEntity<?> findUser(@PathVariable String userId) {
+        FindUserResDto findUserResDto = userService.findUser(userId);
+        if(findUserResDto != null){
+            return new ResponseEntity<>(findUserResDto, HttpStatus.OK);
         }
-
-        return null;
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 
     @Operation(summary = "회원 정보 수정", description = "유저가 없을 경우 false, 있을 경우 수정하고자 하는 회원 정보 수정 후 db에 저장 및 true 반환")
     @PutMapping("/user")
-    public ResponseEntity<?> updateUser(@Valid @RequestBody Users user) {
-        return userService.updateUser(user);
+    public ResponseEntity<?> updateUser(@Valid @RequestBody UpdateUserReqDto updateUserReqDto) {
+        return userService.updateUser(updateUserReqDto);
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 정보 삭제")
@@ -78,13 +73,13 @@ public class UserController {
 
     @Operation(summary = "아이디 찾기", description = "유저 아이디 있으면 유저 아이디 반환, 없으면 null 반환")
     @PostMapping("/user/find-id")
-    public String findUserId(@Valid @RequestBody FindUserIdReqDto findUserIdReqDto) {
+    public ResponseEntity<?> findUserId(@Valid @RequestBody FindUserIdReqDto findUserIdReqDto) {
 
         String userId = userService.findUserId(findUserIdReqDto);
         if (userId != null) {
-            return userId;
+            return new ResponseEntity<>(userId, HttpStatus.OK);
         }
-        return null;
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 
     @Operation(summary = "임시 비밀번호 발급", description = "유저 아이디 찾아서 없을 경우 false, 있을 경우 랜덤 비밀번호 생성 후 db에 비밀번호 변경, 이메일로 전송")
@@ -99,13 +94,13 @@ public class UserController {
         return userService.availableNickname(nickname);
     }
 
-    // 사용자 평가
+    @Operation(summary = "사용자 평가", description = "사용자 평가")
     @PostMapping("/user/point")
     public void evalUser(@RequestBody EvalUserReqDto evalUserReqDto) {
         userService.evalUser(evalUserReqDto);
     }
 
-    // 프로필 이미지 다운로드
+    @Operation(summary = "프로필 이미지 다운로드", description = "프로필 이미지 다운로드")
     @GetMapping("/user/profile-img/{userId}")
     public ResponseEntity<?> getProfileImg(@PathVariable String userId) throws Exception {
         ProfileImg profileImg = profileImgService.findByUserId(userId);
@@ -120,7 +115,7 @@ public class UserController {
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 
-    // 프로필 이미지 업데이트
+    @Operation(summary = "프로필 이미지 업데이트", description = "프로필 이미지 업데이트")
     @PutMapping("/user/profile-img/{userId}")
     public void updateProfileImg(@PathVariable String userId, @RequestParam(name = "profileImg") MultipartFile profileImg) throws Exception {
         profileImgService.save(userId, profileImg);

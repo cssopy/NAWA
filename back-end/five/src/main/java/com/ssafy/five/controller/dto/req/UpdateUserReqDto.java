@@ -1,9 +1,8 @@
 package com.ssafy.five.controller.dto.req;
 
+import com.ssafy.five.domain.entity.ProfileImg;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-
-import javax.validation.constraints.NotBlank;
 
 @Builder
 @Getter
@@ -11,17 +10,23 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class GiveTempPwReqDto {
+public class UpdateUserReqDto {
 
     @ApiModelProperty(example = "유저 아이디")
-    @NotBlank
     private String userId;
 
+    @ApiModelProperty(example = "비밀번호")
+    private String password;
+
     @ApiModelProperty(example = "이메일 아이디")
-    @NotBlank
     private String emailId;
 
     @ApiModelProperty(example = "이메일 도메인")
-    @NotBlank
     private String emailDomain;
+
+    @ApiModelProperty(example = "닉네임")
+    private String nickname;
+
+    @ApiModelProperty(example = "자기소개")
+    private String ment;
 }

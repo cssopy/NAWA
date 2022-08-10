@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,7 +21,7 @@ import java.util.Map;
 public class CmtController {
     private final CmtService cmtService;
 
-    @Transactional
+
     @PostMapping("/")
     public ResponseEntity<?> postCmt(@RequestBody RegistCmtReqDto registCmtReqDto) {
         if (cmtService.regist(registCmtReqDto)) {
@@ -44,7 +43,6 @@ public class CmtController {
         return new ResponseEntity<>(getCmtResDto, HttpStatus.OK);
     }
 
-    @Transactional
     @PutMapping("/")
     public ResponseEntity<?> putCmt(@RequestBody UpdateCmtReqDto updateCmtReqDto) {
         if (cmtService.updateCmt(updateCmtReqDto)) {
@@ -60,7 +58,6 @@ public class CmtController {
         }
     }
 
-    @Transactional
     @DeleteMapping("/{cmtId}")
     public void deleteCmt(@PathVariable Long cmtId) {
         cmtService.deleteByCmtId(cmtId);

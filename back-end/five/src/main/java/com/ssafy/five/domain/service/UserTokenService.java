@@ -3,7 +3,6 @@ package com.ssafy.five.domain.service;
 import com.ssafy.five.config.jwt.JwtTokenProvider;
 import com.ssafy.five.controller.dto.req.TokenReqDto;
 import com.ssafy.five.controller.dto.res.TokenResDto;
-import com.ssafy.five.domain.entity.RefreshTable;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.UserRepository;
 import com.ssafy.five.exception.UserNotFoundException;
@@ -15,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +40,10 @@ public class UserTokenService {
             throw new Exception("비밀번호를 잘못 입력하였습니다.");
         }
 
+        if(!user.getEndDate().before(new Date())){
+            throw new Exception("해당 아이디는 정지상태입니다.");
+        }
+
         List<String> list = user.getRoles();
 
         // acc, ref 토큰 생성
@@ -53,23 +57,15 @@ public class UserTokenService {
 
     @Transactional
     public ResponseEntity<?> logout(String userId){
-        Map<String, String> map = new HashMap<>();
         // 현재 유저 아이디로 Users 가져오기
         Users user = userRepository.findByUserId(userId);
         // RefreshTable 가져오기
         // 테이블이 있다면
         if(user.getRefreshToken() != null){
-            // refreshtable 삭제
-//            user.updateRefreshToken(null);
             user.setRefreshToken(null);
-
-            map.put("result", "true");
-            map.put("message", "로그아웃 성공");
-            return new ResponseEntity<>(map, HttpStatus.OK);
+            return new ResponseEntity<>(true, HttpStatus.OK);
         }
-        map.put("result", "false");
-        map.put("message", "로그아웃 실패");
-        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
     }
 
     @Transactional
@@ -97,6 +93,11 @@ public class UserTokenService {
 
     @Transactional
     public TokenResDto autoLogin(TokenReqDto tokenReqDto) throws Exception{
+
+        Users checkUserState = userRepository.findByUserId(jwtTokenProvider.getUserId(tokenReqDto.getAccessToken()));
+        if(!checkUserState.getEndDate().before(new Date())){
+            throw new Exception("해당 아이디는 정지상태입니다.");
+        }
 
         if(!jwtTokenProvider.validateToken(tokenReqDto.getRefreshToken())){
             throw new Exception("refreshToken이 유효하지 않습니다."); //401 로그인다시
