@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,10 @@ public class UserTokenService {
 
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new Exception("비밀번호를 잘못 입력하였습니다.");
+        }
+
+        if(!user.getEndDate().before(new Date())){
+            throw new Exception("해당 아이디는 정지상태입니다.");
         }
 
         List<String> list = user.getRoles();
@@ -88,6 +93,11 @@ public class UserTokenService {
 
     @Transactional
     public TokenResDto autoLogin(TokenReqDto tokenReqDto) throws Exception{
+
+        Users checkUserState = userRepository.findByUserId(jwtTokenProvider.getUserId(tokenReqDto.getAccessToken()));
+        if(!checkUserState.getEndDate().before(new Date())){
+            throw new Exception("해당 아이디는 정지상태입니다.");
+        }
 
         if(!jwtTokenProvider.validateToken(tokenReqDto.getRefreshToken())){
             throw new Exception("refreshToken이 유효하지 않습니다."); //401 로그인다시

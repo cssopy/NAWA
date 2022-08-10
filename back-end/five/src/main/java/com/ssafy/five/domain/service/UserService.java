@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,12 +40,16 @@ public class UserService {
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
+        Calendar cal = Calendar.getInstance();
+        cal.set(2022, 0, 1);
+
         Users user = Users.builder()
                 .userId(signUpReqDto.getUserId())
                 .password(passwordEncoder.encode(signUpReqDto.getPassword()))
                 .birth(signUpReqDto.getBirth())
                 .emailId(signUpReqDto.getEmailId())
                 .emailDomain(signUpReqDto.getEmailDomain())
+                .endDate(new Date(cal.getTimeInMillis()))
                 .nickname(signUpReqDto.getNickname())
                 .ment(signUpReqDto.getMent())
                 .number(signUpReqDto.getNumber())
