@@ -6,12 +6,18 @@ import {useAppDispatch} from '../store';
 import * as Progress from 'react-native-progress';
 import { Button } from "@rneui/themed";
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { RootState } from "../store/reducer";
 
 
 
 
 
 const Mate2 = ( {navigation} ) => {
+  const cate1 = useState((state:RootState) => state.matching.category1)
+  const cate2 = useState((state:RootState) => state.matching.category2)
+  const cate3 = useState((state:RootState) => state.matching.category3)
+
+
   const dispatch = useAppDispatch();
     return (
       <>
@@ -28,6 +34,8 @@ const Mate2 = ( {navigation} ) => {
             title="Click"
             onPress={() => navigation.navigate('MainScreen')}
           />
+          <Text>{cate1}{cate2}{cate3}</Text>
+        
         </View>
       </>
     );

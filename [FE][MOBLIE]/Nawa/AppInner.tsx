@@ -17,6 +17,7 @@ import SettingScreen from './src/screens/SettingScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import SignUp from './src/screens/SignUp';
 import SignIn from './src/screens/SignIn';
+import FindInfo from './src/screens/FindInfo';
 import { useAppDispatch } from './src/store';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, { AxiosError } from 'axios';
@@ -24,6 +25,7 @@ import userSlice from './src/slices/user';
 import SplashScreen from 'react-native-splash-screen';
 import AsyncStorage from '@react-native-community/async-storage';
 
+SplashScreen.show()
 
 export type LoggedInParamList = {  //다른 곳에서도 쓸꺼니까 export
   Home: undefined;
@@ -35,6 +37,7 @@ export type LoggedInParamList = {  //다른 곳에서도 쓸꺼니까 export
 export type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
+  FindInfo: undefined;
 };
 
 
@@ -48,8 +51,7 @@ function AppInner() {
   //////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
   const dispatch = useAppDispatch()
   const userId = useSelector((state : RootState) => state.user.userId)
-  const isLoggedIn = !!userId
-
+  
   // 자동 로그인
   useEffect(() => {
     const getTokenAndRefresh = async () => {
@@ -99,7 +101,7 @@ function AppInner() {
       <NavigationContainer>
         {/* <Drawer.Navigator>
         </Drawer.Navigator> */}
-        {isLoggedIn ? (
+        {userId ? (
           <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
@@ -122,6 +124,7 @@ function AppInner() {
             tabBarInactiveTintColor : 'grey',  // 활성화 안된 탭 색
             headerShown : false,
             tabBarHideOnKeyboard : true,
+            tabBarStyle : {height:50}
           })}
         >
           <Tab.Screen name="홈" component={HomeScreen} />
@@ -131,17 +134,21 @@ function AppInner() {
           <Tab.Screen name="설정" component={SettingScreen} />
       </Tab.Navigator>
         ) : (
-          // jh 상단 헤더 없애기
           <Stack.Navigator screenOptions={{headerShown: false}}>  
                 <Stack.Screen
                 name="SignIn"
                 component={SignIn}
-                options={{title: '로그인'}}
+                // options={{title: '로그인'}}
                 />
                 <Stack.Screen
                 name="SignUp"
                 component={SignUp}
-                options={{title: '회원가입', headerShown:true ,headerStyle:{backgroundColor:'rgb(0, 197, 145)'}}}
+                // options={{title: '회원가입', headerShown:true ,headerStyle:{backgroundColor:'rgb(0, 197, 145)'}}}
+                />
+                <Stack.Screen
+                name="FindInfo"
+                component={FindInfo}
+                // options={{title: '아이디/비밀번호찾기' }}
                 />
                 
             </Stack.Navigator>

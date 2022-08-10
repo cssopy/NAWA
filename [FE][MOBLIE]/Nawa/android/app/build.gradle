@@ -143,6 +143,7 @@ android {
         targetSdkVersion 31
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     splits {
         abi {
@@ -203,6 +204,9 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     implementation platform('com.google.firebase:firebase-bom:30.3.1')
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.naver.maps:map-sdk:3.15.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
+
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'

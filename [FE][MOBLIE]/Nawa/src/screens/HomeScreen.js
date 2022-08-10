@@ -48,10 +48,8 @@ const HomeScreen = () => {
             transform: [{ translateY: translateY }],
             flexDirection : 'row',
             backgroundColor: "white", 
-            shadowColor: "black", //그림자색
-            shadowOpacity: 1,//그림자 투명도
-            shadowOffset: { width: 0, height: 2 },
             elevation: 8,
+            zIndex:100
           }}
         >
           <View style={{ flex:1, backgroundColor:'rgb(0, 197, 145)', justifyContent:'center', alignItems:'center' }}>
@@ -60,8 +58,8 @@ const HomeScreen = () => {
               style={styles.logoImage}
             /> 
           </View>
-          <View style={{ flex:4, backgroundColor:'rgb(0, 197, 145)', justifyContent:'center', alignItems:'center'}}>
-            <Search width={constants.width * 0.65} />
+          <View style={{ flex:4, backgroundColor:'rgb(0, 197, 145)', justifyContent:'center'}}>
+            <Search width={constants.width * 0.65} string='언제 어디서나 나와!' />
           </View>
           <View style={{ flex:1, backgroundColor:'rgb(0, 197, 145)', justifyContent:'center', alignItems:'center' }}>
           <Image
