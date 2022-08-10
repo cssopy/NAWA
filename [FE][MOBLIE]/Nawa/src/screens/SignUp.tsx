@@ -20,7 +20,7 @@ import DatePicker from 'react-native-date-picker';
 import AsyncStorage from '@react-native-community/async-storage';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
-
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>
 
 // 사진파일 저장 필요
@@ -50,7 +50,85 @@ function SignUp({navigation} : SignUpScreenProps) {
     const numberRef = useRef<TextInput | null>(null);
     const genderRef = useRef<TextInput | null>(null);
 
+    // 아이디 닉네임 중복 / 번호 인증 / 비밀번호 확인test
+    const [openId, setOpenId] = useState('');
+    const [openNickname, setOpenNickname] = useState('');
+    const [authNumber, setAuthNumber] = useState('');
+    const authNumberRef = useRef<TextInput | null>(null);
+    const [passwordCheck, setPasswordCheck] = useState('')
+    const passwordCheckRef = useRef<TextInput | null>(null);
+    // 성별 래디오 버튼
+    const radio_props = [
+      {label: '남성', value: "MAN" },
+      {label: '여성', value: "WOMAN" }
+    ];
 
+    // 아이디 중복 검사
+    const [idCheck, setIdCheck] = useState(false)
+    const checkId = async e => {
+      setOpenId(e)
+      try {
+        const response = await axios.get(`http://i7d205.p.ssafy.io:8080/userId/${openId}`, {
+        });
+        setUserId(openId)
+        setIdCheck(true)
+        console.log('ID pass', openId, userId)
+        Alert.alert('알림', '사용 가능합니다.')
+        console.log(response.status)
+      }
+      catch {
+        console.log("ID fail!")
+        Alert.alert('알림', '중복입니다.')
+      }
+    }
+
+    // 닉네임 중복 검사
+    const [nicknameCheck, setNicknameCheck] = useState(false)
+    const checkNickname = async e => {
+      setOpenNickname(e)
+      try {
+        const response = await axios.get(`http://i7d205.p.ssafy.io:8080/user/nickname/${openNickname}`, {
+        });
+        setNickName(openNickname)
+        setNicknameCheck(true)
+        console.log('Nickname pass', nickName)
+        Alert.alert('알림', '사용 가능합니다.')
+      } catch {
+        console.log('Nickname fail!')
+        Alert.alert('알림', '중복입니다.')
+      }
+    }
+
+    // 인증 번호 보내기
+    const [sendNumber, setSendNumber] = useState('')
+    const sendAuthNumber = async e => {
+      setSendNumber(e)
+      try {
+        const response = await axios.post(`http://i7d205.p.ssafy.io:8080/user/sms`, {
+          "recipientPhoneNumber": sendNumber});
+        console.log(number)
+      }
+      catch {
+        console.log('not available')
+      }
+    }
+    
+    // 인증 번호
+    const [authNumberCheck, setAuthNumberCheck] = useState(false)
+    const checkAuthNumber = async e => {
+      setAuthNumber(e)
+      try {
+        const response = await axios.post(`http://i7d205.p.ssafy.io:8080/user/sms/check`, {
+          "certNumber": authNumber, 
+          "recipientPhoneNumber": number});
+        console.log("Authentication Pass")
+      } 
+      catch{
+        console.log("retry")
+      }
+    }
+    
+  
     // 저장 함수
     const onChangeUserId = useCallback(text => {
         setUserId(text.trim());
@@ -61,9 +139,9 @@ function SignUp({navigation} : SignUpScreenProps) {
     const onChangeEmail = useCallback(text => {
         setEmail(text.trim());
     }, []);
-    const onChangeName = useCallback(text => {
-        setName(text.trim());
-    }, []);
+    // const onChangeName = useCallback(text => {
+    //     setName(text.trim());
+    // }, []);
     const onChangeNickName = useCallback(text => {
         setNickName(text.trim());
     }, []);
@@ -73,6 +151,12 @@ function SignUp({navigation} : SignUpScreenProps) {
     const onChangeGender = useCallback(text => {
         setGender(text.trim());
     }, []);
+    const onChangeAuthNumber = useCallback(text => {
+      setAuthNumber(text.trim());
+    }, []);
+    const onChangePasswordCheck = useCallback(text => {
+      setPasswordCheck(text.trim());
+  }, []);
 
     // 제출 처리 | 비동기 await | 유효성 검사
     const onSubmit = useCallback(async () => {
@@ -91,9 +175,9 @@ function SignUp({navigation} : SignUpScreenProps) {
         if (!email || !email.trim()) {
             return Alert.alert('email 나와 !', 'email을 입력해주세요');
         }
-        if (!name || !name.trim()) {
-            return Alert.alert('이름 나와 !', '이름을 입력해주세요');
-        }
+        // if (!name || !name.trim()) {
+        //     return Alert.alert('이름 나와 !', '이름을 입력해주세요');
+        // }
         if (!nickName || !nickName.trim()) {
             return Alert.alert('닉네임 나와 !', '닉네임을 입력해주세요');
         }
@@ -159,25 +243,20 @@ function SignUp({navigation} : SignUpScreenProps) {
     }, [loading, navigation, userId, password, date, email, name, nickName, number, gender]);
 //////////////////////////////////////////////////////////////////// 끝 //////////////////////////////////////////
 
-    const canGoNext = userId && password && date && email && name && nickName && number && gender;
+    // const canGoNext = userId && password && date && email && name && nickName && number && gender;
+    // userId, nickName => id, 닉네임 중복검사
+    const canGoNext = idCheck && password && date && email && nicknameCheck && number && gender; 
     return (
-        <DismissKeyboardView>
-          <View style={styles.viewTop} />
-          <Form
-            onButtonPress={onSubmit}
-            buttonText = "회원가입"
-            buttonStyle={
-              canGoNext
-                ? StyleSheet.compose(styles.loginButtonForm, styles.loginButtonActiveForm)
-                : styles.loginButtonForm
-            }
-          >
-            <FormItem
-              label = "아이디" 
-              labelStyle= {styles.labelForm}
-              style={styles.textInputForm}
+      <DismissKeyboardView>
+      <View style={styles.viewTop}></View>
+      <View style={styles.inputWrapper}>
+        <Text style={styles.label}>아이디</Text>
+        <View style={{flex: 1, flexDirection:'row'}}>
+          <View style={{flex: 5}}>
+            <TextInput
+              style={styles.textInput}
               onChangeText={onChangeUserId}
-              placeholder="아이디를 입력해주세요."
+              placeholder="아이디를 입력해주세요"
               placeholderTextColor="#666"
               textContentType="username"
               value={userId}
@@ -188,86 +267,113 @@ function SignUp({navigation} : SignUpScreenProps) {
               blurOnSubmit={false}
               autoCapitalize= 'none'
             />
-            <FormItem 
-              label = "비밀번호"
-              labelStyle= {styles.labelForm}
-              style={styles.textInputForm}
-              placeholder="비밀번호를 입력해주세요.(영문,숫자,특수문자)"
-              placeholderTextColor="#666"
-              onChangeText={onChangePassword}
-              value={password}
-              keyboardType={Platform.OS === 'android' ? 'default' : 'ascii-capable'}
-              textContentType="password"
-              secureTextEntry
-              returnKeyType="send"
-              clearButtonMode="while-editing"
-              ref={passwordRef}
-              onSubmitEditing={() => emailRef.current?.focus()}
-              autoCapitalize= 'none'
+          </View>
+          <View style={{flex: 2}}>
+            <Pressable
+              style={styles.checkButton}
+              onPress={() => {
+                checkId(userId)
+              }}>
+              <Text style={styles.loginButtonText}>{ idCheck ? '통과완료' : '중복검사'}</Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+      <View style={styles.inputWrapper}>
+        <Text style={styles.label}>비밀번호</Text>
+        <TextInput
+          style={styles.textInput}
+          placeholder="비밀번호를 입력해주세요(영문,숫자,특수문자)"
+          placeholderTextColor="#666"
+          onChangeText={onChangePassword}
+          value={password}
+          keyboardType={Platform.OS === 'android' ? 'default' : 'ascii-capable'}
+          textContentType="password"
+          secureTextEntry
+          returnKeyType="send"
+          clearButtonMode="while-editing"
+          ref={passwordRef}
+          onSubmitEditing={() => passwordCheckRef.current?.focus()}
+          autoCapitalize= 'none'
+        />
+      </View>
+      <View style={styles.inputWrapper}>
+        <Text style={styles.label}>비밀번호 확인</Text>
+        <TextInput
+          style={styles.textInput}
+          placeholder="비밀번호를 입력해주세요(영문,숫자,특수문자)"
+          placeholderTextColor="#666"
+          onChangeText={onChangePasswordCheck}
+          value={passwordCheck}
+          keyboardType={Platform.OS === 'android' ? 'default' : 'ascii-capable'}
+          textContentType="password"
+          secureTextEntry
+          returnKeyType="send"
+          clearButtonMode="while-editing"
+          ref={passwordCheckRef}
+          onSubmitEditing={() => 
+            password === passwordCheck ? 
+            emailRef.current?.focus() 
+            : Alert.alert('알람', '비밀번호와 다릅니다. \n확인이 필요합니다.')
+          }
+          autoCapitalize= 'none'
+        />
+      </View>
+      <View style={styles.inputWrapper}>
+        <Text style={styles.label}>생일</Text>
+        <View style={{flex: 1, flexDirection: "row"}}>
+          <View style={{flex: 5}}>
+            <Text style={styles.textBirth}>{date.getFullYear()} / {date.getMonth()+1} / {date.getDate()}</Text>
+          </View>
+          <View style={{flex: 2}}>
+            <Pressable
+                style={styles.checkButton}
+                onPress={() => setOpen(true)}>
+                <Text style={styles.loginButtonText}>달력 열기</Text>
+              </Pressable>
+            <DatePicker
+                modal
+                locale="ko"
+                open={open}
+                date={date}
+                mode="date"
+                onConfirm={(date) => {
+                    setOpen(false)
+                    setDate(date)
+                }}
+                onCancel={() => {
+                    setOpen(false)
+                }}
             />
-            <View style={styles.inputWrapper}>
-              <Text style={styles.label}>생일</Text>
-              <View style={{ flexDirection:"row" }}>
-                <Text style={styles.label}>{date.getFullYear()} . {date.getMonth()} . {date.getDate()}</Text>
-              
-              <Button title='open'
-                color={'#00aeff'} 
-                onPress={() => setOpen(true)} />
-              <DatePicker
-                  modal
-                  locale="ko"
-                  open={open}
-                  date={date}
-                  mode="date"
-                  onConfirm={(date) => {
-                      setOpen(false)
-                      setDate(date)
-                  }}
-                  onCancel={() => {
-                      setOpen(false)
-                  }}
-              />
-              </View>
-            </View>
-            <FormItem 
-              label = "이메일"
-              labelStyle= {styles.labelForm}
-              style={styles.textInputForm}
-              onChangeText={onChangeEmail}
-              placeholder="이메일을 입력해주세요."
-              placeholderTextColor="#666"
-              textContentType="emailAddress"
-              value={email}
-              returnKeyType="next"
-              clearButtonMode="while-editing"
-              ref={emailRef}
-              onSubmitEditing={() => nameRef.current?.focus()}
-              blurOnSubmit={false}
-              autoCapitalize= 'none'
-              // keyboardType="email-address"  // 빨간 에러 발생 시 못 생겨서 보류
-            />
-            <FormItem 
-              label = "이름"
-              labelStyle= {styles.labelForm}
-              style={styles.textInputForm}
-              onChangeText={onChangeName}
-              placeholder="이름을 입력해주세요."
-              placeholderTextColor="#666"
-              textContentType="name"
-              value={name}
-              returnKeyType="next"
-              clearButtonMode="while-editing"
-              ref={nameRef}
-              onSubmitEditing={() => nickNameRef.current?.focus()}
-              blurOnSubmit={false}
-              autoCapitalize= 'none'
-            />
-            <FormItem 
-              label = "닉네임"
-              labelStyle= {styles.labelForm}
-              style={styles.textInputForm}
+          </View>
+        </View>
+      </View>
+      <View style={styles.inputWrapper}>
+        <Text style={styles.label}>이메일</Text>
+        <TextInput
+          style={styles.textInput}
+          onChangeText={onChangeEmail}
+          placeholder="이메일을 입력해주세요"
+          placeholderTextColor="#666"
+          textContentType="emailAddress"
+          value={email}
+          returnKeyType="next"
+          clearButtonMode="while-editing"
+          ref={emailRef}
+          onSubmitEditing={() => nameRef.current?.focus()}
+          blurOnSubmit={false}
+          autoCapitalize= 'none'
+          keyboardType="email-address"
+        />
+      </View>
+      <View style={styles.inputWrapper}>
+        <Text style={styles.label}>닉네임</Text>
+        <View style={{flex: 1, flexDirection:'row'}}>
+          <View style={{flex: 5}}>
+            <TextInput
+              style={styles.textInput}
               onChangeText={onChangeNickName}
-              placeholder="닉네임을 입력해주세요."
+              placeholder="닉네임을 입력해주세요"
               placeholderTextColor="#666"
               textContentType="username"
               value={nickName}
@@ -278,52 +384,155 @@ function SignUp({navigation} : SignUpScreenProps) {
               blurOnSubmit={false}
               autoCapitalize= 'none'
             />
-            <FormItem 
-              label = "전화번호"
-              labelStyle= {styles.labelForm}
-              style={styles.textInputForm}
+          </View>
+          <View style={{flex: 2}}>
+            <Pressable
+              style={styles.checkButton}
+              onPress={() => checkNickname(nickName)}>
+              <Text style={styles.loginButtonText}>{ nicknameCheck ? '통과 완료' : '중복 검사'}</Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+      <View style={styles.inputWrapper}>
+        <Text style={styles.label}>전화번호</Text>
+        <View style={{flex: 1, flexDirection:'row'}}>
+          <View style={{flex: 5}}>
+            <TextInput
+              style={styles.textInput}
               onChangeText={onChangeNumber}
-              placeholder="전화번호를 입력해주세요."
+              placeholder="전화번호를 입력해주세요"
               placeholderTextColor="#666"
               textContentType="telephoneNumber"
               value={number}
               returnKeyType="next"
               clearButtonMode="while-editing"
               ref={numberRef}
-              onSubmitEditing={() => genderRef.current?.focus()}
+              // onSubmitEditing={() => genderRef.current?.focus()}
               blurOnSubmit={false}
               autoCapitalize= 'none'
-              // keyboardType="numeric"  //  빨간 에러 발생 시 못생겨서 보류
+              keyboardType= "number-pad"
             />
-            <FormItem 
-              label = "성별"
-              labelStyle= {styles.labelForm}
-              style={styles.textInputForm}
-              onChangeText={onChangeGender}
-              placeholder="성별을 입력해주세요."
+          </View>
+          <View style={{flex: 2}}>
+            <Pressable
+              style={styles.checkButton}
+              onPress={() => sendAuthNumber(number)}>
+              <Text style={styles.loginButtonText}>인증 문자</Text>
+            </Pressable>
+          </View>
+        </View>
+        <View style={{flex: 1, flexDirection:'row', marginVertical: 12}}>
+          <View style={{flex: 5}}>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={onChangeAuthNumber}
+              placeholder="인증번호를 입력해주세요"
               placeholderTextColor="#666"
-              textContentType="none"
-              value={gender}
-              returnKeyType="send"
+              textContentType="telephoneNumber"
+              value={authNumber}
+              returnKeyType="next"
               clearButtonMode="while-editing"
-              ref={genderRef}
-              onSubmitEditing={onSubmit}
+              ref={authNumberRef}
+              blurOnSubmit={false}
               autoCapitalize= 'none'
+              keyboardType= "number-pad"
             />
-          </Form>
-
-        </DismissKeyboardView>
+          </View>
+          <View style={{flex: 2}}>
+            <Pressable
+              style={styles.checkButton}
+              onPress={() => checkAuthNumber(authNumber)}>
+              <Text style={styles.loginButtonText}>번호 인증</Text>
+            </Pressable>
+          </View>
+        </View>       
+      </View>
+      <View style={styles.inputWrapper}>
+        <Text style={styles.label}>성별</Text>
+        {/* <RadioForm
+          radio_props={radio_props}
+          initial={"남성"}
+          buttonColor={"gray"}
+          formHorizontal={true}
+          onPress={
+            (value : string) => {setGender(value)
+            console.log("value: ", value)
+            }}
+        /> */}
+        <RadioForm
+          formHorizontal={true}
+          animation={true}
+        >
+          {
+            radio_props.map((obj, i) => (
+              <RadioButton labelHorizontal={true} key={i} >
+                <RadioButtonInput
+                  obj={obj}
+                  index={i}
+                  isSelected={gender === obj.value}
+                  onPress={
+                    (value : string) => {setGender(value)
+                      console.log("value: ", value)}
+                    }
+                  borderWidth={1}
+                  buttonInnerColor={'gray'}
+                  buttonOuterColor={gender === obj.value ? '#2196f3' : '#000'}
+                  buttonSize={10}
+                  buttonOuterSize={20}
+                  buttonStyle={{}}
+                  buttonWrapStyle={{marginLeft: 10}}
+                />
+                <RadioButtonLabel
+                  obj={obj}
+                  index={i}
+                  labelHorizontal={true}
+                  onPress={
+                    (value : string) => {setGender(value)
+                      console.log("value: ", value)}
+                    }
+                  labelStyle={{fontSize: 17, color: 'black', marginRight: 60}}
+                  labelWrapStyle={{}}
+                />
+              </RadioButton>
+          ))}
+        </RadioForm>
+      </View>
+      <View style={styles.buttonZone}>
+        <Pressable
+          style={
+            canGoNext
+              ? StyleSheet.compose(styles.loginButtonForm, styles.loginButtonActiveForm)
+              : styles.loginButtonForm
+          }
+          disabled={!canGoNext || loading}
+          onPress={onSubmit}>
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.loginButtonText}>회원가입</Text>
+          )}
+        </Pressable>
+      </View>
+    </DismissKeyboardView>
       );
     }
     
     const styles = StyleSheet.create({
       textInput: {
         padding: 5,
-        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderWidth: 1,
+      },
+      textBirth:{
+        padding: 5,
+        borderWidth: 1,
+        height: 40,
+        textAlign: "center",
+        textAlignVertical: "center",
       },
       inputWrapper: {
-        paddingLeft: 20,
-        paddingRight: 20,
+        paddingLeft: 25,
+        paddingRight: 25,
         paddingBottom: 20,
       },
       label: {
@@ -336,48 +545,34 @@ function SignUp({navigation} : SignUpScreenProps) {
       buttonZone: {
         alignItems: 'center',
       },
-      loginButton: {
-        backgroundColor: 'gray',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
+      checkButton: {
+        backgroundColor: '#A0A0A0',
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
         borderRadius: 5,
-        marginBottom: 10,
-      },
-      loginButtonActive: {
-        backgroundColor: 'blue',
+        marginLeft: 5,
       },
       loginButtonText: {
         color: 'white',
         fontSize: 16,
       },
-      textInputForm: {
-        padding: 5,
-        borderWidth: 1,
-        marginLeft: 20,
-        marginRight: 20,
-        marginBottom: 10,
-        marginTop: 10,
-        borderRadius: 5,
-      },
       loginButtonForm: {
-        backgroundColor: '#acd5e8',
+        backgroundColor: '#C0C0C0',
+        paddingHorizontal: 128,
         paddingVertical: 10,
         borderRadius: 5,
         marginLeft: 20,
         marginRight: 20,
         marginBottom: 10,
         marginTop: 10,
+        borderWidth: 1,
       },
       loginButtonActiveForm: {
         backgroundColor: '#00aeff',
       },
-      labelForm : {
-        fontWeight: 'bold',
-        fontSize: 16,
-        marginLeft: 30,
-      },
       viewTop :{
-        marginTop: 25,
+        marginTop: 30,
       }
     });
     

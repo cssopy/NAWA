@@ -42,7 +42,7 @@ function SignIn({navigation}: SignInScreenProps) {
       return;
     }
     if (!userId || !userId.trim()) {
-      return Alert.alert('알림', '아이디을 입력해주세요.');
+      return Alert.alert('알림', '아이디를 입력해주세요.');
     }
     if (!password || !password.trim()) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
@@ -55,6 +55,7 @@ function SignIn({navigation}: SignInScreenProps) {
         password,
       });
       Alert.alert('알림', '로그인 되었습니다.');
+      console.log("login pass")
       dispatch(
         userSlice.actions.setUser({ // 이 액션이 dispatch 되면 
           userId : response.data.userId,
@@ -91,6 +92,10 @@ function SignIn({navigation}: SignInScreenProps) {
     navigation.navigate('SignUp');
   }, [navigation]);
 
+  const toFindinfo = useCallback(() => {
+    navigation.navigate('FindInfo');
+  }, [navigation]);
+
   const canGoNext = userId && password;
   return (
     <DismissKeyboardView>
@@ -110,9 +115,7 @@ function SignIn({navigation}: SignInScreenProps) {
             : styles.loginButtonForm
           }
         >
-          <FormItem 
-            // label = "아이디"
-            // labelStyle= {styles.labelForm}
+          <FormItem
             style={styles.textInputForm}
             // isRequired  // 넣으면 칸 안이쁘게 깨짐
             onChangeText={onChangeuserId}
@@ -132,8 +135,6 @@ function SignIn({navigation}: SignInScreenProps) {
             autoCapitalize= 'none'
           />
         <FormItem
-          // label = "비밀번호"
-          // labelStyle={styles.labelForm}
           style={styles.textInputForm}
           onChangeText={onChangePassword}
           value = {password}
@@ -151,10 +152,15 @@ function SignIn({navigation}: SignInScreenProps) {
         />
       </Form>
       <Form 
+        onButtonPress={toFindinfo}
+        buttonText = '아이디 / 비밀번호 찾기'
+        buttonStyle={styles.signUpButtonForm}
+        >
+      </Form>
+      <Form 
         onButtonPress={toSignUp}
         buttonText = '회원가입하기'
         buttonStyle={styles.signUpButtonForm}
-        // style = {styles.inputWrapperForm}
         >
       </Form>
 
@@ -163,37 +169,6 @@ function SignIn({navigation}: SignInScreenProps) {
 }
 
 const styles = StyleSheet.create({
-  textInput: {
-    padding: 5,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  inputWrapper: {
-    padding: 20,
-  },
-  label: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  buttonZone: {
-    alignItems: 'center',
-  },
-  loginButton: {
-    // backgroundColor: 'gray',
-    backgroundColor: '#acd5e8',
-    paddingHorizontal: 140,
-    paddingVertical: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  loginButtonActive: {
-    // backgroundColor: 'blue',
-    backgroundColor: '#00aeff',
-  },
-  loginButtonText: {
-    color: 'white',
-    fontSize: 16,
-  },
   logoWrap: {
     flex : 1,
     alignContent: 'center',
@@ -237,19 +212,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 5,
     autoCapitalize: "none"
-    
-  },
-  labelForm : {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginLeft: 30,
-  },
-  inputWrapperForm: {
-    backgroundColor: '#F5F5F5'
-  },
-  inputWrapperFormPassword: {
-    paddingLeft: 20,
-    paddingRight: 0,
   },
 });
 
