@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -96,6 +97,10 @@ public class Users implements UserDetails {
 
     public void updateEmailDomain(String emailDomain) {
         this.emailDomain = emailDomain;
+    }
+
+    public void updateReportCount(int reportCount){
+        this.reportCount = reportCount;
     }
 
     public void updateNickname(String nickname) {
