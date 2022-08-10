@@ -26,6 +26,7 @@
     "react-native-encrypted-storage": "^4.0.2",
     "react-native-form-component": "^2.4.0",
     "react-native-gesture-handler": "^1.7.0",
+    "react-native-image-picker": "^4.8.5",
     "react-native-keyboard-aware-scrollview": "^2.1.0",
     "react-native-paper": "^4.12.4",
     "react-native-progress": "^5.0.0",
