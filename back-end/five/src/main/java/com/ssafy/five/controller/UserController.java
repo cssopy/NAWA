@@ -3,7 +3,6 @@ package com.ssafy.five.controller;
 import com.ssafy.five.controller.dto.req.*;
 import com.ssafy.five.controller.dto.res.FindUserResDto;
 import com.ssafy.five.domain.entity.ProfileImg;
-import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.service.ProfileImgService;
 import com.ssafy.five.domain.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,8 +52,9 @@ public class UserController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> findUser(@PathVariable String userId) {
         FindUserResDto findUserResDto = userService.findUser(userId);
-        if(findUserResDto != null){
+        if (findUserResDto != null) {
             return new ResponseEntity<>(findUserResDto, HttpStatus.OK);
+        }
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 
