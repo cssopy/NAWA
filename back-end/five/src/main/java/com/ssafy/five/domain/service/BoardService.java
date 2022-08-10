@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +43,7 @@ public class BoardService {
     private final FileRepository fileRepository;
     private final LikeBoardRepository likeBoardRepository;
 
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class})
     public void regist(RegistBoardReqDto registBoardReqDto, MultipartFile[] multipartFiles) throws Exception {
         // 파일 중 이미지가 있는지 여부
         boolean existImage = false;
@@ -83,13 +84,17 @@ public class BoardService {
 
                     // UUID+파일원본이름을 가진 새로운 파일 객체를 생성하여 로컬에 저장
                     File newFile = new File(uploadpath, newFileName);
-                    file.transferTo(newFile);
+                    try {
+                        file.transferTo(newFile);
+                    } catch (IOException e) {
+                        throw new Exception("파일 로컬 저장 실패");
+                    }
                 }
             }
         }
 
         // 파일 중 영상 파일이 있다면
-        Board boardEntity;
+        Board boardEntity = null;
         if (existVideo) {
             boardEntity = boardRepository.save(registBoardReqDto.toEntity(BoardType.VIDEO));
         }
@@ -101,15 +106,24 @@ public class BoardService {
         else {
             boardEntity = boardRepository.save(registBoardReqDto.toEntity(BoardType.GENERAL));
         }
+        // board 엔티티 저장에 실패하면
+        if (boardEntity == null) {
+            throw new Exception("게시글 DB 저장 실패");
+        }
 
         // db에 파일 정보 저장
         for (FileDto item : list) {
-            fileRepository.save(Files.builder()
+            Files fileEntity = fileRepository.save(Files.builder()
                     .board(boardEntity)
                     .fileName(item.getFileName())
                     .fileType(item.getFileType())
                     .fileSize(item.getFileSize())
                     .build());
+
+            // 파일 DB에 저장 실패하면
+            if (fileEntity == null) {
+                throw new Exception("파일정보 DB 저장 실패");
+            }
         }
     }
 
@@ -118,34 +132,47 @@ public class BoardService {
         return list.stream().map(GetBoardResDto::new).collect(Collectors.toList());
     }
 
-    @Transactional
-    public boolean update(UpdateBoardReqDto updateBoardReqDto) {
+    @Transactional(rollbackFor = {Exception.class})
+    public void update(UpdateBoardReqDto updateBoardReqDto) throws Exception {
         int result = boardRepository.updateBoard(updateBoardReqDto.getBoardTitle(),
                 updateBoardReqDto.getBoardContent(),
                 updateBoardReqDto.getBoardId(),
                 new Date());
-        return (result > 0 ? true : false);
+        if (result == 0) {
+            throw new Exception("게시글 수정 실패");
+        }
     }
 
-    @Transactional
-    public void deleteById(Long boardId) {
+    @Transactional(rollbackFor = {Exception.class})
+    public void deleteById(Long boardId) throws Exception {
         Board boardEntity = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException());
+        // Board 엔티티 가져오기 실패
+        if (boardEntity == null) {
+            throw new Exception("해당하는 아이디의 게시글이 존재하지 않음");
+        }
+
         List<Files> files = fileRepository.findAllByBoard(boardEntity);
         // DB에 있는 게시글, 댓글, 파일 정보 삭제
         boardRepository.deleteById(boardId);
 
         // 서버 로컬에 저장된 파일 삭제
-        for (Files file : files) {
-            File dfile = new File(bpath + "/" + file.getFileType() + "/" + file.getFileName());
-            if (dfile.exists()) {
-                dfile.delete();
+        if (files != null) {
+            for (Files file : files) {
+                File dfile = new File(bpath + "/" + file.getFileType() + "/" + file.getFileName());
+                // 해당하는 이름의 파일이 존재하면 삭제
+                if (dfile.exists()) {
+                    dfile.delete();
+                }
             }
         }
     }
 
-    @Transactional
-    public GetBoardResDto findById(Long boardId) {
-        boardRepository.updateHit(boardId);
+    @Transactional(rollbackFor = {Exception.class})
+    public GetBoardResDto findById(Long boardId) throws Exception {
+        int result = boardRepository.updateHit(boardId);
+        if (result == 0) {
+            throw new Exception("게시글 조회수 반영 실패");
+        }
         Board entity = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException());
         return new GetBoardResDto(entity);
     }
@@ -155,18 +182,19 @@ public class BoardService {
         return boards.stream().map(GetBoardResDto::new).collect(Collectors.toList());
     }
 
-    @Transactional
-    public void onOffBoardLike(OnOffBoardLikeReqDto onOffBoardLikeReqDto) {
+    @Transactional(rollbackFor = {Exception.class})
+    public void onOffBoardLike(OnOffBoardLikeReqDto onOffBoardLikeReqDto) throws Exception {
         Users users = userRepository.findById(onOffBoardLikeReqDto.getUserId()).orElseThrow(() -> new UserNotFoundException());
         Board board = boardRepository.findById(onOffBoardLikeReqDto.getBoardId()).orElseThrow(() -> new BoardNotFoundException());
         LikeBoard likeBoard = likeBoardRepository.findByUserAndBoard(users, board);
 
+        Board boardEntity = null;
         // 해당 유저가 해당 게시글을 좋아요를 한 상태라면 OFF
         if (likeBoard != null) {
             likeBoardRepository.delete(likeBoard);
 
             // 게시글 좋아요 수 감소
-            boardRepository.save(Board.builder()
+            boardEntity = boardRepository.save(Board.builder()
                     .user(users)
                     .boardId(board.getBoardId())
                     .boardTitle(board.getBoardTitle())
@@ -187,7 +215,7 @@ public class BoardService {
             likeBoardRepository.save(likeBoard);
 
             // 게시글 좋아요 수 증가
-            boardRepository.save(Board.builder()
+            boardEntity = boardRepository.save(Board.builder()
                     .user(users)
                     .boardId(board.getBoardId())
                     .boardTitle(board.getBoardTitle())
@@ -198,6 +226,11 @@ public class BoardService {
                     .boardDate(board.getBoardDate())
                     .boardUpdate(board.getBoardUpdate())
                     .build());
+        }
+
+        // 게시글 좋아요 수 반영 실패
+        if (boardEntity == null) {
+            throw new Exception("게시글 좋아요 수 반영 실패");
         }
     }
 

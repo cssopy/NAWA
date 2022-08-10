@@ -10,8 +10,6 @@ import java.util.Date;
 import java.util.List;
 
 public interface CmtRepository extends JpaRepository<Comment, Long> {
-
-    //    @Query("SELECT c from Comment c WHERE c.board = :board")
     List<Comment> findALLByBoard(Board board);
 
     @Modifying

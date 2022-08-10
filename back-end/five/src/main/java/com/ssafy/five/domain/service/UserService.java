@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -87,7 +88,8 @@ public class UserService {
     @Transactional
     public FindUserResDto findUser(String userId) {
         Users user = userRepository.findByUserId(userId);
-        if(user != null){
+
+        if (user != null) {
             FindUserResDto findUserResDto = FindUserResDto.builder()
                     .nickname(user.getNickname())
                     .ment(user.getMent())
@@ -143,10 +145,14 @@ public class UserService {
     public ResponseEntity<?> giveUserTempPass(GiveTempPwReqDto giveTempPwReqDto) {
         Users user = userRepository.findByUserId(giveTempPwReqDto.getUserId());
         if (user != null) {
-            // 랜덤 비밀번호 생성 (영소문자, 10자리)
+            // ASCII 범위 – 영숫자(0-9, a-z, A-Z)
+            String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            // 랜덤 비밀번호 생성 (10자리)
             SecureRandom random = new SecureRandom();
-            String newPwd = random.ints(10, 97, 122 + 1)
-                    .mapToObj(i -> String.valueOf((char) i))
+            String newPwd = IntStream.range(0, 10)
+                    .map(i -> random.nextInt(chars.length()))
+                    .mapToObj(randomIndex -> String.valueOf(chars.charAt(randomIndex)))
                     .collect(Collectors.joining());
 
             // DB에 새비밀번호 업데이트

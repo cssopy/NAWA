@@ -55,7 +55,6 @@ public class UserController {
         FindUserResDto findUserResDto = userService.findUser(userId);
         if(findUserResDto != null){
             return new ResponseEntity<>(findUserResDto, HttpStatus.OK);
-        }
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 
@@ -117,8 +116,13 @@ public class UserController {
 
     @Operation(summary = "프로필 이미지 업데이트", description = "프로필 이미지 업데이트")
     @PutMapping("/user/profile-img/{userId}")
-    public void updateProfileImg(@PathVariable String userId, @RequestParam(name = "profileImg") MultipartFile profileImg) throws Exception {
-        profileImgService.save(userId, profileImg);
+    public ResponseEntity<?> updateProfileImg(@PathVariable String userId, @RequestParam(name = "profileImg") MultipartFile profileImg) {
+        try {
+            profileImgService.save(userId, profileImg);
+            return new ResponseEntity<>(true, HttpStatus.valueOf(201));
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.valueOf(500));
+        }
     }
 
 
