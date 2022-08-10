@@ -49,7 +49,4 @@ public class SignUpReqDto {
 
     @ApiModelProperty(example = "성별")
     private GenderType genderType;
-
-//    @NotBlank(message = "사진은 필수 입력 값입니다.")
-//    private File picture;
 }

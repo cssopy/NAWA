@@ -1,9 +1,7 @@
 package com.ssafy.five.controller;
 
-import com.ssafy.five.controller.dto.req.EvalUserReqDto;
-import com.ssafy.five.controller.dto.req.FindUserIdReqDto;
-import com.ssafy.five.controller.dto.req.GiveTempPwReqDto;
-import com.ssafy.five.controller.dto.req.SignUpReqDto;
+import com.ssafy.five.controller.dto.req.*;
+import com.ssafy.five.controller.dto.res.FindUserResDto;
 import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.service.ProfileImgService;
@@ -45,7 +43,7 @@ public class UserController {
 
     }
 
-    @Operation(summary = "아이디 중복 체크", description = "중복이면 false, 아니면 true 반환")
+    @Operation(summary = "아이디 중복 확인", description = "중복이면 false, 아니면 true 반환")
     @GetMapping("/userId/{userId}")
     public ResponseEntity<?> availableUserId(@PathVariable String userId) {
         return userService.availableUserId(userId);
@@ -54,19 +52,17 @@ public class UserController {
     @Operation(summary = "회원 한명 조회", description = "회원 한명 조회")
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> findUser(@PathVariable String userId) {
-        Users user = userService.findUser(userId);
-
-        if(user != null){
-            return new ResponseEntity<>(user, HttpStatus.OK);
+        FindUserResDto findUserResDto = userService.findUser(userId);
+        if(findUserResDto != null){
+            return new ResponseEntity<>(findUserResDto, HttpStatus.OK);
         }
-
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 
     @Operation(summary = "회원 정보 수정", description = "유저가 없을 경우 false, 있을 경우 수정하고자 하는 회원 정보 수정 후 db에 저장 및 true 반환")
     @PutMapping("/user")
-    public ResponseEntity<?> updateUser(@Valid @RequestBody Users user) {
-        return userService.updateUser(user);
+    public ResponseEntity<?> updateUser(@Valid @RequestBody UpdateUserReqDto updateUserReqDto) {
+        return userService.updateUser(updateUserReqDto);
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 정보 삭제")
