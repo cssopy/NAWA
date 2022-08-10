@@ -106,10 +106,6 @@ public class Users implements UserDetails {
         this.ment = ment;
     }
 
-    public void updateGender(GenderType genderType) {
-        this.genderType = genderType;
-    }
-
     public void updatePoint(int dp) {
         this.point += dp;
     }

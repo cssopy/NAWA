@@ -1,4 +1,4 @@
-package com.ssafy.five.controller;
+package com.ssafy.five.controller.dto.res;
 
 import com.ssafy.five.domain.entity.LocationList;
 import lombok.Getter;
