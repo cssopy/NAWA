@@ -59,11 +59,10 @@ function FindInfo({navigation} : FindInfoScreenProps) {
             const response = await axios.post(`http://i7d205.p.ssafy.io:8080/user/find-id`, {
                 "emailDomain" : email.split('@')[1],
                 "emailId" : email.split('@')[0],
-
             });
             setEmailCheck(true)
             console.log(response.data)
-            Alert.alert('아이디 찾기', '아이디: ', response.data)
+            Alert.alert('아이디 찾기', response.data)
         } catch (error) {
             const errorResponse = (error as AxiosError).response;
             if (errorResponse) {
@@ -100,6 +99,8 @@ function FindInfo({navigation} : FindInfoScreenProps) {
                 Alert.alert('비밀번호 찾기', '이메일로 임시 비밀번호를 발송하였습니다.')
             }
             else {
+                setEmailpwCheck(false)
+                setUserIdCheck(false)
                 Alert.alert('비밀번호 찾기', '아이디와 이메일에 해당하는 정보가 없습니다.')
             }
             
