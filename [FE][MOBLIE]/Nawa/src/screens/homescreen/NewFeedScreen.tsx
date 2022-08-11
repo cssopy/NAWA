@@ -17,9 +17,8 @@ function NewFeedScreen({ navigation }) {
   const [media, setMedia] = useState(Object);
   const [loading, setLoading] = useState(false)
 
-  // const whoamI = useSelector((state : RootState) => state.user.userId)
+  const whoamI = useSelector((state : RootState) => state.user.userId)
   const myId = useSelector((state: RootState) => state.user.accessToken)
-  const whoamI = 'imageupload12'
 
   const formdata = new FormData();
 
@@ -82,16 +81,14 @@ function NewFeedScreen({ navigation }) {
       } else if(res.errorCode) {
         console.log(res.errorMessage)
       } else {
-        console.log(typeof(res.assets[0]))
         const data = res.assets[0]
         // console.log(data)
         const callMedia = {
-          uri: Platform.OS === 'android' ? data.uri?.replace('file://', '') : data.uri,
+          uri: Platform.OS === 'android' ? data.uri :  data.uri?.replace('file://', ''),
           type: data.type,
           name: data.fileName,
         }
         setMedia(callMedia)
-        console.log(callMedia)
       }
     })
   }
@@ -99,15 +96,13 @@ function NewFeedScreen({ navigation }) {
   const onSubmit = async () => {
     if (loading) return;
     try {
-      formdata.append("key", new Blob([JSON.stringify({
-        boardContent: content,
-        boardTitle: title,
-        userId: whoamI
-      })]))
       setLoading(true);
-      console.log(formdata)
+      formdata.append('uploadfile', media)
       await axios.post('http://i7d205.p.ssafy.io:8080/board',{
-        formdata,
+        userId: whoamI,
+        boardTitle: title,
+        boradContent: content,
+        filelist: formdata,
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': myId,
