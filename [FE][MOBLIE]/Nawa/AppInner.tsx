@@ -14,7 +14,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import MatingScreen from './src/screens/Matching';
 import ChattingScreen from './src/screens/ChattingScreen';
 import SettingScreen from './src/screens/SettingScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
+import ProfileScreen from './src/screens/profileScreen';
 import SignUp from './src/screens/SignUp';
 import SignIn from './src/screens/SignIn';
 import FindInfo from './src/screens/FindInfo';

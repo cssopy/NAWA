@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { ScrollView, Dimensions, StyleSheet, Alert, Platform, View } from "react-native";
 
 import { Form, FormItem } from 'react-native-form-component';
@@ -94,30 +94,50 @@ function NewFeedScreen({ navigation }) {
   }
   
   const onSubmit = async () => {
-    if (loading) return;
-    try {
-      setLoading(true);
-      formdata.append('uploadfile', media)
-      await axios.post('http://i7d205.p.ssafy.io:8080/board',{
-        userId: whoamI,
-        boardTitle: title,
-        boradContent: content,
-        filelist: formdata,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': myId,
-        }
-      }).then((res) => {
-        console.log(res)
+      formdata.append(
+        "key",
+        new Blob([JSON.stringify({
+          boardTitle: title,
+          boardContent: content,
+          userId:myId
+        })],
+        {
+          type: "application/json",
+        }))
+      // formdata.append('uploadfile', media)
+      // try {
+      //   const response = await fetch('http://i7d205.p.ssafy.io:8080/board/', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //     Authorization: myId,
+      //   },
+      //   body: formdata
+      //   })
+      //   const json = await response.json();
+      //   console.log(json)
+      // } catch (err) {
+      //   console.log(err)
+      // }
+      console.log(formdata)
+      axios.post('http://i7d205.p.ssafy.io:8080/board/',
+        formdata,
+      { headers: {
+        // 'Content-Type': 'multipart/form-data',
+        Authorization: myId,
+      },
+      transformRequest: formdata => formdata,
+    }).then(function (res) {
+        console.log('결과: ', res)
+      }).catch(function (err) {
+        console.log('에러: ', err)
       });
-    } catch (error) {
-      const errorResponse = (error as AxiosError).response;
-      if (errorResponse) {
-        Alert.alert('오류가 발생했습니다');
-      }
-    } finally {
-      setLoading(false)
-    }
+    // axios.get('http://i7d205.p.ssafy.io:8080/board/')
+    // .then(res => {
+    //   console.log('결과: ', res)
+    // }).catch(err => {
+    //   console.log('에러: ',err)
+    // })
     navigation.navigate('Main')
   }
 
