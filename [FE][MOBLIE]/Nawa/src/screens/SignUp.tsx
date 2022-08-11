@@ -52,7 +52,9 @@ function SignUp({navigation} : SignUpScreenProps) {
 
     // 아이디 닉네임 중복 / 번호 인증 / 비밀번호 확인test
     const [openId, setOpenId] = useState('');
+    const openIdRef = useRef<TextInput | null>(null);
     const [openNickname, setOpenNickname] = useState('');
+    const openNicknameRef = useRef<TextInput | null>(null);
     const [authNumber, setAuthNumber] = useState('');
     const authNumberRef = useRef<TextInput | null>(null);
     const [passwordCheck, setPasswordCheck] = useState('')
@@ -65,47 +67,58 @@ function SignUp({navigation} : SignUpScreenProps) {
 
     // 아이디 중복 검사
     const [idCheck, setIdCheck] = useState(false)
-    const checkId = async e => {
-      setOpenId(e)
+    const checkId = async () => {
+      // setOpenId(e)
       try {
+        console.log(openId, "&", userId)
         const response = await axios.get(`http://i7d205.p.ssafy.io:8080/userId/${openId}`, {
-        });
-        setUserId(openId)
-        setIdCheck(true)
-        console.log('ID pass', openId, userId)
-        Alert.alert('알림', '사용 가능합니다.')
-        console.log(response.status)
-      }
-      catch {
-        console.log("ID fail!")
-        Alert.alert('알림', '중복입니다.')
+        }).then(response => {
+          setUserId(openId)
+          setIdCheck(true)
+          console.log('ID pass', openId, userId)
+          Alert.alert('알림', '아이디 사용 가능합니다.')
+          console.log(response.data)
+        })
+      } catch (error) {
+        const errorResponse = (error as AxiosError).response;
+        if (errorResponse) {
+          console.log(errorResponse.data)
+           
+          console.log("ID fail!")
+          Alert.alert('알림', '아이디 중복입니다.')  
+        }
+        
       }
     }
 
     // 닉네임 중복 검사
     const [nicknameCheck, setNicknameCheck] = useState(false)
-    const checkNickname = async e => {
-      setOpenNickname(e)
+    const checkNickname = async () => {
       try {
         const response = await axios.get(`http://i7d205.p.ssafy.io:8080/user/nickname/${openNickname}`, {
-        });
-        setNickName(openNickname)
-        setNicknameCheck(true)
-        console.log('Nickname pass', nickName)
-        Alert.alert('알림', '사용 가능합니다.')
-      } catch {
-        console.log('Nickname fail!')
-        Alert.alert('알림', '중복입니다.')
+        }).then(response => {
+          setNickName(openNickname)
+          setNicknameCheck(true)
+          console.log('Nickname pass', nickName)
+          Alert.alert('알림', '사용 가능합니다.')
+        })
+      } catch (error) {
+        const errorResponse = (error as AxiosError).response;
+        if (errorResponse) {
+          console.log(errorResponse.data)
+           
+          console.log("Nickname fail!")
+          Alert.alert('알림', '닉네임 중복입니다.')  
+        }
       }
     }
 
     // 인증 번호 보내기
     const [sendNumber, setSendNumber] = useState('')
-    const sendAuthNumber = async e => {
-      setSendNumber(e)
+    const sendAuthNumber = async () => {
       try {
         const response = await axios.post(`http://i7d205.p.ssafy.io:8080/user/sms`, {
-          "recipientPhoneNumber": sendNumber});
+          "recipientPhoneNumber": number});
         console.log(number)
       }
       catch {
@@ -115,13 +128,14 @@ function SignUp({navigation} : SignUpScreenProps) {
     
     // 인증 번호
     const [authNumberCheck, setAuthNumberCheck] = useState(false)
-    const checkAuthNumber = async e => {
-      setAuthNumber(e)
+    const checkAuthNumber = async () => {
+      
       try {
         const response = await axios.post(`http://i7d205.p.ssafy.io:8080/user/sms/check`, {
           "certNumber": authNumber, 
           "recipientPhoneNumber": number});
         console.log("Authentication Pass")
+        setAuthNumberCheck(true)
       } 
       catch{
         console.log("retry")
@@ -130,8 +144,11 @@ function SignUp({navigation} : SignUpScreenProps) {
     
   
     // 저장 함수
-    const onChangeUserId = useCallback(text => {
-        setUserId(text.trim());
+    // const onChangeUserId = useCallback(text => {
+    //     setUserId(text.trim());
+    // }, []);
+    const onChangeOpenId = useCallback(text => {
+      setOpenId(text.trim());
     }, []);
     const onChangePassword = useCallback(text => {
         setPassword(text.trim());
@@ -145,6 +162,9 @@ function SignUp({navigation} : SignUpScreenProps) {
     const onChangeNickName = useCallback(text => {
         setNickName(text.trim());
     }, []);
+    const onChangeOpenNickname = useCallback(text => {
+      setOpenNickname(text.trim());
+  }, []);
     const onChangeNumber = useCallback(text => {
         setNumber(text.trim());
     }, []);
@@ -244,8 +264,10 @@ function SignUp({navigation} : SignUpScreenProps) {
 //////////////////////////////////////////////////////////////////// 끝 //////////////////////////////////////////
 
     // const canGoNext = userId && password && date && email && name && nickName && number && gender;
-    // userId, nickName => id, 닉네임 중복검사
-    const canGoNext = idCheck && password && date && email && nicknameCheck && number && gender; 
+    // userId, nickName => id와 닉네임 중복 검사 , 휴대폰 인증 확인 절차 추가 
+    // const canGoNext = idCheck && password && date && email && nicknameCheck && authNumberCheck && gender; 
+    // 현재 휴대폰 인증 막아둠
+    const canGoNext = idCheck && password && date && email && nicknameCheck && authNumber && gender; 
     return (
       <DismissKeyboardView>
       <View style={styles.viewTop}></View>
@@ -255,14 +277,14 @@ function SignUp({navigation} : SignUpScreenProps) {
           <View style={{flex: 5}}>
             <TextInput
               style={styles.textInput}
-              onChangeText={onChangeUserId}
+              onChangeText={onChangeOpenId}
               placeholder="아이디를 입력해주세요"
               placeholderTextColor="#666"
               textContentType="username"
-              value={userId}
+              value={openId}
               returnKeyType="next"
               clearButtonMode="while-editing"
-              ref={userIdRef}
+              ref={openIdRef}
               onSubmitEditing={() => passwordRef.current?.focus()}
               blurOnSubmit={false}
               autoCapitalize= 'none'
@@ -272,7 +294,10 @@ function SignUp({navigation} : SignUpScreenProps) {
             <Pressable
               style={styles.checkButton}
               onPress={() => {
-                checkId(userId)
+                setOpenId(openId)
+                if (openId) {
+                  checkId()
+                }
               }}>
               <Text style={styles.loginButtonText}>{ idCheck ? '통과완료' : '중복검사'}</Text>
             </Pressable>
@@ -360,7 +385,7 @@ function SignUp({navigation} : SignUpScreenProps) {
           returnKeyType="next"
           clearButtonMode="while-editing"
           ref={emailRef}
-          onSubmitEditing={() => nameRef.current?.focus()}
+          onSubmitEditing={() => nickNameRef.current?.focus()}
           blurOnSubmit={false}
           autoCapitalize= 'none'
           keyboardType="email-address"
@@ -372,14 +397,14 @@ function SignUp({navigation} : SignUpScreenProps) {
           <View style={{flex: 5}}>
             <TextInput
               style={styles.textInput}
-              onChangeText={onChangeNickName}
+              onChangeText={onChangeOpenNickname}
               placeholder="닉네임을 입력해주세요"
               placeholderTextColor="#666"
               textContentType="username"
-              value={nickName}
+              value={openNickname}
               returnKeyType="next"
               clearButtonMode="while-editing"
-              ref={nickNameRef}
+              ref={openNicknameRef}
               onSubmitEditing={() => numberRef.current?.focus()}////
               blurOnSubmit={false}
               autoCapitalize= 'none'
@@ -388,7 +413,12 @@ function SignUp({navigation} : SignUpScreenProps) {
           <View style={{flex: 2}}>
             <Pressable
               style={styles.checkButton}
-              onPress={() => checkNickname(nickName)}>
+              onPress={() => {
+                setOpenNickname(openNickname)
+                if (openNickname) {
+                  checkNickname()
+                }
+              }}>
               <Text style={styles.loginButtonText}>{ nicknameCheck ? '통과 완료' : '중복 검사'}</Text>
             </Pressable>
           </View>
@@ -417,7 +447,10 @@ function SignUp({navigation} : SignUpScreenProps) {
           <View style={{flex: 2}}>
             <Pressable
               style={styles.checkButton}
-              onPress={() => sendAuthNumber(number)}>
+              onPress={() => {
+                if (number) {
+                  sendAuthNumber()
+                }}}>
               <Text style={styles.loginButtonText}>인증 문자</Text>
             </Pressable>
           </View>
@@ -442,7 +475,7 @@ function SignUp({navigation} : SignUpScreenProps) {
           <View style={{flex: 2}}>
             <Pressable
               style={styles.checkButton}
-              onPress={() => checkAuthNumber(authNumber)}>
+              onPress={() => checkAuthNumber()}>
               <Text style={styles.loginButtonText}>번호 인증</Text>
             </Pressable>
           </View>
