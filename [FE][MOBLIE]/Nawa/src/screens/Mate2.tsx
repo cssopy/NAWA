@@ -6,7 +6,7 @@ import {useAppDispatch} from '../store';
 import * as Progress from 'react-native-progress';
 
 import { FAB } from '@rneui/themed';
-import { CheckBox, Icon } from '@rneui/themed';
+import { CheckBox } from '@rneui/themed';
 
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
@@ -21,109 +21,42 @@ import Foundation from 'react-native-vector-icons/Foundation';
 
 
 const Mate2 = ( {navigation} ) => {
-
   const dispatch = useAppDispatch();
-  const [gage, setGage] = useState(0.25);
+  const [gage, setGage] = useState(0.33);
   const [visible, setVisible] = useState(false);
+
   const [disabled, setDisabled] = useState(false);
-  const [check0, setCheck0] = useState(false);
-  const [check1, setCheck1] = useState(false);
-  const [check2, setCheck2] = useState(false);
-  const [check3, setCheck3] = useState(false);
-  const [check4, setCheck4] = useState(false);
-  const [check5, setCheck5] = useState(false);
-  const [check6, setCheck6] = useState(false);
-  const [check7, setCheck7] = useState(false);
-  const [check8, setCheck8] = useState(false);
-  const [check9, setCheck9] = useState(false);
-  const [check10, setCheck10] = useState(false);
-  const [check11, setCheck11] = useState(false);
+  const [box, setBox] = useState<String[]>([]);
+  // const where = useSelector((state:RootState) => state.matching.location)
+  // const distance = useSelector((state:RootState) => state.matching.distance)
 
-  const [total, setTotal] = useState(0);
-  const [selectedItems, setSelectedItem] = useState([]);
-  const where = useSelector((state:RootState) => state.matching.location)
-  const distance = useSelector((state:RootState) => state.matching.distance)
-  // const first = useSelector((state : RootState) =>state.matching.category1)
-  // const second = useSelector((state : RootState) =>state.matching.category2)
-  // const third = useSelector((state : RootState) =>state.matching.category3)
 
-  const count = () => {
-    let countTrue = 0;
-    let items : string[] = [];
-    if (check0) {
-      countTrue += 1;
-      items.push(checkList[0])
-    } 
-    if (check1) {
-      countTrue += 1;
-      items.push(checkList[1])
-    } 
-    if (check2) {
-      countTrue += 1;
-      items.push(checkList[2])
-    } 
-    if (check3) {
-      countTrue += 1;
-      items.push(checkList[3])
-    } 
-    if (check4) {
-      countTrue += 1;
-      items.push(checkList[4])
-    } 
-    if (check5) {
-      countTrue += 1;
-      items.push(checkList[5])
-    } 
-    if (check6) {
-      countTrue += 1;
-      items.push(checkList[6])
-    } 
-    if (check7) {
-      countTrue += 1;
-      items.push(checkList[7])
-    } 
-    if (check8) {
-      countTrue += 1;
-      items.push(checkList[8])
-    } 
-    if (check9) {
-      countTrue += 1;
-      items.push(checkList[9])
-    } 
-    if (check10) {
-      countTrue += 1;
-      items.push(checkList[10])
-    } 
-    if (check11) {
-      countTrue += 1;
-      items.push(checkList[11])
-    } 
-    setTotal(countTrue);
-    setSelectedItem(items);
-    // console.log(countTrue, items)
-    if (countTrue === 3) {
-      setVisible(true);
-      setDisabled(true);
-      setGage(0.5);
-    } else {setVisible(false)}
+  const boxing = (target : String) => {
+    if (box.includes(target)) {
+      let newBox = box.filter((item) => item !== target)
+      setBox(newBox)
+    } else {
+      setBox([...box, target])
+    }
   }
   
   const stored = async () => {
     dispatch(
-      matchingSlice.actions.setC1({
-        category1 : selectedItems[0],
-        category2 : selectedItems[1],
-        category3 : selectedItems[2],
+      matchingSlice.actions.setC({
+        category : box
       })
     )
-    // console.log(first, second, third)
   };
 
-
   useEffect(() => {
-    count()
-    console.log(selectedItems)
-  }, [check0, check1, check2, check3, check4, check5, check6, check7, check8, check9, check10, check11])
+    if (box.length === 3) {
+      setDisabled(true)
+      setVisible(true)
+      setGage(0.66)
+    } else {
+      setGage(0.33)
+    }}, [box.length])
+  
 
     return (
       <>
@@ -136,26 +69,15 @@ const Mate2 = ( {navigation} ) => {
           <Progress.Bar style={{marginHorizontal:4, borderColor: 'rgb(0, 197, 145)'}} progress ={gage} width={constants.width - 10} height={6} unfilledColor={'white'} />
         </View>  
 
-        <View style={{ backgroundColor:'lightgrey', width:constants.width, height:constants.height }}>
-          <Text>{where.longitude} {where.latitude}</Text>
-          <Text>{distance}</Text>
-          {/* <Text>{checkList[0]} : {check0 ? 'yes':''}</Text>
-          <Text>{checkList[1]} : {check1 ? 'yes':''}</Text>
-          <Text>{checkList[2]} : {check2 ? 'yes':''}</Text>
-          <Text>{checkList[3]} : {check3 ? 'yes':''}</Text>
-          <Text>{checkList[4]} : {check4 ? 'yes':''}</Text>
-          <Text>{checkList[5]} : {check5 ? 'yes':''}</Text>
-          <Text>{checkList[6]} : {check6 ? 'yes':''}</Text>
-          <Text>{checkList[7]} : {check7 ? 'yes':''}</Text>
-          <Text>{checkList[8]} : {check8 ? 'yes':''}</Text>
-          <Text>{checkList[9]} : {check9 ? 'yes':''}</Text>
-          <Text>{checkList[10]} : {check10 ? 'yes':''}</Text>
-          <Text>{checkList[11]} : {check11 ? 'yes':''}</Text> */}
-          <Text style={{fontSize: 30, color:'black'}}>3개만 골라야 통과시켜줄거임</Text>
-
+        <View style={{ backgroundColor:'lightgrey', width:constants.width, height:constants.height - 100}}>
+          <View style={{backgroundColor:'white', borderRadius:20, alignItems:'center', marginHorizontal:3, marginVertical:4}}>
+            <Text style={{fontSize: 18, color:'black'}}>원하는 운동 3가지를 골라주세요 !</Text>
+            <Text style={{fontSize: 18, color:'black'}}>같은 운동을 선택한 메이트를 먼저 찾아 줍니다 !</Text>
+            <Text style={{fontSize: 30, color:'black'}}>{box.length} / 3</Text>
+          </View>
           
 
-          <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
+          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
           <CheckBox
             center
             title={<><Ionicons size={20} name='barbell' color='black' /><Text> {checkList[0]}  </Text></>}
@@ -165,8 +87,8 @@ const Mate2 = ( {navigation} ) => {
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check0}
-            onPress={() => setCheck0(!check0)}
+            checked={box.includes('헬스')}
+            onPress={() => boxing('헬스')}
             disabled={disabled}
           />
           <CheckBox
@@ -178,8 +100,8 @@ const Mate2 = ( {navigation} ) => {
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check1}
-            onPress={() => setCheck1(!check1)}
+            checked={box.includes('배드민턴')}
+            onPress={() => boxing('배드민턴')}
             disabled={disabled}
           />
           <CheckBox
@@ -191,12 +113,12 @@ const Mate2 = ( {navigation} ) => {
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check2}
-            onPress={() => setCheck2(!check2)}
+            checked={box.includes('러닝')}
+            onPress={() => boxing('러닝')}
             disabled={disabled}
           />
           </View>
-          <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
+          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
           <CheckBox
             center
             title={<><MaterialCommunityIcons size={20} name='dog-side' color='black' /><Text> {checkList[3]}  </Text></>}
@@ -206,8 +128,8 @@ const Mate2 = ( {navigation} ) => {
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check3}
-            onPress={() => setCheck3(!check3)}
+            checked={box.includes('애견산책')}
+            onPress={() => boxing('애견산책')}
             disabled={disabled}
           />
           <CheckBox
@@ -219,8 +141,8 @@ const Mate2 = ( {navigation} ) => {
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check4}
-            onPress={() => setCheck4(!check4)}
+            checked={box.includes('산책')}
+            onPress={() => boxing('산책')}
             disabled={disabled}
           />
           <CheckBox
@@ -232,12 +154,12 @@ const Mate2 = ( {navigation} ) => {
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check5}
-            onPress={() => setCheck5(!check5)}
+            checked={box.includes('등산')}
+            onPress={() => boxing('등산')}
             disabled={disabled}
           />
           </View>
-          <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
+          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
           <CheckBox
             center
             title={<><Ionicons size={20} name='bicycle' color='black' /><Text> {checkList[6]}  </Text></>}
@@ -247,8 +169,8 @@ const Mate2 = ( {navigation} ) => {
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check6}
-            onPress={() => setCheck6(!check6)}
+            checked={box.includes('자전거')}
+            onPress={() => boxing('자전거')}
             disabled={disabled}
           />
           <CheckBox
@@ -260,8 +182,8 @@ const Mate2 = ( {navigation} ) => {
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check7}
-            onPress={() => setCheck7(!check7)}
+            checked={box.includes('수영')}
+            onPress={() => boxing('수영')}
             disabled={disabled}
           />
           <CheckBox
@@ -273,12 +195,12 @@ const Mate2 = ( {navigation} ) => {
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check8}
-            onPress={() => setCheck8(!check8)}
+            checked={box.includes('볼링')}
+            onPress={() => boxing('볼링')}
             disabled={disabled}
           />
           </View>
-          <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
+          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
           <CheckBox
             center
             title={<><MaterialCommunityIcons size={20} name='baseball-bat' color='black' /><Text> {checkList[9]}  </Text></>}
@@ -288,8 +210,8 @@ const Mate2 = ( {navigation} ) => {
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check9}
-            onPress={() => setCheck9(!check9)}
+            checked={box.includes('당구')}
+            onPress={() => boxing('당구')}
             disabled={disabled}
           />
           <CheckBox
@@ -301,8 +223,8 @@ const Mate2 = ( {navigation} ) => {
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check10}
-            onPress={() => setCheck10(!check10)}
+            checked={box.includes('농구')}
+            onPress={() => boxing('농구')}
             disabled={disabled}
           />
           <CheckBox
@@ -314,19 +236,31 @@ const Mate2 = ( {navigation} ) => {
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check11}
-            onPress={() => setCheck11(!check11)}
+            checked={box.includes('풋살')}
+            onPress={() => boxing('풋살')}
             disabled={disabled}
           />
           </View>
+        <View style={{zIndex:2, flexDirection:"row", justifyContent:'center'}}>
+          {box.map((item, idx) => {
+            return (
+            <View key={idx} style={{borderRadius: 20, padding:14, margin:10, backgroundColor: 'lightgreen', elevation:8 }}>
+              <Text style={{fontSize:25}}>{item}</Text>
+            </View>
+            )
+          })}
         </View>
+        </View>
+
+
+
         <View style={{position:"absolute", flexDirection:"row", bottom:10, alignSelf:'center'}}>
           <FAB
                 style={{marginHorizontal:2}}
-                onPress={() => {setTotal(0); setSelectedItem([]); setDisabled(false); setVisible(false); setGage(0.25); } }
+                onPress={() => {setBox([]); setDisabled(false); setVisible(false); setGage(0.25); } }
                 visible={visible}
                 disabled={!visible}
-                title="AGAIN"
+                title="다시 !"
                 icon={{
                   name: 'refresh',
                   color: 'white',
@@ -337,7 +271,7 @@ const Mate2 = ( {navigation} ) => {
                 onPress={() => {stored(); navigation.navigate('Mate3'); }}
                 visible={visible}
                 disabled={!visible}
-                title="NEXT"
+                title="완료 !"
                 icon={{
                   name: 'check',
                   color: 'white',
@@ -366,7 +300,8 @@ const styles = StyleSheet.create({
     marginHorizontal : 0,
     marginBottom : 2,
     width : constants.width - 6,
-    height : 20
+    height : 20,
+    zIndex:5
   },
 })
 

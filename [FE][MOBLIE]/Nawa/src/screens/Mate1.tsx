@@ -91,9 +91,9 @@ const Mate1 = ( {navigation} ) => {
 
   useEffect (() => {
     if (distance < 130) {
-      setZoom(16);
+      setZoom(17);
     } else if (distance < 200) {
-      setZoom(15);
+      setZoom(16);
     } else if (distance < 350) {
       setZoom(15);
     } else if (distance < 600) {
@@ -206,7 +206,7 @@ const Mate1 = ( {navigation} ) => {
             {mapLoading ? 
               <ActivityIndicator style={{flex:1, textAlign:"center",alignSelf:"flex-end" }}  name='locate' size={40} color='red' />
               :
-              <Ionicons onPress={() => {getLocation(); setMapLoading(true); setGage(0.2)}} style={{flex:1 ,textAlign:"center",alignSelf:"flex-end" }}  name='locate' size={35} color='red' />
+              <Ionicons onPress={() => {getLocation(); setMapLoading(true); setGage(0.33)}} style={{flex:1 ,textAlign:"center",alignSelf:"flex-end" }}  name='locate' size={35} color='red' />
             }
             <Slider
             flex={4}
@@ -246,8 +246,8 @@ const Mate1 = ( {navigation} ) => {
                     distance : distance
                   }),
                 )
-                setButtonLoading(false)
-                navigation.navigate('Mate2')
+                setTimeout(() => {setButtonLoading(false); navigation.navigate('Mate2')}, 500)
+                
               }}
               containerStyle={{
                 flex:1,
@@ -263,7 +263,7 @@ const Mate1 = ( {navigation} ) => {
 
           <View style={{ flexDirection:"column", position: "absolute", top: SCREEN_HEIGHT/2 - 40,alignSelf:'center' , alignItems:"center" }}>
             <Ionicons name='locate' size={35} color='black' />
-            <Text style={{fontWeight:"700", color:'black'}}>{`매칭거리 ${(distance*0.001).toFixed(1)}km`}</Text>
+            <Text style={{fontWeight:"700", color:'black'}}>{`매칭거리 ${(distance*0.001).toFixed(2)}km`}</Text>
           </View>
         </View>
       </View>
