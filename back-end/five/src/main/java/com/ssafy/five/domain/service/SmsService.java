@@ -1,37 +1,37 @@
-package com.ssafy.five.domain.service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.five.controller.dto.MessageDto;
-import com.ssafy.five.controller.dto.req.SmsRequest;
-import com.ssafy.five.controller.dto.res.SmsResponse;
-import com.ssafy.five.domain.entity.Messages;
-import com.ssafy.five.domain.entity.Users;
-import com.ssafy.five.domain.repository.SmsRepository;
-import com.ssafy.five.domain.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.*;
-
-@Service
-@Transactional
-@RequiredArgsConstructor
-public class SmsService {
-
+//package com.ssafy.five.domain.service;
+//
+//import com.fasterxml.jackson.core.JsonProcessingException;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.ssafy.five.controller.dto.MessageDto;
+//import com.ssafy.five.controller.dto.req.SmsRequest;
+//import com.ssafy.five.controller.dto.res.SmsResponse;
+//import com.ssafy.five.domain.entity.Messages;
+//import com.ssafy.five.domain.entity.Users;
+//import com.ssafy.five.domain.repository.SmsRepository;
+//import com.ssafy.five.domain.repository.UserRepository;
+//import lombok.RequiredArgsConstructor;
+//import org.apache.tomcat.util.codec.binary.Base64;
+//import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.http.*;
+//import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+//import org.springframework.stereotype.Service;
+//import org.springframework.transaction.annotation.Transactional;
+//import org.springframework.web.client.RestTemplate;
+//
+//import javax.crypto.Mac;
+//import javax.crypto.spec.SecretKeySpec;
+//import java.io.UnsupportedEncodingException;
+//import java.net.URI;
+//import java.net.URISyntaxException;
+//import java.security.InvalidKeyException;
+//import java.security.NoSuchAlgorithmException;
+//import java.util.*;
+//
+//@Service
+//@Transactional
+//@RequiredArgsConstructor
+//public class SmsService {
+//
 //    private final SmsRepository smsRepository;
 //
 //    private final UserRepository userRepository;
@@ -135,4 +135,4 @@ public class SmsService {
 //
 //        return encodeBase64String;
 //    }
-}
+//}

@@ -99,6 +99,10 @@ public class Users implements UserDetails {
         this.emailDomain = emailDomain;
     }
 
+    public void updateNumber(String number){
+        this.number = number;
+    }
+
     public void updateReportCount(int reportCount){
         this.reportCount = reportCount;
     }
