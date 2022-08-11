@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.ssafy.five.util.SecurityUtil.getCurrentUserId;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -132,7 +134,8 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<?> deleteUser(String userId) {
-        if (userRepository.findByUserId(userId) != null) {
+        Users user = userRepository.findByUserId(userId);
+        if (user != null && user.getUserId().equals(getCurrentUserId())) {
             userRepository.deleteById(userId);
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
@@ -142,7 +145,7 @@ public class UserService {
     @Transactional
     public String findUserId(FindUserIdReqDto findUserIdReqDto) {
 
-        String userId = userRepository.findUserIdByNameAndEmail(findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
+        String userId = userRepository.findUserIdByEmailIdAndEmailDomain(findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
 
         if (userId != null) {
             return userId;
@@ -153,7 +156,7 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<?> giveUserTempPass(GiveTempPwReqDto giveTempPwReqDto) {
-        Users user = userRepository.findByUserId(giveTempPwReqDto.getUserId());
+        Users user = userRepository.findByUserIdAndEmailIdAndEmailDomain(giveTempPwReqDto.getUserId(), giveTempPwReqDto.getEmailId(), giveTempPwReqDto.getEmailDomain());
         if (user != null) {
             // ASCII 범위 – 영숫자(0-9, a-z, A-Z)
             String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -169,7 +172,7 @@ public class UserService {
             user.updatePassword(passwordEncoder.encode(newPwd));
 
             // 메일 전송
-            mailService.snedMailWithNewPwd(user.getEmailId() + "@" + user.getEmailDomain(), newPwd);
+            mailService.sendMailWithNewPwd(user.getEmailId() + "@" + user.getEmailDomain(), newPwd);
 
             return new ResponseEntity<>(true, HttpStatus.OK);
         }

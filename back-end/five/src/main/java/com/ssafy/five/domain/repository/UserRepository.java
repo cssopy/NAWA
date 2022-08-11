@@ -8,12 +8,13 @@ public interface UserRepository extends JpaRepository<Users, String> {
 
     Users findByUserId(String userId);
 
-    @Query("select userId from Users where emailId = :emailId and emailDomain = :emailDomain")
-    String findUserIdByNameAndEmail(String emailId, String emailDomain);
+    String findUserIdByEmailIdAndEmailDomain(String emailId, String emailDomain);
 
     boolean existsByNickname(String nickname);
 
     Users findByNickname(String nickname);
+
+    Users findByUserIdAndEmailIdAndEmailDomain(String userId, String emailId, String emailDomain);
 
     Users findByNumber(String recipientPhoneNumber);
 
