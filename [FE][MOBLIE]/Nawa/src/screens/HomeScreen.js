@@ -1,10 +1,14 @@
+<<<<<<< HEAD
 import React, { useRef, useEffect, useState } from "react";
 import { SafeAreaView, Text, Animated, View, StyleSheet, Image, Keyboard } from "react-native";
+=======
+import React from "react";
+import { SafeAreaView } from "react-native";
+>>>>>>> newfeed
 
-import FeedItem from '../components/FeedItem';
-import Search from "../components/Search";
-import constants from '../constants';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+<<<<<<< HEAD
 import DismissKeyboardView from "../components/DismissKeyboardView";
 
 const HEADER_HEIGHT = 60;
@@ -68,53 +72,36 @@ const HomeScreen = () => {
             /> 
           </View>
         </Animated.View>
+=======
+import NewFeedScrren from './homescreen/NewFeedScreen';
+import Main from './homescreen/Main'
 
-        <Animated.ScrollView
-          onScroll={onScroll}
-          style={{
-            transform: [{ translateY: translateY }],
-            marginBottom: HEADER_HEIGHT,
-          }}
-          scrollEventThrottle={16}
-          bounces={false}
-        >
-          <FeedItem />
-          <FeedItem />
-          <FeedItem />
-          <FeedItem />
-        </Animated.ScrollView>
-      </View>
-    </SafeAreaView>
+const Stack = createNativeStackNavigator();
+
+const HomeScreen = () => {
+  return (
+    // <SafeAreaView>
+    //   <Main />
+      
+    // </SafeAreaView>
+    <Stack.Navigator
+      screenOptions={{headerShown: false}}
+    >
+      <Stack.Screen
+        name="Main"
+        component={Main}
+        options={{
+          title: "피드"
+        }}
+      />
+>>>>>>> newfeed
+
+      <Stack.Screen
+        name="NewFeedScrren"
+        component={NewFeedScrren}
+      />
+    </Stack.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  fixedBox : {
-    backgroundColor : 'black',
-    width : constants.width,
-    height : 30,
-  },
-  first: {
-    color : 'black',
-    fontSize : 18,
-    fontWeight : '900',
-  },
-  logoImage : {
-    width : 50,
-    height : 50,
-    resizeMode : 'contain',
-  },
-  map : {
-    width : 60,
-    height : 60,
-    resizeMode : 'contain',
-    marginTop : 7,
-  }
-})
-
-
-
-
-
 
 export default HomeScreen;
