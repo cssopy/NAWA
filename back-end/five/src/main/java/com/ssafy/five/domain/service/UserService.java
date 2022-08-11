@@ -4,6 +4,7 @@ import com.ssafy.five.controller.dto.req.*;
 import com.ssafy.five.controller.dto.res.FindUserResDto;
 import com.ssafy.five.domain.entity.EnumType.EvalType;
 import com.ssafy.five.domain.entity.EnumType.StateType;
+import com.ssafy.five.domain.entity.Messages;
 import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.SmsRepository;
@@ -66,7 +67,7 @@ public class UserService {
 //        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
 //
 //        if(!msg.isAuth()){
-//            return false;
+//            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
 //        }
 //        smsRepository.delete(msg);
         return new ResponseEntity<>(true, HttpStatus.OK);
@@ -113,6 +114,15 @@ public class UserService {
             user1.updateEmailDomain(updateUserReqDto.getEmailDomain());
             user1.updateNickname(updateUserReqDto.getNickname());
             user1.updateMent(updateUserReqDto.getMent());
+
+//            if(!user1.getNumber().equals(updateUserReqDto.getNumber())){
+//                Messages msg = smsRepository.findById(updateUserReqDto.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
+//                if(!msg.isAuth()){
+//                    return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+//                }
+                user1.updateNumber(updateUserReqDto.getNumber());
+//                smsRepository.delete(msg);
+//            }
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
         return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);

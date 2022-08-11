@@ -24,6 +24,9 @@ public class UpdateUserReqDto {
     @ApiModelProperty(example = "이메일 도메인")
     private String emailDomain;
 
+    @ApiModelProperty(example = "전화번호")
+    private String number;
+
     @ApiModelProperty(example = "닉네임")
     private String nickname;
 
