@@ -84,6 +84,8 @@ public class JwtTokenProvider {
     public boolean validateToken(String token){
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            System.out.println(claims.getBody().getExpiration());
+            System.out.println(new Date());
             return !claims.getBody().getExpiration().before(new Date());
         } catch(Exception e){
             return false;
@@ -92,9 +94,9 @@ public class JwtTokenProvider {
 
     public String validateRefreshToken(String token){
         try {
-            JSONObject object = new JSONObject(token);
-            String refreshToken = object.getString("refreshToken");
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshToken);
+//            JSONObject object = new JSONObject(token);
+//            String refreshToken = object.getString("refreshToken");
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             // refresh 토큰의 만료시간 남아있을 때
             if (!claims.getBody().getExpiration().before(new Date())) {
                 return recreateAccessToken(claims.getBody().get("sub").toString(), claims.getBody().get("roles"));
@@ -104,9 +106,10 @@ public class JwtTokenProvider {
         // refresh 토큰이 만료되었을 때
         catch(ExpiredJwtException e){
             throw new ExpiredException();
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
         }
+//        catch (JSONException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     public String recreateAccessToken(String userId, Object roles){

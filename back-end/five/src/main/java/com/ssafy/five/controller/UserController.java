@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @Operation(summary = "아이디 찾기", description = "유저 아이디 있으면 유저 아이디 반환, 없으면 null 반환")
-    @PostMapping("/user/find-id")
+    @PostMapping("/find-id")
     public ResponseEntity<?> findUserId(@Valid @RequestBody FindUserIdReqDto findUserIdReqDto) {
 
         String userId = userService.findUserId(findUserIdReqDto);
@@ -82,7 +82,7 @@ public class UserController {
     }
 
     @Operation(summary = "임시 비밀번호 발급", description = "유저 아이디 찾아서 없을 경우 false, 있을 경우 랜덤 비밀번호 생성 후 db에 비밀번호 변경, 이메일로 전송")
-    @PostMapping("/user/give-temp-pw")
+    @PostMapping("/give-temp-pw")
     public ResponseEntity<?> giveTempPassword(@Valid @RequestBody GiveTempPwReqDto giveTempPwReqDto) {
         return userService.giveUserTempPass(giveTempPwReqDto);
     }
