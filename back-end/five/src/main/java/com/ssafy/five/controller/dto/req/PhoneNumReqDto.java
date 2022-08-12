@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PhoneNumReqDto {
-    @ApiModelProperty(example = "인증받을 전화번호")
+    @ApiModelProperty(example = "01012345678")
     private String recipientPhoneNumber;
 }

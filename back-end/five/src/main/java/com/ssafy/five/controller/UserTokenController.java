@@ -5,7 +5,10 @@ import com.ssafy.five.controller.dto.req.TokenReqDto;
 import com.ssafy.five.controller.dto.res.TokenResDto;
 import com.ssafy.five.domain.service.UserTokenService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,6 +25,12 @@ public class UserTokenController {
     private final UserTokenService userTokenService;
 
     @Operation(summary = "로그인", description = "아이디와 비밀번호를 가지고 로그인 시도, 유저가 없다면 UserNotFoundException 발생, 비밀번호 잘못 입력시 Exception 발생, 아이디와 비밀번호 둘다 정상이면 accessToken, refreshToken 생성 후 db에 refreshToken 저장, 객체로 두 토큰 반환")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "정상 작동"),
+            @ApiResponse(responseCode = "400", description = "잘못된 비밀번호"),
+            @ApiResponse(responseCode = "403", description = "정지된 유저"),
+            @ApiResponse(responseCode = "404", description = "없는 유저")
+    })
     @PostMapping("/token/login")
     public TokenResDto login(@Valid @RequestBody LoginReqDto loginReqDto) throws Exception {
         TokenResDto tokenResDto = userTokenService.login(loginReqDto.getUserId(), loginReqDto.getPassword());

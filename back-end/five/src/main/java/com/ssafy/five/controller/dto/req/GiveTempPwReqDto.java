@@ -13,15 +13,15 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class GiveTempPwReqDto {
 
-    @ApiModelProperty(example = "유저 아이디")
+    @ApiModelProperty(example = "testUser")
     @NotBlank
     private String userId;
 
-    @ApiModelProperty(example = "이메일 아이디")
+    @ApiModelProperty(example = "testUser123")
     @NotBlank
     private String emailId;
 
-    @ApiModelProperty(example = "이메일 도메인")
+    @ApiModelProperty(example = "naver.com")
     @NotBlank
     private String emailDomain;
 }

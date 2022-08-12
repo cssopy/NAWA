@@ -5,14 +5,14 @@ import com.ssafy.five.domain.service.CustomUserDetailsService;
 import com.ssafy.five.exception.ExpiredException;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -86,19 +86,14 @@ public class JwtTokenProvider {
         System.out.println("token = " + token);
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            System.out.println(claims.getBody().getExpiration());
-            System.out.println(new Date());
             return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch(Exception e){
             return false;
         }
     }
 
     public String validateRefreshToken(String token) {
         try {
-//            JSONObject object = new JSONObject(token);
-//            String refreshToken = object.getString("refreshToken");
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             // refresh 토큰의 만료시간 남아있을 때
             if (!claims.getBody().getExpiration().before(new Date())) {
@@ -107,12 +102,9 @@ public class JwtTokenProvider {
             return null;
         }
         // refresh 토큰이 만료되었을 때
-        catch (ExpiredJwtException e) {
+        catch (ExpiredJwtException e){
             throw new ExpiredException();
         }
-//        catch (JSONException e) {
-//            throw new RuntimeException(e);
-//        }
     }
 
     public String recreateAccessToken(String userId, Object roles) {
