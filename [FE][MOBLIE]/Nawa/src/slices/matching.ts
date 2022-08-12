@@ -6,14 +6,14 @@ interface initialState {
     location : object;
     distance : number;
     category : Array<String>;
-    settings : Array<String>;
+    settings : string;
 }
 
 const initialState = {
     location : {longitude : 0, latitude : 0},
     distance : 0,
     category : [],
-    settings : [],
+    settings : '',
 };
 
 const matchingSlice = createSlice({
