@@ -29,14 +29,16 @@ import {
 
 
 const Mate3 = ( {navigation} ) => {
+  const dispatch = useAppDispatch();
   // Online matching
   const [realTime, setRealTime] = useState([]);
   const [sortedUser, setSortedUser] = useState([]);
-  const dispatch = useAppDispatch();
   const [online, setOnline] = useState(false);
   const [onAir, setOnAir] = useState(false);
-  // const nickname = useSelector((state : RootState) => state.user.nickname);
-  const nickname = 'phone'
+  
+  const nickname = useSelector((state : RootState) => state.user.nickname);
+  console.log(nickname)
+  // const nickname = 'phone'
   const category = useSelector((state : RootState) => state.matching.category);
   const location = useSelector((state : RootState) => state.matching.location);
   const distance = useSelector((state : RootState) => state.matching.distance);
@@ -44,11 +46,8 @@ const Mate3 = ( {navigation} ) => {
   
   // web RTC
   const [remoteStream, setRemoteStream] = useState(null);
-  const [webcamStarted, setWebcamStarted] = useState(false);
   const [localStream, setLocalStream] = useState(null);
   const [channelId, setChannelId] = useState('');
-
-  const [matching, setMatching] = useState([])
 
   const pc = useRef();
 
@@ -64,7 +63,6 @@ const Mate3 = ( {navigation} ) => {
     ],
     iceCandidatePoolSize: 10, // 훕 10개 까지만
   };
-
 
   const startCall = async (targetname) => {
     pc.current = new RTCPeerConnection(servers);
@@ -118,11 +116,12 @@ const Mate3 = ( {navigation} ) => {
     await channelDoc.set({offer});
 
     // Listen for remote answer
-    channelDoc.onSnapshot(snapshot => {
+    channelDoc.onSnapshot(async snapshot => {
       const data = snapshot.data();
       if (!pc.current.currentRemoteDescription && data?.answer) {
+        console.log('set remote description :', data.answer)
         const answerDescription = new RTCSessionDescription(data.answer);
-        pc.current.setRemoteDescription(answerDescription);
+        await pc.current.setRemoteDescription(answerDescription);
       }
     });
 
@@ -183,6 +182,8 @@ const Mate3 = ( {navigation} ) => {
     const channelData = channelDocument.data();
 
     const offerDescription = channelData.offer;
+    console.log(offerDescription)
+
 
     await pc.current.setRemoteDescription(
       new RTCSessionDescription(offerDescription),
@@ -280,20 +281,20 @@ const Mate3 = ( {navigation} ) => {
 
     if (!!onWaiting.data()) {
       setOnAir(true)
-      Alert.alert('알림', '누군가 당신에게 나와! 라고 외쳤습니다. 곧 화상채팅이 연결 됩니다.')
-      joinCall()
+      // Alert.alert('알림', '누군가 당신에게 나와! 라고 외쳤습니다. 곧 화상채팅이 연결 됩니다.')
+      return
     }
   }
 
-  useEffect( () => {
-      function onResult(QuerySnapshot) {
-        getData2()
-      }
-      function onError(error) {
-        console.error(error);
-      }
-      firestore().collection('MATCHING_GUMI').onSnapshot(onResult, onError);
-  },[])
+  // useEffect( () => {
+  //     function onResult(QuerySnapshot) {
+  //       getData2()
+  //     }
+  //     function onError(error) {
+  //       console.error(error);
+  //     }
+  //     firestore().collection('MATCHING_GUMI').onSnapshot(onResult, onError);
+  // },[])
 
 
   // 자동정렬 (거리)
@@ -359,6 +360,8 @@ const Mate3 = ( {navigation} ) => {
           </View>
           <Progress.Bar style={{marginHorizontal:4, borderColor: 'rgb(0, 197, 145)'}} progress ={0.75} width={constants.width - 10} height={6} unfilledColor={'white'} />
         </View>  
+
+
         <View style={{height:SCREEN_HEIGHT/2, borderRadius:20}}>
           <NaverMapView style={{width: '100%', height: '100%', zIndex:-2}}
             center={{...onLocation, zoom: zooming(distance)}}
@@ -377,11 +380,16 @@ const Mate3 = ( {navigation} ) => {
                   <></>
                 }
           </NaverMapView>
-          <View style={{flexDirection:"row", position:"absolute", top:SCREEN_HEIGHT/2 - 50, borderRadius:30, backgroundColor:'white',elevation:8, padding:5 , marginLeft:5 }}>
+          <View style={{flexDirection:"row", position:"absolute", top:SCREEN_HEIGHT/2 - 50, borderRadius:30, padding:5 , marginLeft:5 }}>
             {online ?
             <>
-              <ActivityIndicator size={"small"} color="black" ></ActivityIndicator>
-              <Text style={{alignItems:"baseline", fontSize:19, color:'black'}} > 매칭중 ... 현재 {realTime.length} 명 </Text>
+              
+              <Button buttonStyle={{}}>
+                <ActivityIndicator size={"small"} color="black" ></ActivityIndicator>
+                <Text style={{justifyContent:'center', fontSize:19, color:'black'}}>
+                  매칭중... 현재 {realTime.length} 명
+                </Text>
+              </Button>
             </>
             :
               <Text style={{alignItems:"baseline", fontSize:19, color:'black'}} > 매칭 대기열에 입장하세요 </Text>
@@ -405,22 +413,19 @@ const Mate3 = ( {navigation} ) => {
           )  
         }
         })}
-        </ScrollView> :
-        <></>
-        }
+        </ScrollView> : <></>}
+      <Button onPress={() => {joinCall(); setOnAir(true);}}> 연결확인 </Button>
       </>
       :
       <>
       <KeyboardAvoidingView style={styles.body} behavior="position">
         <SafeAreaView>
           {localStream && (
-            <View style={styles.localStream}>
             <RTCView
               streamURL={localStream?.toURL()}
               objectFit="cover"
               mirror
             />
-            </View>
           )}
 
           {remoteStream && ( 
@@ -433,7 +438,7 @@ const Mate3 = ( {navigation} ) => {
           )}
         </SafeAreaView>
       </KeyboardAvoidingView>
-          <Button style={{position:"absolute"}} onPress={() => disconnecting()}>종료</Button>
+          <Button style={{position:"absolute"}} onPress={() => {disconnecting(); setOnAir(false)}}>종료</Button>
       </>
       }
 

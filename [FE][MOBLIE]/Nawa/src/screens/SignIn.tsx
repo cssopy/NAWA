@@ -50,6 +50,8 @@ function SignIn({navigation}: SignInScreenProps) {
 //////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
     try {
       setLoading(true);
+      const nickname = await AsyncStorage.getItem('nickname')
+
       const response = await axios.post(`http://i7d205.p.ssafy.io:8080/token/login`, {
         userId,
         password,
@@ -59,6 +61,7 @@ function SignIn({navigation}: SignInScreenProps) {
         userSlice.actions.setUser({ // 이 액션이 dispatch 되면 
           userId : response.data.userId,
           accessToken : response.data.accessToken,
+          nickname : nickname
         }),
         );
       Alert.alert('알림', '로그인 되었습니다.');
