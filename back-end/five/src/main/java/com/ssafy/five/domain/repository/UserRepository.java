@@ -8,7 +8,7 @@ public interface UserRepository extends JpaRepository<Users, String> {
 
     Users findByUserId(String userId);
 
-    String findUserIdByEmailIdAndEmailDomain(String emailId, String emailDomain);
+    Users findUserIdByEmailIdAndEmailDomain(String emailId, String emailDomain);
 
     boolean existsByNickname(String nickname);
 

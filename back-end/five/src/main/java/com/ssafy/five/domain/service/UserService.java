@@ -145,10 +145,10 @@ public class UserService {
     @Transactional
     public String findUserId(FindUserIdReqDto findUserIdReqDto) {
 
-        String userId = userRepository.findUserIdByEmailIdAndEmailDomain(findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
+        Users user = userRepository.findUserIdByEmailIdAndEmailDomain(findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
 
-        if (userId != null) {
-            return userId;
+        if (user.getUserId() != null) {
+            return user.getUserId();
         }
         return null;
 
