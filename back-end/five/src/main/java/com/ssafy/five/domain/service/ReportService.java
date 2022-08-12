@@ -60,29 +60,14 @@ public class ReportService {
             }
 
             // 유저 정보 업데이트
-            Users updateUser = Users.builder()
-                    .userId(user.getUserId())
-                    .password(user.getPassword())
-                    .birth(user.getBirth())
-                    .emailId(user.getEmailId())
-                    .emailDomain(user.getEmailDomain())
-                    .nickname(user.getNickname())
-                    .ment(user.getMent())
-                    .number(user.getNumber())
-                    .genderType(user.getGenderType())
-                    //                .picture(user.getPicture())
-                    .point(user.getPoint())
-                    .reportCount(reportCount)
-                    .stateType(userStateType)
-                    .endDate(endDate)
-                    .roles(user.getRoles())
-                    .build();
+            user.updateReportCount(user.getReportCount()+1);
+            user.updateEndDate(endDate);
+            user.updateStateType(userStateType);
 
-            userRepository.save(updateUser);
 
             if (userStateType.equals(StateType.STOP)) {
                 Map<String, String> message = new HashMap<>();
-                message.put("userId", "reports");
+                message.put("chatUserId", "reported");
                 message.put("detail", "신고 회수 누적으로 임시 사용 정지 되었습니다.");
                 message.put("endDate", endDate.toString());
                 Map<String, Map> data = new HashMap<>();

@@ -86,11 +86,11 @@ public class AddMateService {
                 // 나 자신에 대한 친구 요청인 경우
                 response = 410;
             } else {
-                Map<String, String> message = new HashMap<>();
-                message.put("userId", "mateRequest");
-                message.put("detail", user2.getNickname() +  "님으로 부터 메이트 신청이 들어왔습니다.");
-                message.put("addMateId", addMateRepository.save(addMateReqDto.addMate(user1, user2)).getAddMateId().toString());
                 Map<String, Map> data = new HashMap<>();
+                Map<String, String> message = new HashMap<>();
+                message.put("chatUserId", "mateRequest");
+                message.put("detail", user1.getNickname() +  "님으로 부터 메이트 신청이 들어왔습니다.");
+                message.put("addMateId", addMateRepository.save(addMateReqDto.addMate(user1, user2)).getAddMateId().toString());
                 data.put("data", message);
                 messaging.convertAndSend("/sub/chat/user/" + user2.getUserId(), data);
             }

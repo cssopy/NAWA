@@ -27,7 +27,7 @@ public class Chat {
     private Long chatId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "roomId")
     @NotNull
     private Room roomId;
@@ -46,5 +46,9 @@ public class Chat {
 
     @Column(name = "isRead", nullable = false, columnDefinition = "int")
     private int isRead;
+
+    public void updateIsRead() {
+        this.isRead -= 1;
+    }
 }
 

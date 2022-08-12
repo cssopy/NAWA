@@ -22,8 +22,8 @@ public class BlockController {
         return new ResponseEntity<>(response.get("result").equals(200), HttpStatus.valueOf(response.get("result")));
     }
 
-    @GetMapping()
-    public ResponseEntity<?> findAllBlockList(@RequestBody String userId) {
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> findAllBlockList(@PathVariable String userId) {
         Map<String, ?> response = blockService.findAllBlockList(userId);
         return new ResponseEntity<>(response.get("result"), response.get("result").equals(false)? HttpStatus.UNAUTHORIZED : HttpStatus.OK);
     }

@@ -11,13 +11,12 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/chat")
 public class RoomController {
 
     private final RoomService roomService;
 
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/chat/user/{userId}")
     @ResponseBody
     public ResponseEntity<?> findAllRooms(@PathVariable String userId) {
         Map<String, ?> allRooms = roomService.findAllRooms(userId);
@@ -28,15 +27,6 @@ public class RoomController {
         }
     }
 
-    @GetMapping("/room/{roomId}/{userId}")
-    public ResponseEntity<?> findRoom(@PathVariable Long roomId, String userId) {
-        Map<String, ?> roomDetail = roomService.findByRoomId(roomId, userId);
-        if (roomDetail.get("result").equals(false)) {
-            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
-        } else {
-            return new ResponseEntity<>(roomDetail.get("result"), HttpStatus.OK);
-        }
-    }
 }
 
 

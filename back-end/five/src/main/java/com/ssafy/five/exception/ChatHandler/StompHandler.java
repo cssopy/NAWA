@@ -2,6 +2,7 @@ package com.ssafy.five.exception.ChatHandler;
 
 
 import com.ssafy.five.domain.service.RoomService;
+import com.ssafy.five.domain.service.RoomSessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -18,19 +19,24 @@ import java.util.Objects;
 @Component
 public class StompHandler implements ChannelInterceptor {
     private final RoomService roomService;
+    private final RoomSessionService roomSessionService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        System.out.println(accessor.getDestination());
+        System.out.println(accessor);
 
-        if (accessor.getDestination() != null && accessor.getDestination().startsWith("/sub/chat/room/")) {
-            if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
-                String roomId = (String) ((List) Objects.requireNonNull((Map) message.getHeaders().get("nativeHeaders")).get("roomId")).get(0);
-                roomService.roomCount(Long.parseLong(roomId) , -1);
-            } else if (StompCommand.UNSUBSCRIBE == accessor.getCommand()) {
-                String roomId = (String) ((List) Objects.requireNonNull((Map) message.getHeaders().get("nativeHeaders")).get("id")).get(0);
-                roomService.roomCount(Long.parseLong(roomId), 1);
+        // 입장시 구현
+        if (StompCommand.SUBSCRIBE == accessor.getCommand() && accessor.getDestination().startsWith("/sub/chat/room/")) {
+            String roomId = (String) ((List) Objects.requireNonNull((Map) message.getHeaders().get("nativeHeaders")).get("roomId")).get(0);
+            String simpSessionId = (String) message.getHeaders().get("simpSessionId");
+            roomSessionService.saveSession(simpSessionId, Long.parseLong(roomId));
+            roomService.roomCount(Long.parseLong(roomId), -1);
+        } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
+            String simpSessionId = (String) message.getHeaders().get("simpSessionId");
+            Long roomId = roomSessionService.deleteSession(simpSessionId);
+            if (roomId != 0l) {
+                roomService.roomCount(roomId, 1);
             }
         }
 

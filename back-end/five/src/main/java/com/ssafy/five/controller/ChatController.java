@@ -32,14 +32,4 @@ public class ChatController {
             return new ResponseEntity<>(response.get("result"), HttpStatus.OK);
         }
     }
-
-    @GetMapping("/chat/message/{roomId}")
-    public ResponseEntity<?> findAllMessage(@PathVariable Long roomId) {
-        Map<String, ?> response = chatService.findByRoomId(roomId);
-        if (response.get("result").equals(false)) {
-            return new ResponseEntity<>(false, HttpStatus.valueOf(409));
-        } else {
-            return new ResponseEntity<>(response.get("result"), HttpStatus.OK);
-        }
-    }
 }

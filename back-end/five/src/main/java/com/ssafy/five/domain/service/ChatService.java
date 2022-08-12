@@ -2,9 +2,11 @@ package com.ssafy.five.domain.service;
 
 
 import com.ssafy.five.controller.dto.req.ChatReqDto;
+import com.ssafy.five.controller.dto.res.ChatAlertDto;
 import com.ssafy.five.controller.dto.res.ChatResDto;
 import com.ssafy.five.domain.entity.Chat;
 import com.ssafy.five.domain.entity.Room;
+import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.ChatRepository;
 import com.ssafy.five.domain.repository.RoomRepository;
 import com.ssafy.five.domain.repository.UserRepository;
@@ -15,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
@@ -28,28 +32,26 @@ public class ChatService {
 
     @Transactional
     public void saveChat(ChatReqDto message) {
-        if (message.getUserId().equals("In")) {
+        if ("In".equals(message.getChatUserId())) {
             for (Chat chat : chatRepository.findAllByRoomId(roomRepository.findById(message.getRoomId()).get())) {
-                if (chat.getIsRead() >= 1) {
-                    chatRepository.save(Chat.builder()
-                            .chatId(chat.getChatId())
-                            .chatContent(chat.getChatContent())
-                            .chatDate(chat.getChatDate())
-                            .isRead(chat.getIsRead()-1)
-                            .chatUserId(chat.getChatUserId())
-                            .roomId(chat.getRoomId())
-                            .build());
+                if (chat.getIsRead() >= 1 && !chat.getChatUserId().equals(message.getChatContent())) {
+                    chat.updateIsRead();
                 }
             }
-            messaging.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
-        } else if (!message.getUserId().equals("Out")) {
+            Map<String, ChatReqDto> data = new HashMap<>();
+            data.put("data", message);
+            messaging.convertAndSend("/sub/chat/room/" + message.getRoomId(), data);
+        } else {
             Room room = roomRepository.findById(message.getRoomId()).get();
-            Chat save = chatRepository.save(message.saveChat(room));
-            messaging.convertAndSend("/sub/chat/room/" + message.getRoomId(), save);
+            Users user = userRepository.findById(message.getChatUserId()).get();
+            ChatAlertDto save = new ChatAlertDto(chatRepository.save(message.saveChat(room)), user);
+            Map<String, ChatAlertDto> data = new HashMap<>();
+            data.put("data", save);
+            messaging.convertAndSend("/sub/chat/room/" + message.getRoomId(), data);
             if (room.getRoomCount() > 0) {
-                String userId = room.getRoomUserId1().equals(message.getUserId())? room.getRoomUserId2() : room.getRoomUserId1();
+                String userId = room.getRoomUserId1().equals(message.getChatUserId()) ? room.getRoomUserId2() : room.getRoomUserId1();
                 if (userId != null) {
-                    messaging.convertAndSend("/sub/chat/user/" + userId, save);
+                    messaging.convertAndSend("/sub/chat/user/" + userId, data);
                 }
             }
         }
@@ -70,22 +72,6 @@ public class ChatService {
             Map<String, List> allChats = new HashMap<>();
             allChats.put("allChats", chats);
             response.put("result", allChats);
-            return response;
-        }
-    }
-
-    public Map<String, ?> findByRoomId(Long roomId) {
-        Optional<Room> room = roomRepository.findById(roomId);
-        if (room.isEmpty()) {
-            Map<String, Boolean> response = new HashMap<>();
-            response.put("result", false);
-            return response;
-        } else {
-            List<Chat> chats = chatRepository.findAllByRoomId(room.get());
-            Map<String, Map> response = new HashMap<>();
-            Map<String, List> chat = new HashMap<>();
-            chat.put("roomChats", chats.stream().map(ChatResDto::new).collect(Collectors.toList()));
-            response.put("result", chat);
             return response;
         }
     }

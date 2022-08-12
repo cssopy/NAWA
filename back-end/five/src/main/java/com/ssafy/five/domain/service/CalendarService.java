@@ -30,11 +30,12 @@ public class CalendarService {
     @Transactional
     public Map<String, ?> createTodo(CalReqDto calReqDto) {
         Users user = userRepository.findByUserId(calReqDto.getUserId());
+        Calendar calendar = calenderRepository.findByCalDateAndUsers(calReqDto.getCalDate(), user);
         if (user == null) {
             Map<String, Integer> response = new HashMap<>();
             response.put("result", 401);
             return response;
-        } else if (calenderRepository.findByCalDate(calReqDto.getCalDate()) == null) {
+        } else if (calendar == null) {
             calenderRepository.save(calReqDto.saveTodo(user));
             Map<String, Map> response = new HashMap<>();
             Map<String, List> calendars = new HashMap<>();
@@ -51,14 +52,13 @@ public class CalendarService {
     public Map<String, ?> findTodo(String userId) {
         Optional<Users> user = userRepository.findById(userId);
         if (user.isEmpty()) {
-            Map<String, Integer> response = new HashMap<>();
-            response.put("result", 401);
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("result", false);
             return response;
         } else {
             Map<String, Map> response = new HashMap<>();
-            List<Calendar> Todos = calenderRepository.findByUsers(user.get());
             Map<String, List> calendars = new HashMap<>();
-            calendars.put("calendars", Todos);
+            calendars.put("calendars", calenderRepository.findByUsers(user.get()).stream().map(CalResDto::new).collect(Collectors.toList()));
             response.put("result", calendars);
             return response;
         }
@@ -67,7 +67,7 @@ public class CalendarService {
     @Transactional
     public Map<String, ?> updateTodo(CalReqDto calReqDto) {
         Optional<Users> user = userRepository.findById(calReqDto.getUserId());
-        Calendar calendar = calenderRepository.findByCalDate(calReqDto.getCalDate());
+        Calendar calendar = calenderRepository.findByCalDateAndUsers(calReqDto.getCalDate(), user.get());
         if (user.isEmpty()) {
             Map<String, Integer> response = new HashMap<>();
             response.put("result", 401);
@@ -90,8 +90,8 @@ public class CalendarService {
     public Map<String, ?> deleteTodo(Long calId) {
         Optional<Calendar> Todo = calenderRepository.findById(calId);
         if (!Todo.isPresent()) {
-            Map<String, Integer> response = new HashMap<>();
-            response.put("result", 403);
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("result", false);
             return response;
         } else {
             calenderRepository.delete(Todo.get());

@@ -48,4 +48,3 @@ public class Block {
     @Column(name = "blockDate", nullable = false, columnDefinition = "timestamp")
     private Date blockDate;
 }
-

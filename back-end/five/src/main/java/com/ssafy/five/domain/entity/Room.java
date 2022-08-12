@@ -29,4 +29,16 @@ public class Room {
     @Column(name = "roomCount", nullable = false, columnDefinition = "int")
     private int roomCount;
 
+    public void updateUser1() {
+        this.roomUserId1 = null;
+    }
+
+    public void updateUser2() {
+        this.roomUserId2 = null;
+    }
+
+    public void updateRoomCount(int count) {
+        this.roomCount += count;
+    }
+
 }

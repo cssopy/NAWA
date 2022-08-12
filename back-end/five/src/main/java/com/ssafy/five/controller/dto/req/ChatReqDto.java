@@ -11,14 +11,14 @@ public class ChatReqDto {
 
     private Long roomId;
 
-    private String userId;
+    private String chatUserId;
     private String chatContent;
 
     public Chat saveChat(Room room) {
 
         return Chat.builder()
                 .roomId(room)
-                .chatUserId(this.userId)
+                .chatUserId(this.chatUserId)
                 .chatContent(this.chatContent)
                 .chatDate(new Date())
                 .isRead(room.getRoomCount())

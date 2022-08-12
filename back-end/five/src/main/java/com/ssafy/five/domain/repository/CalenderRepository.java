@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface CalenderRepository extends JpaRepository<Calendar, Long> {
 
-    Calendar findByCalDate(Date calDate);
+    Calendar findByCalDateAndUsers(Date calDate, Users user);
     List<Calendar> findByUsers(Users user);
 }
