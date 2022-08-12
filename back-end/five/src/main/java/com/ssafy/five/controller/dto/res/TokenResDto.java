@@ -10,12 +10,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TokenResDto {
-    @ApiModelProperty(example = "유저 아이디")
+    @ApiModelProperty(example = "testUser")
     private String userId;
 
-    @ApiModelProperty(example = "accessToken")
+    @ApiModelProperty(example = "...")
     private String accessToken;
 
-    @ApiModelProperty(example = "refreshToken")
+    @ApiModelProperty(example = "...")
     private String refreshToken;
 }

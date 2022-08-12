@@ -13,11 +13,11 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class LoginReqDto {
 
-    @ApiModelProperty(example = "유저 아이디")
+    @ApiModelProperty(example = "testUser")
     @NotBlank(message = "아이디를 입력하세요.")
     private String userId;
 
-    @ApiModelProperty(example = "비밀번호")
+    @ApiModelProperty(example = "12345678!")
     @NotBlank(message = "비밀번호를 입력하세요.")
     private String password;
 

@@ -11,9 +11,9 @@ import lombok.*;
 @AllArgsConstructor
 public class TokenReqDto {
 
-    @ApiModelProperty(example = "유저 아이디")
+    @ApiModelProperty(example = "testUser")
     private String userId;
 
-    @ApiModelProperty(example = "refreshToken")
+    @ApiModelProperty(example = "...")
     private String refreshToken;
 }

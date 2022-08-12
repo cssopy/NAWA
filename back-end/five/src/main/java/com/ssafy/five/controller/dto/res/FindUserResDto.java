@@ -17,30 +17,30 @@ import java.util.List;
 @AllArgsConstructor
 public class FindUserResDto {
 
-    @ApiModelProperty(example = "닉네임")
+    @ApiModelProperty(example = "test")
     private String nickname;
 
-    @ApiModelProperty(example = "자기소개")
+    @ApiModelProperty(example = "안녕하세요 반갑습니다.")
     private String ment;
 
-    @ApiModelProperty(example = "성별")
+    @ApiModelProperty(example = "MAN")
     private GenderType genderType;
 
-    @ApiModelProperty(example = "점수")
+    @ApiModelProperty(example = "0")
     private float point;
 
-    @ApiModelProperty(example = "상태")
+    @ApiModelProperty(example = "NORMAL")
     private StateType stateType;
 
-    @ApiModelProperty(example = "신고받은 횟수")
+    @ApiModelProperty(example = "0")
     private int reportCount;
 
-    @ApiModelProperty(example = "정지 해제일")
+    @ApiModelProperty(example = "2022.01.01")
     private Date endDate;
 
     @ApiModelProperty(example = "프로필 이미지")
     private ProfileImg profileImg;
 
-    @ApiModelProperty(example = "역할")
+    @ApiModelProperty(example = "ROLE_USER")
    private List<String> roles;
 }

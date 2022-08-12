@@ -12,9 +12,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SmsReqDto {
 
-    @ApiModelProperty(example = "인증받을 전화번호")
+    @ApiModelProperty(example = "01012345678")
     private String recipientPhoneNumber;
 
-    @ApiModelProperty(example = "인증번호")
+    @ApiModelProperty(example = "7840")
     private String certNumber;
 }
