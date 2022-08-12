@@ -44,6 +44,10 @@ public class UserService {
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
+        if(userRepository.findByEmailIdAndEmailDomain(signUpReqDto.getEmailId(), signUpReqDto.getEmailDomain()) != null){
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+
         Calendar cal = Calendar.getInstance();
         cal.set(2022, 0, 1);
 
