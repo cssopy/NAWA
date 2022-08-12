@@ -66,13 +66,13 @@ public class UserService {
                 .build();
 
 
-        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
-
-        if(!msg.isAuth()){
-            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
-        }
+//        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
+//
+//        if(!msg.isAuth()){
+//            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+//        }
         userRepository.save(user);
-        smsRepository.delete(msg);
+//        smsRepository.delete(msg);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
