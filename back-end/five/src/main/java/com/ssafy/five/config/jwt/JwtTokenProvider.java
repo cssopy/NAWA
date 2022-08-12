@@ -31,12 +31,13 @@ public class JwtTokenProvider {
     private long refreshTokenExpireTime = 1000L * 60 * 60 * 24 * 15; // refresh 토큰 유효기간 15일
 
     private final CustomUserDetailsService userDetailsService;
+
     @PostConstruct
-    protected void init(){
+    protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public TokenResDto createToken(String userId, List<String> roles){
+    public TokenResDto createToken(String userId, List<String> roles) {
 
         Date now = new Date();
 
@@ -61,36 +62,40 @@ public class JwtTokenProvider {
     }
 
     // token 인증 정보 조회
-    public Authentication getAuthentication(String token){
+    public Authentication getAuthentication(String token) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserId(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     // token 사용자 추출
-    public String getUserId(String token){
+    public String getUserId(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
     // Header에서 token 추출
-    public String resolveToken(HttpServletRequest request){
+    public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
         return null;
     }
 
     // token 유효성 검증
-    public boolean validateToken(String token){
+    public boolean validateToken(String token) {
+        System.out.println("token = " + token);
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            System.out.println(claims.getBody().getExpiration());
+            System.out.println(new Date());
             return !claims.getBody().getExpiration().before(new Date());
-        } catch(Exception e){
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
 
-    public String validateRefreshToken(String token){
+    public String validateRefreshToken(String token) {
         try {
             JSONObject object = new JSONObject(token);
             String refreshToken = object.getString("refreshToken");
@@ -102,14 +107,14 @@ public class JwtTokenProvider {
             return null;
         }
         // refresh 토큰이 만료되었을 때
-        catch(ExpiredJwtException e){
+        catch (ExpiredJwtException e) {
             throw new ExpiredException();
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String recreateAccessToken(String userId, Object roles){
+    public String recreateAccessToken(String userId, Object roles) {
         Claims claims = Jwts.claims().setSubject(userId);
         claims.put("roles", roles);
         Date now = new Date();
