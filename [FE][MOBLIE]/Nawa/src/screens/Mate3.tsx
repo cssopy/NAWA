@@ -11,202 +11,34 @@ import { useSelector } from 'react-redux';
 import { Dimensions } from "react-native";
 import NaverMapView, {Circle, Marker} from "react-native-nmap";
 
+import matchingSlice from "../slices/matching";
+
+
 // firebase 클라우드
 import firestore from '@react-native-firebase/firestore';
 import { ActivityIndicator } from "react-native-paper";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-// web RTC
-import {
-  RTCPeerConnection,
-  RTCIceCandidate,
-  RTCSessionDescription,
-  RTCView,
-  MediaStream,
-  mediaDevices,
-} from 'react-native-webrtc';
+
 
 
 
 const Mate3 = ( {navigation} ) => {
+  const dispatch = useAppDispatch();
   // Online matching
   const [realTime, setRealTime] = useState([]);
   const [sortedUser, setSortedUser] = useState([]);
-  const dispatch = useAppDispatch();
   const [online, setOnline] = useState(false);
   const [onAir, setOnAir] = useState(false);
-  // const nickname = useSelector((state : RootState) => state.user.nickname);
-  const nickname = 'phone'
+  
+  const nickname = useSelector((state : RootState) => state.user.nickname);
+  if (!! nickname) {Alert.alert('알림', '닉네임 설정이 필요합니다. 하고 오세요')}
   const category = useSelector((state : RootState) => state.matching.category);
   const location = useSelector((state : RootState) => state.matching.location);
   const distance = useSelector((state : RootState) => state.matching.distance);
   const [onLocation, setOnLocation] = useState({longitude : location.longitude , latitude : location.latitude});
   
-  // web RTC
-  const [remoteStream, setRemoteStream] = useState(null);
-  const [webcamStarted, setWebcamStarted] = useState(false);
-  const [localStream, setLocalStream] = useState(null);
-  const [channelId, setChannelId] = useState('');
-
-  const [matching, setMatching] = useState([])
-
-  const pc = useRef();
-
-  // 서버 설정 stun
-  const servers = {
-    iceServers: [
-      {
-        urls: [
-          'stun:stun1.l.google.com:19302',
-          'stun:stun2.l.google.com:19302',
-        ],
-      },
-    ],
-    iceCandidatePoolSize: 10, // 훕 10개 까지만
-  };
-
-
-  const startCall = async (targetname) => {
-    pc.current = new RTCPeerConnection(servers);
-    const local = await mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
-    pc.current.addStream(local);
-    setLocalStream(local);
-
-    const remote = new MediaStream();
-    setRemoteStream(remote);
-
-    // Push tracks from local stream to peer connection
-    local.getTracks().forEach(track => {
-      pc.current.getLocalStreams()[0].addTrack(track);
-    });
-
-    // Pull tracks from peer connection, add to remote video stream
-    pc.current.ontrack = event => {
-      event.streams[0].getTracks().forEach(track => {
-        remote.addTrack(track);
-      });
-    };
-
-    pc.current.onaddstream = event => {
-      setRemoteStream(event.stream);
-    };
-
-    const channelDoc = firestore().collection('MATCHING_GUMI').doc(targetname);
-    const offerCandidates = channelDoc.collection('offerCandidates');
-    const answerCandidates = channelDoc.collection('answerCandidates');
-
-    setChannelId(targetname);
-
-    pc.current.onicecandidate = async event => {
-      if (event.candidate) {
-        await offerCandidates.add(event.candidate.toJSON());
-      }
-    };
-
-    //create offer
-    const offerDescription = await pc.current.createOffer();
-    await pc.current.setLocalDescription(offerDescription);
-
-    const offer = {
-      sdp: offerDescription.sdp,
-      type: offerDescription.type,
-    };
-
-    await channelDoc.set({offer});
-
-    // Listen for remote answer
-    channelDoc.onSnapshot(snapshot => {
-      const data = snapshot.data();
-      if (!pc.current.currentRemoteDescription && data?.answer) {
-        const answerDescription = new RTCSessionDescription(data.answer);
-        pc.current.setRemoteDescription(answerDescription);
-      }
-    });
-
-    // When answered, add candidate to peer connection
-    answerCandidates.onSnapshot(snapshot => {
-      snapshot.docChanges().forEach(change => {
-        if (change.type === 'added') {
-          const data = change.doc.data();
-          pc.current.addIceCandidate(new RTCIceCandidate(data));
-        }
-      });
-    });
-  };
-  
-
-  const joinCall = async () => {
-    pc.current = new RTCPeerConnection(servers);
-    const local = await mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
-    pc.current.addStream(local);
-    setLocalStream(local);
-
-    const remote = new MediaStream();
-    setRemoteStream(remote);
-
-    // Push tracks from local stream to peer connection
-    local.getTracks().forEach(track => {
-      pc.current.getLocalStreams()[0].addTrack(track);
-    });
-
-    // Pull tracks from peer connection, add to remote video stream
-    pc.current.ontrack = event => {
-      event.streams[0].getTracks().forEach(track => {
-        remote.addTrack(track);
-      });
-    };
-
-    pc.current.onaddstream = event => {
-      setRemoteStream(event.stream);
-    };
-    
-
-    const channelDoc = firestore().collection('MATCHING_GUMI').doc(nickname);
-    const offerCandidates = channelDoc.collection('offerCandidates');
-    const answerCandidates = channelDoc.collection('answerCandidates');
-    
-    setChannelId(nickname);
-
-    pc.current.onicecandidate = async event => {
-      if (event.candidate) {
-        await answerCandidates.add(event.candidate.toJSON());
-      }
-    };
-
-    const channelDocument = await channelDoc.get();
-    const channelData = channelDocument.data();
-
-    const offerDescription = channelData.offer;
-
-    await pc.current.setRemoteDescription(
-      new RTCSessionDescription(offerDescription),
-    );
-
-    const answerDescription = await pc.current.createAnswer();
-    await pc.current.setLocalDescription(answerDescription);
-
-    const answer = {
-      type: answerDescription.type,
-      sdp: answerDescription.sdp,
-    };
-
-    await channelDoc.update({answer});
-
-    offerCandidates.onSnapshot(snapshot => {
-      snapshot.docChanges().forEach(change => {
-        if (change.type === 'added') {
-          const data = change.doc.data();
-          pc.current.addIceCandidate(new RTCIceCandidate(data));
-        }
-      });
-    });
-  };
+ 
 
 
 
@@ -235,16 +67,7 @@ const Mate3 = ( {navigation} ) => {
       })
   }
 
-  const disconnecting = async () => {
-    firestore()
-      .collection('MATCHING_GUMI')
-      .doc(channelId)
-      .delete()
-      .then( () => {
-        setOnline(false);
-        console.log('화상채팅 종료 !')
-      })
-  }
+
   
   
   
@@ -281,7 +104,12 @@ const Mate3 = ( {navigation} ) => {
     if (!!onWaiting.data()) {
       setOnAir(true)
       Alert.alert('알림', '누군가 당신에게 나와! 라고 외쳤습니다. 곧 화상채팅이 연결 됩니다.')
-      joinCall()
+      dispatch(
+        matchingSlice.actions.setS({
+          settings : nickname
+        })
+      )      
+      navigation.navigate('Mate4', nickname)
     }
   }
 
@@ -337,20 +165,18 @@ const Mate3 = ( {navigation} ) => {
   const conncting = async (targetUser) => {
     userOut(nickname); 
     userOut(targetUser);
-    startCall(targetUser)
-    // const onWaiting = firestore().collection('MATCHING_GUMI').doc(targetUser);
-    // await onWaiting.set({
-    //   offer : nickname,
-    //   target : targetUser
-    // }).then( () => {});
+    dispatch(
+      matchingSlice.actions.setS({
+        settings : targetUser
+      })
+    )
+    navigation.navigate('Mate4')
   }
 
 
 
   return (
     <View style={{height:SCREEN_HEIGHT}}>
-      {!onAir ?
-      <>
         <View style={styles.topBox}>
           <View style={styles.infoBox}>
             <Ionicons style={{marginLeft:2}} onPress={() => navigation.navigate('Mate2')} size={22} name='arrow-back-outline' color='white' />
@@ -359,6 +185,8 @@ const Mate3 = ( {navigation} ) => {
           </View>
           <Progress.Bar style={{marginHorizontal:4, borderColor: 'rgb(0, 197, 145)'}} progress ={0.75} width={constants.width - 10} height={6} unfilledColor={'white'} />
         </View>  
+
+
         <View style={{height:SCREEN_HEIGHT/2, borderRadius:20}}>
           <NaverMapView style={{width: '100%', height: '100%', zIndex:-2}}
             center={{...onLocation, zoom: zooming(distance)}}
@@ -377,18 +205,23 @@ const Mate3 = ( {navigation} ) => {
                   <></>
                 }
           </NaverMapView>
-          <View style={{flexDirection:"row", position:"absolute", top:SCREEN_HEIGHT/2 - 50, borderRadius:30, backgroundColor:'white',elevation:8, padding:5 , marginLeft:5 }}>
+          <View style={{flexDirection:"row", position:"absolute", top:SCREEN_HEIGHT/2 - 50, borderRadius:30, padding:5 , marginLeft:5 }}>
             {online ?
             <>
-              <ActivityIndicator size={"small"} color="black" ></ActivityIndicator>
-              <Text style={{alignItems:"baseline", fontSize:19, color:'black'}} > 매칭중 ... 현재 {realTime.length} 명 </Text>
+              
+              <Button buttonStyle={{}}>
+                <ActivityIndicator size={"small"} color="black" ></ActivityIndicator>
+                <Text style={{justifyContent:'center', fontSize:19, color:'black'}}>
+                  매칭중... 현재 {realTime.length} 명
+                </Text>
+              </Button>
             </>
             :
               <Text style={{alignItems:"baseline", fontSize:19, color:'black'}} > 매칭 대기열에 입장하세요 </Text>
             }
           </View>
         </View>
-        {!online  ? 
+        {!online ? 
           <Button onPress={() => {userInit(); setOnline(true);}} >대기열 입장</Button>
           : 
           <Button onPress={() => {userOut(nickname); setOnline(false);}} >대기열 취소</Button>
@@ -400,43 +233,13 @@ const Mate3 = ( {navigation} ) => {
           return (
           <View key={idx} style={{flexDirection:"row" , justifyContent:'center', width:constants.width}}>
             <Button style={{flex:5 }} onPress={() => changingTarget(item.location)}>{item.nickname}님 / {(((location.latitude - item.location.latitude)**2 + (location.longitude - item.location.longitude)**2)**0.5).toFixed(3)} km</Button>
-            <Button color='red' style={{flex:2}} onPress={() => {conncting(item.nickname); }}>시작하기</Button>
+            <Button color='red' style={{flex:2}} onPress={() => {navigation.navigate('Mate4', item.nickname) }}>시작하기</Button>
           </View>
           )  
         }
         })}
-        </ScrollView> :
-        <></>
-        }
-      </>
-      :
-      <>
-      <KeyboardAvoidingView style={styles.body} behavior="position">
-        <SafeAreaView>
-          {localStream && (
-            <View style={styles.localStream}>
-            <RTCView
-              streamURL={localStream?.toURL()}
-              objectFit="cover"
-              mirror
-            />
-            </View>
-          )}
-
-          {remoteStream && ( 
-            <RTCView
-              streamURL={remoteStream?.toURL()}
-              style={styles.remoteStream}
-              objectFit="cover"
-              mirror
-            />
-          )}
-        </SafeAreaView>
-      </KeyboardAvoidingView>
-          <Button style={{position:"absolute"}} onPress={() => disconnecting()}>종료</Button>
-      </>
-      }
-
+        </ScrollView> : <></>}
+      {/* <Button onPress={() => {navigation.navigate('Mate4', )}}> 연결확인 </Button> */}
       </View>
     );
   }

@@ -106,7 +106,7 @@ function AppInner() {
       <NavigationContainer>
         {/* <Drawer.Navigator>
         </Drawer.Navigator> */}
-        {userId ? (
+        {!userId ? (
           <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
