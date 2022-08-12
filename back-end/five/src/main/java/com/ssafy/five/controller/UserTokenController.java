@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -27,32 +25,25 @@ public class UserTokenController {
     @PostMapping("/token/login")
     public TokenResDto login(@Valid @RequestBody LoginReqDto loginReqDto) throws Exception {
         TokenResDto tokenResDto = userTokenService.login(loginReqDto.getUserId(), loginReqDto.getPassword());
-
         return tokenResDto;
     }
 
     @Operation(summary = "로그아웃", description = "유저 아이디를 통해 유저가 없으면 false 반환, 있으면 db에 저장된 refreshToken 삭제")
     @PostMapping("/user/logout")
-    public ResponseEntity<?> logout(@RequestBody String userId) throws Exception {
+    public ResponseEntity<?> logout(@RequestBody String userId) {
         return userTokenService.logout(userId);
     }
 
     @Operation(summary = "refresh 토큰 유효성 검사", description = "refresh 토큰이 만료 되었으면 재로그인, 만료되지 않았으면 access 토큰 재생성 후 보냄")
     @PostMapping("/checktoken")
-    public Map<String, String> refreshToken(@RequestBody HashMap<String, String> bodyJson) throws Exception{
-        Map<String, String> map = userTokenService.validateRefreshToken(bodyJson.get("refreshToken"));
-        if(map.get("status").equals("403")){
-            throw new Exception(map.get("message"));
-        }
-        return map;
+    public ResponseEntity<?> refreshToken(@RequestBody TokenReqDto tokenReqDto) throws Exception{
+        return userTokenService.validateRefreshToken(tokenReqDto);
     }
 
     @Operation(summary = "자동 로그인", description = "자동 로그인")
-    @PutMapping("/user/autoLogin")
-    public TokenResDto autoLogin(@Valid @RequestBody TokenReqDto tokenReqDto) throws Exception {
-        TokenResDto tokenResDto = userTokenService.autoLogin(tokenReqDto);
-
-        return tokenResDto;
+    @PutMapping("/autoLogin")
+    public ResponseEntity<?> autoLogin(@Valid @RequestBody TokenReqDto tokenReqDto, HttpServletRequest request) {
+        return userTokenService.autoLogin(tokenReqDto, request);
     }
 
 }
