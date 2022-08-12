@@ -56,17 +56,17 @@ function FindInfo({navigation} : FindInfoScreenProps) {
             return Alert.alert('이메일 나와 !', '올바른 이메일 주소가 아닙니다.');
         }
         try {
-            const response = await axios.post(`http://i7d205.p.ssafy.io:8080/user/find-id`, {
+            const response = await axios.post(`http://i7d205.p.ssafy.io:8080/find-id`, {
                 "emailDomain" : email.split('@')[1],
                 "emailId" : email.split('@')[0],
-
             });
             setEmailCheck(true)
             console.log(response.data)
-            Alert.alert('아이디 찾기', '아이디: ', response.data)
+            Alert.alert('아이디 찾기', '아이디: ' + response.data)
         } catch (error) {
             const errorResponse = (error as AxiosError).response;
             if (errorResponse) {
+                setEmailCheck(false)
                 console.log(errorResponse.data)
                 Alert.alert('아이디 찾기', '이메일에 해당하는 아이디가 없습니다.')
             }
@@ -88,7 +88,7 @@ function FindInfo({navigation} : FindInfoScreenProps) {
             return Alert.alert('이메일 나와 !', '올바른 이메일 주소가 아닙니다.');
         }
         try {
-            const response = await axios.post(`http://i7d205.p.ssafy.io:8080/user/give-temp-pw`, {
+            const response = await axios.post(`http://i7d205.p.ssafy.io:8080/give-temp-pw`, {
                 "emailDomain" : emailpw.split('@')[1],
                 "emailId" : emailpw.split('@')[0],
                 "userId": userId
@@ -97,7 +97,7 @@ function FindInfo({navigation} : FindInfoScreenProps) {
             if (response.data) {
                 setEmailpwCheck(true)
                 setUserIdCheck(true)
-                Alert.alert('비밀번호 찾기', '이메일로 임시 비밀번호를 발송하였습니다.')
+                Alert.alert('비밀번호 찾기', '임시 비밀번호를 이메일로 발송하였습니다.')
             }
             else {
                 Alert.alert('비밀번호 찾기', '아이디와 이메일에 해당하는 정보가 없습니다.')
@@ -147,7 +147,7 @@ function FindInfo({navigation} : FindInfoScreenProps) {
             </View>
             <View style={ styles.viewTop }/>
             <View style={styles.inputWrapper}>
-                <Text style={styles.mainLabel}>비밀번호 찾기</Text>
+                <Text style={styles.mainLabel}>임시비밀번호 발급</Text>
                 <Text style={styles.label}>이메일</Text>
                 <View>
                     <TextInput
