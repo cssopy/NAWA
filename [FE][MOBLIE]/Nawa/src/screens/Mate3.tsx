@@ -46,7 +46,10 @@ const Mate3 = ( {navigation} ) => {
   const [remoteStream, setRemoteStream] = useState(null);
   const [webcamStarted, setWebcamStarted] = useState(false);
   const [localStream, setLocalStream] = useState(null);
-  const [channelId, setChannelId] = useState(null);
+  const [channelId, setChannelId] = useState('');
+
+  const [matching, setMatching] = useState([])
+
   const pc = useRef();
 
   // 서버 설정 stun
@@ -62,7 +65,8 @@ const Mate3 = ( {navigation} ) => {
     iceCandidatePoolSize: 10, // 훕 10개 까지만
   };
 
-  const startWebcam = async () => {
+
+  const startCall = async (targetname) => {
     pc.current = new RTCPeerConnection(servers);
     const local = await mediaDevices.getUserMedia({
       video: true,
@@ -70,17 +74,16 @@ const Mate3 = ( {navigation} ) => {
     });
     pc.current.addStream(local);
     setLocalStream(local);
+
     const remote = new MediaStream();
     setRemoteStream(remote);
 
-
     // Push tracks from local stream to peer connection
     local.getTracks().forEach(track => {
-      // console.log(pc.current.getLocalStreams());
       pc.current.getLocalStreams()[0].addTrack(track);
     });
 
-    // Pull tracks from remote stream, add to video stream
+    // Pull tracks from peer connection, add to remote video stream
     pc.current.ontrack = event => {
       event.streams[0].getTracks().forEach(track => {
         remote.addTrack(track);
@@ -91,19 +94,11 @@ const Mate3 = ( {navigation} ) => {
       setRemoteStream(event.stream);
     };
 
-    setWebcamStarted(true);
-  };
-
-  const startCall = async (targetName) => {
-    startWebcam()
-
-    const channelDoc = firestore().collection('MATCHING_GUMI').doc(targetName);
-    // console.log(channelDoc)
-    // console.log(channelDoc.id)
+    const channelDoc = firestore().collection('MATCHING_GUMI').doc(targetname);
     const offerCandidates = channelDoc.collection('offerCandidates');
     const answerCandidates = channelDoc.collection('answerCandidates');
 
-    setChannelId(channelDoc.id);
+    setChannelId(targetname);
 
     pc.current.onicecandidate = async event => {
       if (event.candidate) {
@@ -141,12 +136,42 @@ const Mate3 = ( {navigation} ) => {
       });
     });
   };
+  
 
   const joinCall = async () => {
-    startWebcam()
+    pc.current = new RTCPeerConnection(servers);
+    const local = await mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    });
+    pc.current.addStream(local);
+    setLocalStream(local);
+
+    const remote = new MediaStream();
+    setRemoteStream(remote);
+
+    // Push tracks from local stream to peer connection
+    local.getTracks().forEach(track => {
+      pc.current.getLocalStreams()[0].addTrack(track);
+    });
+
+    // Pull tracks from peer connection, add to remote video stream
+    pc.current.ontrack = event => {
+      event.streams[0].getTracks().forEach(track => {
+        remote.addTrack(track);
+      });
+    };
+
+    pc.current.onaddstream = event => {
+      setRemoteStream(event.stream);
+    };
+    
+
     const channelDoc = firestore().collection('MATCHING_GUMI').doc(nickname);
     const offerCandidates = channelDoc.collection('offerCandidates');
     const answerCandidates = channelDoc.collection('answerCandidates');
+    
+    setChannelId(nickname);
 
     pc.current.onicecandidate = async event => {
       if (event.candidate) {
@@ -210,7 +235,16 @@ const Mate3 = ( {navigation} ) => {
       })
   }
 
-
+  const disconnecting = async () => {
+    firestore()
+      .collection('MATCHING_GUMI')
+      .doc(channelId)
+      .delete()
+      .then( () => {
+        setOnline(false);
+        console.log('화상채팅 종료 !')
+      })
+  }
   
   
   
@@ -237,12 +271,13 @@ const Mate3 = ( {navigation} ) => {
   
 
   // 매칭 성사
-  const [matching, setMatching] = useState([])
+  
 
   const getData2 = async () => {
     const onWaiting = await firestore().collection('MATCHING_GUMI').doc(nickname).get();
-    console.log(onWaiting.data())
-    
+    // console.log(onWaiting.data())
+    if (onAir) return 
+
     if (!!onWaiting.data()) {
       setOnAir(true)
       Alert.alert('알림', '누군가 당신에게 나와! 라고 외쳤습니다. 곧 화상채팅이 연결 됩니다.')
@@ -250,7 +285,6 @@ const Mate3 = ( {navigation} ) => {
     }
   }
 
-  if (!onAir) {
   useEffect( () => {
       function onResult(QuerySnapshot) {
         getData2()
@@ -260,7 +294,6 @@ const Mate3 = ( {navigation} ) => {
       }
       firestore().collection('MATCHING_GUMI').onSnapshot(onResult, onError);
   },[])
-  }
 
 
   // 자동정렬 (거리)
@@ -303,7 +336,7 @@ const Mate3 = ( {navigation} ) => {
 
   const conncting = async (targetUser) => {
     userOut(nickname); 
-    // userOut(targetUser);
+    userOut(targetUser);
     startCall(targetUser)
     // const onWaiting = firestore().collection('MATCHING_GUMI').doc(targetUser);
     // await onWaiting.set({
@@ -377,27 +410,31 @@ const Mate3 = ( {navigation} ) => {
         }
       </>
       :
+      <>
       <KeyboardAvoidingView style={styles.body} behavior="position">
         <SafeAreaView>
           {localStream && (
+            <View style={styles.localStream}>
             <RTCView
               streamURL={localStream?.toURL()}
-              style={styles.stream}
               objectFit="cover"
               mirror
             />
+            </View>
           )}
 
-          {remoteStream && (
+          {remoteStream && ( 
             <RTCView
               streamURL={remoteStream?.toURL()}
-              style={styles.stream}
+              style={styles.remoteStream}
               objectFit="cover"
               mirror
             />
           )}
         </SafeAreaView>
       </KeyboardAvoidingView>
+          <Button style={{position:"absolute"}} onPress={() => disconnecting()}>종료</Button>
+      </>
       }
 
       </View>
@@ -432,10 +469,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     ...StyleSheet.absoluteFill,
   },
-  stream: {
-    flex: 2,
-    width: 200,
-    height: 200,
+  remoteStream: {
+    width: constants.width,
+    height: constants.height,
+    borderColor:'white'
+  },
+  localStream : {
+    position : "absolute",
+    backgroundColor:'black',
+    borderRadius:20,
+    width:150,
+    height:180,
+    left:constants.width/14
   },
   buttons: {
     alignItems: 'flex-start',

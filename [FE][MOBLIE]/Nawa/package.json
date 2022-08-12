@@ -14,6 +14,7 @@
     "@hapi/joi": "^17.1.1",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-firebase/app": "^15.3.0",
+    "@react-native-firebase/database": "^15.3.0",
     "@react-native-firebase/firestore": "^15.3.0",
     "@react-navigation/bottom-tabs": "^6.3.2",
     "@react-navigation/drawer": "^6.4.3",

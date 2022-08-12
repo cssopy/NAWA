@@ -48,7 +48,6 @@ function SignUp({navigation} : SignUpScreenProps) {
     const nameRef = useRef<TextInput | null>(null);
     const nickNameRef = useRef<TextInput | null>(null);
     const numberRef = useRef<TextInput | null>(null);
-    const genderRef = useRef<TextInput | null>(null);
 
     // 아이디 닉네임 중복 / 번호 인증 / 비밀번호 확인test
     const [openId, setOpenId] = useState('');

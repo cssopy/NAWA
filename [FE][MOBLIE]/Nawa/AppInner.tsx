@@ -25,6 +25,9 @@ import userSlice from './src/slices/user';
 import SplashScreen from 'react-native-splash-screen';
 import AsyncStorage from '@react-native-community/async-storage';
 
+
+
+
 SplashScreen.show()
 
 export type LoggedInParamList = {  //다른 곳에서도 쓸꺼니까 export
@@ -56,9 +59,10 @@ function AppInner() {
   useEffect(() => {
     const getTokenAndRefresh = async () => {
       try {
-        const userId = await AsyncStorage.getItem('userId')
-        const accessToken = await AsyncStorage.getItem('accessToken')
-        const refreshToken = await EncryptedStorage.getItem('refreshToken')
+        const userId = await AsyncStorage.getItem('userId');
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        const nickname = await AsyncStorage.getItem('nickname');
+        const refreshToken = await EncryptedStorage.getItem('refreshToken');
         if (!accessToken) {
           SplashScreen.hide();
           return;
@@ -74,10 +78,11 @@ function AppInner() {
         dispatch(
           userSlice.actions.setUser({ // redux state는 값이 변하면, useselector로 참조하고 있는 모든 컴포넌트가 다시 렌더링.
             userId : response.data.userId,
-            accessToken : response.data.accessToken
+            accessToken : response.data.accessToken,
+            nickname : nickname
           }),
         );
-        EncryptedStorage.setItem(
+        AsyncStorage.setItem(
           'accessToken',
           response.data.accessToken
         )

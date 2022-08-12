@@ -58,7 +58,6 @@ function SignIn({navigation}: SignInScreenProps) {
       dispatch(
         userSlice.actions.setUser({ // 이 액션이 dispatch 되면 
           userId : response.data.userId,
-          nickname : '',
           accessToken : response.data.accessToken,
         }),
         );
@@ -79,7 +78,7 @@ function SignIn({navigation}: SignInScreenProps) {
     } catch (error) {
       const errorResponse = (error as AxiosError).response;
       if (errorResponse) {
-        Alert.alert('알림', errorResponse.data.message);
+        Alert.alert('알림', '옳바르지 않은 아이디 또는 비밀번호 입니다.');
       }
       
     } finally {
