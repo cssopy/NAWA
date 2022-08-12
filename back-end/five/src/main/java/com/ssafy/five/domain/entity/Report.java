@@ -3,7 +3,6 @@ package com.ssafy.five.domain.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Builder

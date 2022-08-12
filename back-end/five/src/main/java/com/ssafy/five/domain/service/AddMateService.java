@@ -12,6 +12,7 @@ import com.ssafy.five.domain.repository.BlockRepository;
 import com.ssafy.five.domain.repository.MateRepository;
 import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,8 @@ public class AddMateService {
     private final MateRepository mateRepository;
     private final BlockRepository blockRepository;
     private final RoomService roomService;
+    private final SimpMessageSendingOperations messaging;
+
 
     @Transactional
     public int addMate(AddMateReqDto addMateReqDto) {
@@ -39,10 +42,10 @@ public class AddMateService {
 
         int response = 200;
 
-        if (user1.equals(null)) {
+        if (user1 == null) {
             // 내 아이디가 잘못된 경우
             response = 401;
-        } else if (user2.equals(null)) {
+        } else if (user2 == null) {
             // 상대방이 존재하지 않는 경우
             response = 400;
         } else {
@@ -83,7 +86,13 @@ public class AddMateService {
                 // 나 자신에 대한 친구 요청인 경우
                 response = 410;
             } else {
-                addMateRepository.save(addMateReqDto.addMate(user1, user2));
+                Map<String, Map> data = new HashMap<>();
+                Map<String, String> message = new HashMap<>();
+                message.put("chatUserId", "mateRequest");
+                message.put("detail", user1.getNickname() +  "님으로 부터 메이트 신청이 들어왔습니다.");
+                message.put("addMateId", addMateRepository.save(addMateReqDto.addMate(user1, user2)).getAddMateId().toString());
+                data.put("data", message);
+                messaging.convertAndSend("/sub/chat/user/" + user2.getUserId(), data);
             }
         }
 
@@ -99,8 +108,10 @@ public class AddMateService {
             return response;
         } else {
             List<AddMate> addMateList = addMateRepository.findAllByAddMateTo(user);
-            Map<String, List> response = new HashMap<>();
-            response.put("result", addMateList.stream().map(AddMateResDto::new).collect(Collectors.toList()));
+            Map<String, Map> response = new HashMap<>();
+            Map<String, List> addMates = new HashMap<>();
+            addMates.put("allMateRequest", addMateList.stream().map(AddMateResDto::new).collect(Collectors.toList()));
+            response.put("result", addMates);
             return response;
         }
     }
@@ -110,7 +121,7 @@ public class AddMateService {
         Optional<AddMate> addMate = addMateRepository.findById(mateId);
         int response = 200;
 
-        if (!addMate.isPresent()) {
+        if (addMate.isEmpty()) {
             // addmate 기록이 없는 경우
             response = 401;
         } else {
@@ -139,7 +150,7 @@ public class AddMateService {
                 response = 403;
             } else {
                 mateRepository.save(Mate.builder().mateUserId1(user1).mateUserId2(user2).build());
-                roomService.createRoom(user1, user2);
+                roomService.createRoom(user1.getUserId(), user2.getUserId());
             }
             addMateRepository.delete(addMate.get());
         }

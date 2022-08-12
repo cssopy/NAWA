@@ -39,3 +39,4 @@ public class Mate {
     private Users mateUserId2;
 
 }
+

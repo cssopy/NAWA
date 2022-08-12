@@ -5,10 +5,10 @@ import com.ssafy.five.controller.dto.req.BlockReqDto;
 import com.ssafy.five.controller.dto.req.ReportReqDto;
 import com.ssafy.five.domain.entity.EnumType.StateType;
 import com.ssafy.five.domain.entity.Users;
-import com.ssafy.five.domain.repository.ReportRepositery;
+import com.ssafy.five.domain.repository.ReportRepository;
 import com.ssafy.five.domain.repository.UserRepository;
-import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +19,10 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class ReportService {
 
-    private final ReportRepositery reportRepositery;
+    private final ReportRepository reportRepository;
     private final BlockService blockService;
     private final UserRepository userRepository;
+    private final SimpMessageSendingOperations messaging;
 
     @Transactional
     public Map<String, Integer> reported(ReportReqDto reportReqDto) {
@@ -36,10 +37,10 @@ public class ReportService {
             response.put("result", 401);
         } else if (reportReqDto.getReportTo().equals(reportReqDto.getReportFrom())) {
             response.put("result", 410);
-        } else if (reportRepositery.findByReportFromAndReportTo(reportReqDto.getReportFrom(), reportReqDto.getReportTo()).isPresent()) {
+        } else if (reportRepository.findByReportFromAndReportTo(reportReqDto.getReportFrom(), reportReqDto.getReportTo()).isPresent()) {
             response.put("result", 403);
         } else {
-            reportRepositery.save(reportReqDto.reported());
+            reportRepository.save(reportReqDto.reported());
 
             // 유저 정보 업데이트
             int reportCount = user.getReportCount() + 1;
@@ -59,25 +60,20 @@ public class ReportService {
             }
 
             // 유저 정보 업데이트
-            Users updateUser = Users.builder()
-                    .userId(user.getUserId())
-                    .password(user.getPassword())
-                    .birth(user.getBirth())
-                    .emailId(user.getEmailId())
-                    .emailDomain(user.getEmailDomain())
-                    .nickname(user.getNickname())
-                    .ment(user.getMent())
-                    .number(user.getNumber())
-                    .genderType(user.getGenderType())
-                    //                .picture(user.getPicture())
-                    .point(user.getPoint())
-                    .reportCount(reportCount)
-                    .stateType(userStateType)
-                    .endDate(endDate)
-                    .roles(user.getRoles())
-                    .build();
+            user.updateReportCount(user.getReportCount()+1);
+            user.updateEndDate(endDate);
+            user.updateStateType(userStateType);
 
-            userRepository.save(updateUser);
+
+            if (userStateType.equals(StateType.STOP)) {
+                Map<String, String> message = new HashMap<>();
+                message.put("chatUserId", "reported");
+                message.put("detail", "신고 회수 누적으로 임시 사용 정지 되었습니다.");
+                message.put("endDate", endDate.toString());
+                Map<String, Map> data = new HashMap<>();
+                data.put("data", message);
+                messaging.convertAndSend("/sub/chat/user/" + user.getUserId(), data);
+            }
 
             // 차단까지 하기
             BlockReqDto blockReqDto = new BlockReqDto(reportReqDto.getReportFrom(), reportReqDto.getReportTo(), "신고 차단");

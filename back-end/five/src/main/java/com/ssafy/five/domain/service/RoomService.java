@@ -2,51 +2,66 @@ package com.ssafy.five.domain.service;
 
 import com.ssafy.five.controller.dto.res.RoomResDto;
 import com.ssafy.five.domain.entity.Room;
-import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.RoomRepository;
 import com.ssafy.five.domain.repository.UserRepository;
-import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
-
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class RoomService {
 
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
 
-    public List<RoomResDto> findAllRooms(String userId) {
-        Users user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("잘못된 입력입니다."));
-        List<Room> allRooms = roomRepository.findAllByRoomUserId1OrRoomUserId2(user, user);
-        return allRooms.stream().map(RoomResDto::new).collect(Collectors.toList());
-    }
 
     @Transactional
-    public void createRoom(Users user1, Users user2) {
-        roomRepository.save(Room.builder().roomUserId1(user1).roomUserId2(user2).build());
+    public void createRoom(String user1, String user2){
+        roomRepository.save(Room.builder().roomUserId1(user1).roomUserId2(user2).roomCount(2).build());
     }
 
-    @Transactional
-    public void deleteRoom(Users user1, Users user2) {
-        Optional<Room> room1 = roomRepository.findByRoomUserId1AndRoomUserId2(user1, user2);
-        Optional<Room> room2 = roomRepository.findByRoomUserId1AndRoomUserId2(user2, user1);
-
-        if (room1.isPresent()) {
-            roomRepository.delete(room1.get());
-        } else if (room2.isPresent()) {
-            roomRepository.delete(room2.get());
+    public Map<String, ?> findAllRooms(String userId) {
+        if (userId == null || userRepository.findById(userId).isEmpty()) {
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("result", false);
+            return response;
+        } else {
+            List<Room> allRooms = roomRepository.findAllByRoomUserId1OrRoomUserId2(userId, userId);
+            List<RoomResDto> allRoomsDto = new ArrayList<>();
+            for (Room room : allRooms) {
+                if (room.getRoomUserId1() == null || room.getRoomUserId2() == null) {
+                    allRoomsDto.add(new RoomResDto(room, null));
+                } else {
+                    allRoomsDto.add(new RoomResDto(room, userRepository.findByUserId(room.getRoomUserId1().equals(userId)? room.getRoomUserId2() : room.getRoomUserId1())));
+                }
+            }
+            Map<String, Map> response = new HashMap<>();
+            Map<String, List> allRoom = new HashMap<>();
+            allRoom.put("allRooms", allRoomsDto);
+            response.put("result", allRoom);
+            return response;
         }
     }
 
-    public RoomResDto findByRoomId(Long roomId) {
-        return new RoomResDto(roomRepository.findById(roomId).orElseThrow(RuntimeException::new));
+    @Transactional
+    public void roomCount(Long roomId, int count) {
+        Room room = roomRepository.findById(roomId).get();
+        room.updateRoomCount(count);
+    }
+
+    @Transactional
+    public void deleteRoom(String roomUser1, String roomUser2) {
+        Room room1 = roomRepository.findByRoomUserId1AndRoomUserId2(roomUser1, roomUser2);
+        Room room2 = roomRepository.findByRoomUserId1AndRoomUserId2(roomUser2, roomUser1);
+        if (room1 != null) {
+            room1.updateUser1();
+        } else if (room2 != null) {
+            room2.updateUser2();
+        }
     }
 }
+

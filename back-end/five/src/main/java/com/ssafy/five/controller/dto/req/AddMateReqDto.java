@@ -8,13 +8,13 @@ import lombok.Getter;
 public class AddMateReqDto {
 
     private String addMateFrom;
-
     private String addMateTo;
 
-    public AddMate addMate(Users user1, Users user2) {
+
+    public AddMate addMate(Users addMateFrom, Users addMateTo) {
         return AddMate.builder()
-                .addMateFrom(user1)
-                .addMateTo(user2)
+                .addMateFrom(addMateFrom)
+                .addMateTo(addMateTo)
                 .build();
     }
 }

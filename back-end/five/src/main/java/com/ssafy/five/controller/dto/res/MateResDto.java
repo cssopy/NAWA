@@ -1,19 +1,22 @@
 package com.ssafy.five.controller.dto.res;
 
 
-import com.ssafy.five.domain.entity.Mate;
+import com.ssafy.five.domain.entity.ProfileImg;
+import com.ssafy.five.domain.entity.Users;
 import lombok.Getter;
 
 @Getter
 public class MateResDto {
 
     private Long mateId;
-    private String user1;
-    private String user2;
+    private String userid;
+    private String nickname;
+    private ProfileImg profileImg;
 
-    public MateResDto(Mate mate) {
-        this.mateId = mate.getMateId();
-        this.user1 = mate.getMateUserId1().getUserId();
-        this.user2 = mate.getMateUserId2().getUserId();
+    public MateResDto(Long mateId, Users user) {
+        this.mateId = mateId;
+        this.userid = user.getUserId();
+        this.nickname = user.getNickname();
+        this.profileImg = user.getProfileImg();
     }
 }
