@@ -14,9 +14,6 @@ public class TokenReqDto {
     @ApiModelProperty(example = "유저 아이디")
     private String userId;
 
-    @ApiModelProperty(example = "accessToken")
-    private String accessToken;
-
     @ApiModelProperty(example = "refreshToken")
     private String refreshToken;
 }

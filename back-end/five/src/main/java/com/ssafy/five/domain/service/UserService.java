@@ -65,14 +65,14 @@ public class UserService {
                         .build())
                 .build();
 
-        userRepository.save(user);
 
-//        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
-//
-//        if(!msg.isAuth()){
-//            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
-//        }
-//        smsRepository.delete(msg);
+        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
+
+        if(!msg.isAuth()){
+            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+        }
+        userRepository.save(user);
+        smsRepository.delete(msg);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
@@ -119,14 +119,14 @@ public class UserService {
             user1.updateNickname(updateUserReqDto.getNickname());
             user1.updateMent(updateUserReqDto.getMent());
 
-//            if(!user1.getNumber().equals(updateUserReqDto.getNumber())){
-//                Messages msg = smsRepository.findById(updateUserReqDto.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
-//                if(!msg.isAuth()){
-//                    return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
-//                }
+            if(!user1.getNumber().equals(updateUserReqDto.getNumber())){
+                Messages msg = smsRepository.findById(updateUserReqDto.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
+                if(!msg.isAuth()){
+                    return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+                }
                 user1.updateNumber(updateUserReqDto.getNumber());
-//                smsRepository.delete(msg);
-//            }
+                smsRepository.delete(msg);
+            }
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
         return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);

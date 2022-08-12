@@ -2,11 +2,11 @@ package com.ssafy.five.config.jwt;
 
 import com.ssafy.five.controller.dto.res.TokenResDto;
 import com.ssafy.five.domain.service.CustomUserDetailsService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.ssafy.five.exception.ExpiredException;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,7 +28,7 @@ public class JwtTokenProvider {
     private String secretKey;
 
     private long accessTokenExpireTime = 1000L * 60; // access 토큰 유효기간 30분
-    private long refreshTokenExpireTime = 1000L * 60 * 60 * 24 * 15; // refresh 토큰 유효기간 15일
+    private long refreshTokenExpireTime = 1000L * 60 * 3; // refresh 토큰 유효기간 15일
 
     private final CustomUserDetailsService userDetailsService;
     @PostConstruct
@@ -92,16 +92,21 @@ public class JwtTokenProvider {
 
     public String validateRefreshToken(String token){
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            // refresh 토큰의 만료시간이 지났으면 새로운 access 토큰을 생성한다
-            if(!claims.getBody().getExpiration().before(new Date())){
+            JSONObject object = new JSONObject(token);
+            String refreshToken = object.getString("refreshToken");
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshToken);
+            // refresh 토큰의 만료시간 남아있을 때
+            if (!claims.getBody().getExpiration().before(new Date())) {
                 return recreateAccessToken(claims.getBody().get("sub").toString(), claims.getBody().get("roles"));
             }
-        } catch (Exception e){
-            // 로그인이 만료되었을 때 로그인이 필요하다
             return null;
         }
-        return null;
+        // refresh 토큰이 만료되었을 때
+        catch(ExpiredJwtException e){
+            throw new ExpiredException();
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String recreateAccessToken(String userId, Object roles){

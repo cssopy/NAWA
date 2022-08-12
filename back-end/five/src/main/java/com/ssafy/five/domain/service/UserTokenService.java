@@ -10,14 +10,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -51,7 +51,7 @@ public class UserTokenService {
 
         user.updateRefreshToken(tokenResDto.getRefreshToken());
 
-        // acc, ref 반환
+        // userId, acc, ref 반환
         return tokenResDto;
     }
 
@@ -69,55 +69,45 @@ public class UserTokenService {
     }
 
     @Transactional
-    public Map<String, String> validateRefreshToken(String refreshToken) throws Exception{
-        String accessToken = jwtTokenProvider.validateRefreshToken(refreshToken);
-
-        return createRefreshJson(accessToken);
-    }
-
-    public Map<String, String> createRefreshJson(String accessToken) {
-        Map<String, String> map = new HashMap<>();
-        if(accessToken == null){
-            map.put("errortype", "Forbidden");
-            map.put("status", "402");
-            map.put("message", "RefreshToken이 만료되었습니다. 다시 로그인하여 주세요.");
-
-            return map;
+    public ResponseEntity<?> validateRefreshToken(TokenReqDto tokenReqDto){
+        // 해당 유저의 refreshToken이 아닐경우
+        if(!jwtTokenProvider.getUserId(tokenReqDto.getRefreshToken()).equals(tokenReqDto.getUserId())){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-        map.put("status", "200");
-        map.put("message", "accessToken 재생성하였습니다.");
-        map.put("accessToken", accessToken);
-
-        return map;
+        String accessToken = jwtTokenProvider.validateRefreshToken(tokenReqDto.getRefreshToken());
+        return new ResponseEntity<>(accessToken, HttpStatus.OK);
     }
 
     @Transactional
-    public TokenResDto autoLogin(TokenReqDto tokenReqDto) throws Exception{
+    public ResponseEntity<?> autoLogin(TokenReqDto tokenReqDto, HttpServletRequest request){
 
-        Users checkUserState = userRepository.findByUserId(jwtTokenProvider.getUserId(tokenReqDto.getAccessToken()));
-        if(!checkUserState.getEndDate().before(new Date())){
-            throw new Exception("해당 아이디는 정지상태입니다.");
+        String accessToken = jwtTokenProvider.resolveToken(request);
+        System.out.println(SecurityContextHolder.getContext().getAuthentication());
+
+        Users user = userRepository.findByUserId(tokenReqDto.getUserId());
+        if(!user.getEndDate().before(new Date())){
+            return new ResponseEntity<>(false, HttpStatus.FORBIDDEN);
         }
 
+        // ref 토큰 유효성 만료시
         if(!jwtTokenProvider.validateToken(tokenReqDto.getRefreshToken())){
-            throw new Exception("refreshToken이 유효하지 않습니다."); //401 로그인다시
+            return new ResponseEntity<>(false,HttpStatus.UNAUTHORIZED); //401 로그인다시
         }
-        if(!jwtTokenProvider.validateToken(tokenReqDto.getAccessToken())){
-            Users user = userRepository.findByUserId(jwtTokenProvider.getUserId(tokenReqDto.getAccessToken()));
-            TokenResDto tokenResDto = jwtTokenProvider.createToken(user.getUserId(), jwtTokenProvider.getUserRoles(tokenReqDto.getAccessToken()));
+
+        // acc 토큰 유효성 만료시
+        if(!jwtTokenProvider.validateToken(accessToken)){
+            TokenResDto tokenResDto = jwtTokenProvider.createToken(user.getUserId(), jwtTokenProvider.getUserRoles(accessToken));
             user.updateRefreshToken(tokenReqDto.getRefreshToken());
-            return tokenResDto;
+            return new ResponseEntity<>(tokenResDto, HttpStatus.OK);
         }
 
-        Users user = userRepository.findByUserId(jwtTokenProvider.getUserId(tokenReqDto.getAccessToken()));
-        System.out.println("user = " + user);
-
+        // acc, ref 토큰 유효할 때
         TokenResDto tokenResDto = TokenResDto.builder()
                 .userId(user.getUserId())
-                .accessToken(tokenReqDto.getAccessToken())
+                .accessToken(accessToken)
                 .refreshToken(tokenReqDto.getRefreshToken())
                 .build();
 
-        return tokenResDto;
+        return new ResponseEntity<>(tokenResDto, HttpStatus.OK);
     }
 }
