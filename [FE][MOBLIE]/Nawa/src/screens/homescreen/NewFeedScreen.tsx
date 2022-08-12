@@ -7,27 +7,34 @@ import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import axios, { AxiosError } from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {useAppDispatch} from '../../store';
+import userSlice from "../../slices/user";
+
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 
 function NewFeedScreen({ navigation }) {
+  const dispatch = useAppDispatch()
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [media, setMedia] = useState(Object);
+  const [media, setMedia] = useState({});
   const [loading, setLoading] = useState(false)
+  
+
+
 
   const whoamI = useSelector((state : RootState) => state.user.userId)
+
   const myId = useSelector((state: RootState) => state.user.accessToken)
 
-  const formdata = new FormData();
+  const url = 'http://i7d205.p.ssafy.io:8080/board/'
 
   const openCamera = () => {
     const option = {
       mediaType: 'photo',
-      includeBase64: true,
-      quality: 1
-    }
+    };
     
     launchCamera(option, (res) => {
       if(res.didCancel) {
@@ -47,91 +54,197 @@ function NewFeedScreen({ navigation }) {
   }
 
   const openVideo = () => {
+    const bring = {
+      uri: '',
+      type: '',
+      name: '',
+    };
+
     const option = {
-      includeBase64: true,
       mediaType: 'video',
-      quality: 1,
-    }
+    };
     
     launchCamera(option, (res) => {
       if(res.didCancel) {
         console.log('User Cancelled image picker')
-      } else if(res.errorCode) {
+      } else if (res.errorCode) {
         console.log(res.errorMessage)
-      } else {
-        const data = res.assets
-        const callMedia = {
-          uri: data[0].uri,
-          type: data[0].type,
-          name: data[0].fileName,
-        }
-        setMedia(callMedia)
+      } else if (res.assets) {
+        bring.name = res.assets[0].fileName;
+        bring.type = res.assets[0].type;
+        bring.uri = Platform.OS === 'android' ? res.assets[0].uri : res.assets[0].uri.replace('file://', '');
+        setMedia(bring)
       }
     })
   }
 
-  const openStorage = () => {
+  const openStorage = async () => {
+    const bring = {
+      uri: '',
+      type: '',
+      name: '',
+    };
+
     const option = {
       mediaType: 'mixed',
     }
 
-    launchImageLibrary(option, (res) => {
+    await launchImageLibrary(option, (res) => {
       if(res.didCancel) {
         console.log('User Cancelled image picker')
       } else if(res.errorCode) {
         console.log(res.errorMessage)
       } else {
-        const data = res.assets[0]
-        // console.log(data)
-        const callMedia = {
-          uri: Platform.OS === 'android' ? data.uri :  data.uri?.replace('file://', ''),
-          type: data.type,
-          name: data.fileName,
-        }
-        setMedia(callMedia)
+        bring.name = res.assets[0].fileName;
+        bring.type = res.assets[0].type;
+        bring.uri = Platform.OS === 'android' ? res.assets[0].uri : res.assets[0].uri.replace('file://', '');
+        setMedia(bring)
+        console.log(media)
       }
     })
   }
   
   const onSubmit = async () => {
-      formdata.append(
-        "key",
-        new Blob([JSON.stringify({
+    // const formdata = new FormData();
+
+
+    // formdata.append(
+    //   "key",
+    //   new Blob([JSON.stringify({
+    //     boardTitle: title,
+    //     boardContent: content,
+    //     userId:myId
+    //   })],
+    //   {
+    //     type: 'application/json'
+    //   }))
+
+    // formdata.append('uploadfile', media)
+
+    // console.log(formdata)
+
+    // const formData = new FormData();
+    // formData.append('uploadfile', media)
+
+    // const requestOptions = {
+    //   method: 'post',
+    //   body: formData,
+    //   redirect: 'follow',
+    //   headers: {
+    //     Authorization: myId,
+    //   }
+    // }
+    // await fetch(url, requestOptions)
+    // .then(res => console.log(res))
+    // .catch(err => console.log(err))
+
+    // try {
+    //   const response = await fetch('http://i7d205.p.ssafy.io:8080/board/', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data',
+    //     Authorization: myId,
+    //   },
+    //   body: formdata
+    //   })
+    //   const json = await response.json();
+    //   console.log(json)
+    // } catch (err) {
+    //   console.log(err)
+    // }
+    // console.log(formdata)
+
+    const textData = new FormData()
+    const imgData = new FormData()
+    // textData.append('key', new Blob([JSON.stringify({
+    //   boardTitle: title,
+    //   boardContent: content,
+    //   userId: whoamI,
+    //   })]))
+    imgData.append('uploadfile', media)
+
+    await axios({
+      method: 'post',
+      url: url,
+      data: {
+        key: JSON.stringify({
           boardTitle: title,
           boardContent: content,
-          userId:myId
-        })],
-        {
-          type: "application/json",
-        }))
-      // formdata.append('uploadfile', media)
-      // try {
-      //   const response = await fetch('http://i7d205.p.ssafy.io:8080/board/', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //     Authorization: myId,
-      //   },
-      //   body: formdata
-      //   })
-      //   const json = await response.json();
-      //   console.log(json)
-      // } catch (err) {
-      //   console.log(err)
-      // }
-      console.log(formdata)
-      axios.post('http://i7d205.p.ssafy.io:8080/board/',
-        formdata,
-      { headers: {
-        // 'Content-Type': 'multipart/form-data',
-        Authorization: myId,
+          userId: whoamI,
+        }),
+
+        // uploadfile: media,
+        imgData
       },
-      transformRequest: formdata => formdata,
-    }).then(function (res) {
-        console.log('결과: ', res)
-      }).catch(function (err) {
-        console.log('에러: ', err)
-      });
+      headers: {
+        'Authorization': `Bearer ${myId}`,
+        'Content-Type': 'multipart/form-data',
+        // 'Content-Type': 'multipart/form-data',
+        //  boundary=someArbitraryUniqueString',
+      },
+    }).then(res => {
+    }).catch( async err => {
+      console.log('왜 또', err)
+      try {
+        const refreshToken = await EncryptedStorage.getItem('refreshToken')
+        const response = await axios.put(
+          'http://i7d205.p.ssafy.io:8080/checktoken',
+          {
+            userId: whoamI,
+            refreshToken: refreshToken
+          },
+          );
+          EncryptedStorage.setItem('accessToken', response.data.accessToken)
+          dispatch(
+            userSlice.actions.setUser({
+              accessToken : response.data.accessToken
+            }),
+            )
+          }
+          catch (error) {
+            // EncryptedStorage.removeItem('accessToken')
+            // EncryptedStorage.removeItem('refreshToken')
+            
+            // dispatch(
+            //   userSlice.actions.setUser({
+            //     userId : '',
+            //     nickname: '',
+            //     accessToken: '',
+            //   }),
+            //   )
+            //   console.log('두번째 샛길로')
+            }
+            
+            
+
+
+      // console.log(err)
+    })
+
+    // axios.post('http://i7d205.p.ssafy.io:8080/board/',
+    // {
+    //   key: JSON.stringify({
+    //     boardTitle: title,
+    //     boardContent: content,
+    //     userId: whoamI,
+    //   }),
+
+    //   uploadfile: media,
+    // },
+    // { headers: {
+    //   // 'Content-Type': 'multipart/form-data',
+    //   Authorization: myId,
+    //   'Content-Type': 'multipart/form-data',
+    // },
+    // transformRequest: (data, headers) => {
+    //   return data;
+    // },
+    // }).then(function (res) {
+    //     console.log('결과: ', res)
+    //   }).catch(function (err) {
+    //     console.log('에러: ', err)
+    //   });
+
     // axios.get('http://i7d205.p.ssafy.io:8080/board/')
     // .then(res => {
     //   console.log('결과: ', res)
