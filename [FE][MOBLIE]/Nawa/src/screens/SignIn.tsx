@@ -63,11 +63,11 @@ function SignIn({navigation}: SignInScreenProps) {
         }),
         );
       Alert.alert('알림', '로그인 되었습니다.');
-      await AsyncStorage.setItem(
+      await EncryptedStorage.setItem(
         'userId',
         userId
       );
-      await AsyncStorage.setItem(
+      await EncryptedStorage.setItem(
         'accessToken',
         response.data.accessToken
       );
@@ -79,7 +79,7 @@ function SignIn({navigation}: SignInScreenProps) {
     } catch (error) {
       const errorResponse = (error as AxiosError).response;
       if (errorResponse) {
-        Alert.alert('알림', errorResponse.data.message);
+        Alert.alert('알림', '에러임');
       }
       
     } finally {

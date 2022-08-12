@@ -95,7 +95,7 @@ function SignUp({navigation} : SignUpScreenProps) {
     const [nicknameCheck, setNicknameCheck] = useState(false)
     const checkNickname = async () => {
       try {
-        const response = await axios.get(`http://i7d205.p.ssafy.io:8080/user/nickname/${openNickname}`, {
+        const response = await axios.get(`http://i7d205.p.ssafy.io:8080/nickname/${openNickname}`, {
         }).then(response => {
           setNickName(openNickname)
           setNicknameCheck(true)
@@ -117,7 +117,7 @@ function SignUp({navigation} : SignUpScreenProps) {
     const [sendNumber, setSendNumber] = useState('')
     const sendAuthNumber = async () => {
       try {
-        const response = await axios.post(`http://i7d205.p.ssafy.io:8080/user/sms`, {
+        const response = await axios.post(`http://i7d205.p.ssafy.io:8080/sms`, {
           "recipientPhoneNumber": number});
         console.log(number)
       }
@@ -131,7 +131,7 @@ function SignUp({navigation} : SignUpScreenProps) {
     const checkAuthNumber = async () => {
       
       try {
-        const response = await axios.post(`http://i7d205.p.ssafy.io:8080/user/sms/check`, {
+        const response = await axios.post(`http://i7d205.p.ssafy.io:8080/sms/check`, {
           "certNumber": authNumber, 
           "recipientPhoneNumber": number});
         console.log("Authentication Pass")

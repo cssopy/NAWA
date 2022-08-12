@@ -56,21 +56,30 @@ function AppInner() {
   useEffect(() => {
     const getTokenAndRefresh = async () => {
       try {
-        const userId = await AsyncStorage.getItem('userId')
-        const accessToken = await AsyncStorage.getItem('accessToken')
+        const userId = await EncryptedStorage.getItem('userId')
+        const accessToken = await EncryptedStorage.getItem('accessToken')
         const refreshToken = await EncryptedStorage.getItem('refreshToken')
+
+        console.log(userId)
+        console.log(accessToken)
+        console.log(refreshToken)
+
+
         if (!accessToken) {
           SplashScreen.hide();
           return;
         }
-        const response = await axios.put(
-          'http://i7d205.p.ssafy.io:8080/user/autoLogin',
-          {
-            userId: userId,
-            accessToken: accessToken,
+
+        const response = await axios({
+          method : 'put',
+          url : 'http://i7d205.p.ssafy.io:8080/autoLogin',
+          data : {
+						userId: userId,
             refreshToken: refreshToken
-          },
-        );
+					},
+					headers : {"Authorization" : `Bearer ${accessToken}`}
+				});
+
         dispatch(
           userSlice.actions.setUser({ // redux state는 값이 변하면, useselector로 참조하고 있는 모든 컴포넌트가 다시 렌더링.
             userId : response.data.userId,
@@ -85,10 +94,11 @@ function AppInner() {
           'refreshToken',
           response.data.refreshToken
         )
+				
 
       } catch (error) {
+				
         Alert.alert('알림', '다시 로그인 해주세요');
-
       } finally {
         SplashScreen.hide();
       }
