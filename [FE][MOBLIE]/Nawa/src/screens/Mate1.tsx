@@ -237,7 +237,7 @@ const Mate1 = ( {navigation} ) => {
               }}
             />
             <Button
-              title={ButtonLoading? <ActivityIndicator color='black'></ActivityIndicator> : '완료'}
+              title={ButtonLoading? <ActivityIndicator color='white'></ActivityIndicator> : '완료'}
               onPress={() => {
                 setButtonLoading(true)
                 dispatch(
