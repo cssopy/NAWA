@@ -46,7 +46,7 @@ public class UserService {
         }
 
         if(userRepository.findByEmailIdAndEmailDomain(signUpReqDto.getEmailId(), signUpReqDto.getEmailDomain()) != null){
-            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(false, HttpStatus.CONFLICT);
         }
 
         Calendar cal = Calendar.getInstance();
@@ -94,7 +94,7 @@ public class UserService {
     }
 
     @Transactional
-    public FindUserResDto findUser(String userId) {
+    public ResponseEntity<?> findUser(String userId) {
         Users user = userRepository.findByUserId(userId);
 
         if (user != null) {
@@ -109,9 +109,9 @@ public class UserService {
                     .profileImg(user.getProfileImg())
                     .roles(user.getRoles())
                     .build();
-            return findUserResDto;
+            return new ResponseEntity<>(findUserResDto, HttpStatus.OK);
         }
-        return null;
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @Transactional
@@ -134,7 +134,7 @@ public class UserService {
             }
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
-        return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
     @Transactional
@@ -144,18 +144,18 @@ public class UserService {
             userRepository.deleteById(userId);
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
-        return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
     @Transactional
-    public String findUserId(FindUserIdReqDto findUserIdReqDto) {
+    public ResponseEntity<?> findUserId(FindUserIdReqDto findUserIdReqDto) {
 
         Users user = userRepository.findUserIdByEmailIdAndEmailDomain(findUserIdReqDto.getEmailId(), findUserIdReqDto.getEmailDomain());
 
-        if (user.getUserId() != null) {
-            return user.getUserId();
+        if (user != null) {
+            return new ResponseEntity<>(user.getUserId(), HttpStatus.OK);
         }
-        return null;
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 
     }
 
@@ -181,14 +181,14 @@ public class UserService {
 
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
-        return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
     @Transactional
     public ResponseEntity<?> availableNickname(String nickname) {
         Users user = userRepository.findByNickname(nickname);
         if (user != null) {
-            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(false, HttpStatus.CONFLICT);
         }
         return new ResponseEntity<>(true, HttpStatus.OK);
     }

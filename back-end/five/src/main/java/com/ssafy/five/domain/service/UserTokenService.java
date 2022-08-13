@@ -30,18 +30,18 @@ public class UserTokenService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public TokenResDto login(String userId, String password) throws Exception {
+    public ResponseEntity<?> login(String userId, String password) throws Exception {
         Users user = userRepository.findByUserId(userId);
         if(user == null){
             throw new UserNotFoundException();
         }
 
         if(!passwordEncoder.matches(password, user.getPassword())){
-            throw new Exception("비밀번호를 잘못 입력하였습니다.");
+            return new ResponseEntity<>("비밀번호가 틀렸습니다.", HttpStatus.BAD_REQUEST);
         }
 
         if(!user.getEndDate().before(new Date())){
-            throw new Exception("해당 아이디는 정지상태입니다.");
+            return new ResponseEntity<>("정지된 사용자입니다.", HttpStatus.FORBIDDEN);
         }
 
         List<String> list = user.getRoles();
@@ -52,7 +52,7 @@ public class UserTokenService {
         user.updateRefreshToken(tokenResDto.getRefreshToken());
 
         // userId, acc, ref 반환
-        return tokenResDto;
+        return new ResponseEntity<>(tokenResDto, HttpStatus.OK);
     }
 
     @Transactional
@@ -90,7 +90,7 @@ public class UserTokenService {
 
         // ref 토큰 유효성 만료시
         if(!jwtTokenProvider.validateToken(tokenReqDto.getRefreshToken())){
-            return new ResponseEntity<>(false,HttpStatus.UNAUTHORIZED); //401 로그인다시
+            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED); //401 로그인다시
         }
 
         // acc 토큰 유효성 만료시
