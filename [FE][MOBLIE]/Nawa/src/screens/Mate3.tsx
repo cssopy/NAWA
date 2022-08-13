@@ -5,14 +5,18 @@ import constants from '../constants';
 import {useAppDispatch} from '../store';
 import * as Progress from 'react-native-progress';
 import { Button } from "@rneui/themed";
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RootState } from '../store/reducer';
 import { useSelector } from 'react-redux';
 import { Dimensions } from "react-native";
-import NaverMapView, {Circle, Marker} from "react-native-nmap";
+import NaverMapView, {Circle, Marker, Path} from "react-native-nmap";
 
 import matchingSlice from "../slices/matching";
-
+import Swiper from "react-native-swiper";
+import { Icon } from "@rneui/themed";
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Materiallcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Foundation from 'react-native-vector-icons/Foundation';
 
 // firebase 클라우드
 import firestore from '@react-native-firebase/firestore';
@@ -37,10 +41,183 @@ const Mate3 = ( {navigation} ) => {
   const distance = useSelector((state : RootState) => state.matching.distance);
   const [onLocation, setOnLocation] = useState({longitude : location.longitude , latitude : location.latitude});
   
+  const [target, setTarget] = useState({longitude : location.longitude , latitude : location.latitude})
  
+  const checkList = ['헬스', '배드민턴', '러닝', '애견산책', '산책', '등산', '자전거', '수영', '볼링', '당구', '농구', '풋살']
+  const whatCategory = (item, idx) => {
+    if (item === '헬스' ) {
+      return ( 
+        <View key={idx} style={{flexDirection:"column"}}>
+        <Icon
+        raised
+        size={15}
+        iconStyle={{fontSize:20}}
+        name='barbell'
+        type='ionicon'
+        color='#f50'
+        />
+        </View>
+      )
+    } 
+    else if (item === '배드민턴' ) {
+      return ( 
+        <View key={idx} style={{flexDirection:"column"}}>
+        <Icon
+        raised
+        size={15}
+        iconStyle={{fontSize:20}}
+        name='badminton'
+        type='material-community'
+        color='#f50'
+        />
+        </View>
+      )
+    }
+    else if (item === '러닝' ) {
+      return ( 
+        <View key={idx} style={{flexDirection:"column"}}>
+        <Icon
+        raised
+        size={15}
+        iconStyle={{fontSize:20}}
+        name='directions-run'
+        type='material'
+        color='#f50'
+        />
+        </View>
+      )
+    }
+    else if (item === '애견산책' ) {
+      return ( 
+        <View key={idx} style={{flexDirection:"column"}}>
+        <Icon
+        raised
+        size={15}
+        iconStyle={{fontSize:20}}
+        name='guide-dog'
+        type='foundation'
+        color='#f50'
+        />
+        </View>
+      )
+    }
+    else if (item === '산책' ) {
+      return ( 
+        <View key={idx} style={{flexDirection:"column"}}>
+        <Icon
+        raised
+        size={15}
+        iconStyle={{fontSize:20}}
+        name='directions-walk'
+        type='material'
+        color='#f50'
+        />
+        </View>
+      )
+    }
+    else if (item === '등산' ) {
+      return ( 
+        <View key={idx} style={{flexDirection:"column"}}>
+        <Icon
+        raised
+        size={15}
+        iconStyle={{fontSize:20}}
+        name='mountains'
+        type='foundation'
+        color='#f50'
+        />
+        </View>
+      )
+    }
+    else if (item === '자전거' ) {
+      return ( 
+        <View key={idx} style={{flexDirection:"column"}}>
+        <Icon
+        raised
+        size={15}
+        iconStyle={{fontSize:20}}
+        name='bicycle'
+        type='ionicon'
+        color='#f50'
+        />
+        </View>
+      )
+    }
+    else if (item === '수영' ) {
+      return ( 
+        <View key={idx} style={{flexDirection:"column"}}>
+        <Icon
+        raised
+        size={15}
+        iconStyle={{fontSize:20}}
+        name='swim'
+        type='material-community'
+        color='#f50'
+        />
+        </View>
+      )
+    }
+    else if (item === '볼링' ) {
+      return ( 
+        <View key={idx} style={{flexDirection:"column"}}>
+        <Icon
+        raised
+        size={15}
+        iconStyle={{fontSize:20}}
+        name='bowling'
+        type='material-community'
+        color='#f50'
+        />
+        </View>
+      )
+    }
+    else if (item === '당구' ) {
+      return ( 
+        <View key={idx} style={{flexDirection:"column"}}>
+        <Icon
+        raised
+        size={15}
+        iconStyle={{fontSize:20}}
+        name='baseball-bat'
+        type='material-community'
+        color='#f50'
+        />
+        </View>
+      )
+    }
+    else if (item === '농구' ) {
+      return ( 
+        <View key={idx} style={{flexDirection:"column"}}>
+        <Icon
+        raised
+        size={15}
+        iconStyle={{fontSize:20}}
+        name='basketball'
+        type='material-community'
+        color='#f50'
+        />
+        </View>
+      )
+    }
+    else if (item === '풋살' ) {
+      return ( 
+        <View key={idx} style={{flexDirection:"column"}}>
+        <Icon
+        raised
+        size={15}
+        iconStyle={{fontSize:20}}
+        name='football'
+        type='ionicon'
+        color='#f50'
+        />
+        </View>
+      )
+    }
+  }
 
+  const userMannerPoint = () => {
 
-
+  }
 
   const userInit = async () => { 
       const onWaiting = firestore().collection('waitingRoom').doc(nickname);
@@ -137,6 +314,7 @@ const Mate3 = ( {navigation} ) => {
       return 0
     });
     setSortedUser(sort_item)
+    
   }, [realTime])
 
   const zooming = (distance) => {
@@ -165,7 +343,7 @@ const Mate3 = ( {navigation} ) => {
 
 
   return (
-    <View style={{height:SCREEN_HEIGHT}}>
+    <View style={{height:SCREEN_HEIGHT - 50}}>
         <View style={styles.topBox}>
           <View style={styles.infoBox}>
             <Ionicons style={{marginLeft:2}} onPress={() => navigation.navigate('Mate2')} size={22} name='arrow-back-outline' color='white' />
@@ -176,7 +354,7 @@ const Mate3 = ( {navigation} ) => {
         </View>  
 
 
-        <View style={{height:SCREEN_HEIGHT/2, borderRadius:20}}>
+        <View style={{height:SCREEN_HEIGHT - 50}}>
           <NaverMapView style={{width: '100%', height: '100%', zIndex:-2}}
             center={{...onLocation, zoom: zooming(distance)}}
             onCameraChange={e =>  {setOnLocation({longitude : e.longitude , latitude : e.latitude})}}
@@ -187,34 +365,57 @@ const Mate3 = ( {navigation} ) => {
                 <Marker coordinate={location} caption={{ text:`${nickname} 님`, textSize:15}}/>
                 { online ? 
                   sortedUser.map( (userData, idx) => {
-                    return <Marker key={idx} coordinate={userData.location} caption={{ text:`${userData.nickname} 님`, textSize:15}}/>
+                    return <Marker pinColor="blue" key={idx} coordinate={userData.location} caption={{ text:`${userData.nickname} 님`, textSize:15}}/>
                     }
                   )
                   :
                   <></>
                 }
           </NaverMapView>
-          <View style={{flexDirection:"row", position:"absolute", top:SCREEN_HEIGHT/2 - 50, borderRadius:30, padding:5 , marginLeft:5 }}>
+          <View style={{flexDirection:"row", position:"absolute", top:0, borderRadius:30, padding:5 , marginLeft:5 }}>
             {online ?
-            <>
-              
-              <Button buttonStyle={{}}>
-                <ActivityIndicator size={"small"} color="black" ></ActivityIndicator>
-                <Text style={{justifyContent:'center', fontSize:19, color:'black'}}>
-                  매칭중... 현재 {realTime.length} 명
-                </Text>
+              <Button onPress={() => {userOut(nickname); setOnline(false);}} buttonStyle={{borderRadius:20}} containerStyle={{elevation:8}}>
+                <Text style={{justifyContent:'center', fontSize:19, color:'white'}}>매칭중...   </Text>
+                <ActivityIndicator size={"small"} color="white" ></ActivityIndicator>
               </Button>
-            </>
             :
-              <Text style={{alignItems:"baseline", fontSize:19, color:'black'}} > 매칭 대기열에 입장하세요 </Text>
-            }
+            <Button onPress={() => {userInit(); setOnline(true);}} buttonStyle={{borderRadius:20}} containerStyle={{elevation:8}}>
+              <Text style={{alignItems:"baseline", fontSize:19 , color:'white'}} > 실시간 대기열 입장 </Text>
+            </Button>}
+            <Button onPress={() => setOnLocation(location)}>
+              <Ionicons  style={{flex:1 ,textAlign:"center",alignSelf:"flex-end" }}  name='locate' size={35} color='red' />
+            </Button>
+
           </View>
+          
+          {online &&
+          <View style={{bottom:30, position:'absolute', width:SCREEN_WIDTH, height:200}}>
+            <Swiper style={{ borderRadius:50 }} showsButtons={true} onIndexChanged={(index) => {console.log(index)}} >
+              
+              {sortedUser.map((item, idx) => {
+                  return (
+                    <View key={idx} style={styles.slider}>
+                      <View style={{flex:1, flexDirection:"row", backgroundColor:'white', borderRadius:10, justifyContent:'center', alignItems:'center'}}>
+                        <View style={{backgroundColor:'rgb(0, 197, 145)', borderRadius:20,  elevation:8}}><Text style={{fontSize:18, color:'white', padding:5}}>{item.nickname}</Text></View>
+                        <View style={{backgroundColor:'white', borderRadius:20, elevation:8}}><Text style={{fontSize:18, color:'black', padding:4}}>{(((location.latitude - item.location.latitude)**2 + (location.longitude - item.location.longitude)**2)**0.5).toFixed(2)} km</Text></View>
+                        
+                        
+                        {item.category.map((item, idx) => {
+                          return (whatCategory(item, idx))
+                        })}
+                      
+                      </View>
+                      <View style={{flex:3, backgroundColor:'grey', borderRadius:10}}>
+
+                      </View>
+                    </View>
+                  )
+              })}
+            </Swiper>
+          </View>
+          }
         </View>
-        {!online ? 
-          <Button onPress={() => {userInit(); setOnline(true);}} >대기열 입장</Button>
-          : 
-          <Button onPress={() => {userOut(nickname); setOnline(false);}} >대기열 취소</Button>
-        }        
+
         {online ?
         <ScrollView style={{marginTop:4}}>
         {sortedUser.map((item, idx) => {
@@ -238,13 +439,23 @@ const Mate3 = ( {navigation} ) => {
         }
         })}
         </ScrollView> : <></>}
-      {/* <Button onPress={() => {navigation.navigate('Mate4', )}}> 연결확인 </Button> */}
       </View>
     );
   }
 
 
 const styles = StyleSheet.create({
+  slider : {
+    flexDirection:'column',
+    height:170,
+    margin : 10,
+    elevation:8
+  },
+  text: {
+    color: 'black',
+    fontSize: 30,
+    fontWeight: 'bold'
+  },
   topBox : {
     backgroundColor:'rgb(0, 197, 145)',
     shadowColor: "black", //그림자색

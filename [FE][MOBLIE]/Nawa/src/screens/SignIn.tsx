@@ -138,6 +138,7 @@ function SignIn({navigation}: SignInScreenProps) {
             blurOnSubmit={false}
             underneathText= "아이디"
             autoCapitalize= 'none'
+            textInputStyle={styles.textinput}         
           />
         <FormItem
           style={styles.textInputForm}
@@ -154,6 +155,7 @@ function SignIn({navigation}: SignInScreenProps) {
           ref={passwordRef}
           onSubmitEditing={onSubmit}
           autoCapitalize= 'none'
+          textInputStyle={styles.textinput}         
         />
       </Form>
       <Form 
@@ -216,8 +218,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 10,
     borderRadius: 5,
-    autoCapitalize: "none"
+    autoCapitalize: "none",
   },
+  textinput : {
+    color : 'black'
+  }
 });
 
 export default SignIn;

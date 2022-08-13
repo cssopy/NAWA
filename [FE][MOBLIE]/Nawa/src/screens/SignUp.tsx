@@ -26,7 +26,7 @@ type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>
 
 function SignUp({navigation} : SignUpScreenProps) {
     const dispatch = useAppDispatch();
-
+    
 
 
 
@@ -572,6 +572,7 @@ function SignUp({navigation} : SignUpScreenProps) {
     textInput: {
       padding: 5,
       borderWidth: 1,
+      color : 'black'
     },
     textPassword: {
       paddingLeft: 10,
@@ -587,6 +588,7 @@ function SignUp({navigation} : SignUpScreenProps) {
       height: 40,
       textAlign: "center",
       textAlignVertical: "center",
+      color : 'black'
     },
     inputWrapper: {
       paddingLeft: 25,

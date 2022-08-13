@@ -144,7 +144,7 @@ const JoinRTC = ({navigation}) => {
 
   
     const endCall = async () => {
-      pc.current.close()
+      if (!!pc.current) {pc.current.close()}
 
       const db = firestore();
       const roomRef = db.collection('MATCHING_GUMI').doc(roomInfo);

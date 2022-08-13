@@ -93,9 +93,7 @@ const OpenRTC = () => {
       const channelDoc = firestore().collection('MATCHING_GUMI').doc(roomInfo);
       const offerCandidates = channelDoc.collection('offerCandidates');
       const answerCandidates = channelDoc.collection('answerCandidates');
-  
-      // 데이터 채널 개설
-      const dataChannel = pc.current.createDataChannel();
+
 
       pc.current.onicecandidate = async event => {
         if (event.candidate) {
@@ -135,7 +133,7 @@ const OpenRTC = () => {
       setOnAir(true)
     };
     const endCall = async () => {
-      pc.current.close()
+      if (!!pc.current) {pc.current.close()}
 
       const db = firestore();
       const roomRef = db.collection('MATCHING_GUMI').doc(roomInfo);

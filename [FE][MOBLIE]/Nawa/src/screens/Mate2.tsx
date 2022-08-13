@@ -8,8 +8,6 @@ import * as Progress from 'react-native-progress';
 import { FAB } from '@rneui/themed';
 import { CheckBox } from '@rneui/themed';
 
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/reducer';
 import matchingSlice from "../slices/matching";
 
 
@@ -18,6 +16,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Materiallcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Foundation from 'react-native-vector-icons/Foundation';
+import { Dimensions } from "react-native";
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 
 const Mate2 = ( {navigation} ) => {
@@ -69,7 +69,7 @@ const Mate2 = ( {navigation} ) => {
           <Progress.Bar style={{marginHorizontal:4, borderColor: 'rgb(0, 197, 145)'}} progress ={gage} width={constants.width - 10} height={6} unfilledColor={'white'} />
         </View>  
 
-        <View style={{ backgroundColor:'lightgrey', width:constants.width, height:constants.height - 100}}>
+        <View style={{ backgroundColor:'lightgrey', width:SCREEN_WIDTH, height:constants.height - 100, marginVertical:5}}>
           <View style={{backgroundColor:'white', borderRadius:20, alignItems:'center', marginHorizontal:3, marginVertical:4}}>
             <Text style={{fontSize: 18, color:'black'}}>원하는 운동 3가지를 골라주세요 !</Text>
             <Text style={{fontSize: 18, color:'black'}}>같은 운동을 선택한 메이트를 먼저 찾아 줍니다 !</Text>
@@ -77,10 +77,10 @@ const Mate2 = ( {navigation} ) => {
           </View>
           
 
-          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+          <View style={{flexDirection:'row', justifyContent:'space-around'}}>
           <CheckBox
             center
-            title={<><Ionicons size={20} name='barbell' color='black' /><Text> {checkList[0]}  </Text></>}
+            title={<><Ionicons size={20} name='barbell' color='black' /><Text style={{color:'black'}}> {checkList[0]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
@@ -93,7 +93,7 @@ const Mate2 = ( {navigation} ) => {
           />
           <CheckBox
             center
-            title={<><Materiallcons size={20} name='sports-tennis' color='black' /><Text> {checkList[1]}  </Text></>}
+            title={<><MaterialCommunityIcons size={20} name='badminton' color='black' /><Text style={{color:'black'}}> {checkList[1]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
@@ -106,7 +106,7 @@ const Mate2 = ( {navigation} ) => {
           />
           <CheckBox
             center
-            title={<><Materiallcons size={20} name='directions-run' color='black' /><Text> {checkList[2]}  </Text></>}
+            title={<><Materiallcons size={20} name='directions-run' color='black' /><Text style={{color:'black'}}> {checkList[2]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
@@ -118,10 +118,10 @@ const Mate2 = ( {navigation} ) => {
             disabled={disabled}
           />
           </View>
-          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+          <View style={{flexDirection:'row', justifyContent:'space-around'}}>
           <CheckBox
             center
-            title={<><MaterialCommunityIcons size={20} name='dog-side' color='black' /><Text> {checkList[3]}  </Text></>}
+            title={<><MaterialCommunityIcons size={20} name='dog-side' color='black' /><Text style={{color:'black'}}> {checkList[3]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
@@ -134,7 +134,7 @@ const Mate2 = ( {navigation} ) => {
           />
           <CheckBox
             center
-            title={<><Materiallcons size={20} name='directions-walk' color='black' /><Text> {checkList[4]}  </Text></>}
+            title={<><Materiallcons size={20} name='directions-walk' color='black' /><Text style={{color:'black'}}> {checkList[4]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
@@ -147,7 +147,7 @@ const Mate2 = ( {navigation} ) => {
           />
           <CheckBox
             center
-            title={<><Foundation size={20} name='mountains' color='black' /><Text> {checkList[5]}  </Text></>}
+            title={<><Foundation size={20} name='mountains' color='black' /><Text style={{color:'black'}}> {checkList[5]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
@@ -159,10 +159,10 @@ const Mate2 = ( {navigation} ) => {
             disabled={disabled}
           />
           </View>
-          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+          <View style={{flexDirection:'row', justifyContent:'space-around'}}>
           <CheckBox
             center
-            title={<><Ionicons size={20} name='bicycle' color='black' /><Text> {checkList[6]}  </Text></>}
+            title={<><Ionicons size={20} name='bicycle' color='black' /><Text style={{color:'black'}}> {checkList[6]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
@@ -175,7 +175,7 @@ const Mate2 = ( {navigation} ) => {
           />
           <CheckBox
             center
-            title={<><MaterialCommunityIcons size={20} name='swim' color='black' /><Text> {checkList[7]}  </Text></>}
+            title={<><MaterialCommunityIcons size={20} name='swim' color='black' /><Text style={{color:'black'}}> {checkList[7]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
@@ -188,7 +188,7 @@ const Mate2 = ( {navigation} ) => {
           />
           <CheckBox
             center
-            title={<><MaterialCommunityIcons size={20} name='bowling' color='black' /><Text> {checkList[8]}  </Text></>}
+            title={<><MaterialCommunityIcons size={20} name='bowling' color='black' /><Text  style={{color:'black'}}> {checkList[8]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
@@ -200,10 +200,10 @@ const Mate2 = ( {navigation} ) => {
             disabled={disabled}
           />
           </View>
-          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+          <View style={{flexDirection:'row', justifyContent:'space-around'}}>
           <CheckBox
             center
-            title={<><MaterialCommunityIcons size={20} name='baseball-bat' color='black' /><Text> {checkList[9]}  </Text></>}
+            title={<><MaterialCommunityIcons size={20} name='baseball-bat' color='black' /><Text style={{color:'black'}}> {checkList[9]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
@@ -216,7 +216,7 @@ const Mate2 = ( {navigation} ) => {
           />
           <CheckBox
             center
-            title={<><MaterialCommunityIcons size={20} name='basketball' color='black' /><Text> {checkList[10]}  </Text></>}
+            title={<><MaterialCommunityIcons size={20} name='basketball' color='black' /><Text style={{color:'black'}}> {checkList[10]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
@@ -229,7 +229,7 @@ const Mate2 = ( {navigation} ) => {
           />
           <CheckBox
             center
-            title={<><Ionicons size={20} name='football' color='black' /><Text> {checkList[11]}  </Text></>}
+            title={<><Ionicons size={20} name='football' color='black' /><Text style={{color:'black'}}> {checkList[11]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
