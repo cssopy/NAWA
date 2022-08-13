@@ -29,7 +29,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         if (jwt != null && jwtTokenProvider.validateToken(jwt)) {
             // 토큰으로 인증 정보 조회
             Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
-            System.out.println("authentication = " + authentication);
             // Context에 담는다
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

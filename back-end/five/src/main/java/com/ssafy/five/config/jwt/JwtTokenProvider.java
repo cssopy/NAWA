@@ -2,17 +2,15 @@ package com.ssafy.five.config.jwt;
 
 import com.ssafy.five.controller.dto.res.TokenResDto;
 import com.ssafy.five.domain.service.CustomUserDetailsService;
-import com.ssafy.five.exception.ExpiredException;
+import com.ssafy.five.exception.ExpiredRefException;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -69,7 +67,12 @@ public class JwtTokenProvider {
 
     // token 사용자 추출
     public String getUserId(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        try {
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        }
+        catch (ExpiredJwtException e){
+            throw new ExpiredRefException();
+        }
     }
 
     // Header에서 token 추출
@@ -81,9 +84,8 @@ public class JwtTokenProvider {
         return null;
     }
 
-    // token 유효성 검증
-    public boolean validateToken(String token) {
-        System.out.println("token = " + token);
+    // acctoken 유효성 검증
+    public boolean validateToken(String token){
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
@@ -92,19 +94,14 @@ public class JwtTokenProvider {
         }
     }
 
+    // reftoken 유효성 검증
     public String validateRefreshToken(String token) {
-        try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            // refresh 토큰의 만료시간 남아있을 때
-            if (!claims.getBody().getExpiration().before(new Date())) {
-                return recreateAccessToken(claims.getBody().get("sub").toString(), claims.getBody().get("roles"));
-            }
-            return null;
+        Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+        // refresh 토큰의 만료시간 남아있을 때
+        if (!claims.getBody().getExpiration().before(new Date())) {
+            return recreateAccessToken(claims.getBody().get("sub").toString(), claims.getBody().get("roles"));
         }
-        // refresh 토큰이 만료되었을 때
-        catch (ExpiredJwtException e){
-            throw new ExpiredException();
-        }
+        return null;
     }
 
     public String recreateAccessToken(String userId, Object roles) {

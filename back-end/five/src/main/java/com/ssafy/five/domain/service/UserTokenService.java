@@ -70,9 +70,9 @@ public class UserTokenService {
 
     @Transactional
     public ResponseEntity<?> validateRefreshToken(TokenReqDto tokenReqDto){
-        // 해당 유저의 refreshToken이 아닐경우
+        // 해당 유저의 refreshToken이 아닐경우 , 만료시 걸림
         if(!jwtTokenProvider.getUserId(tokenReqDto.getRefreshToken()).equals(tokenReqDto.getUserId())){
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("해당 유저의 토큰이 아닙니다", HttpStatus.BAD_REQUEST);
         }
         String accessToken = jwtTokenProvider.validateRefreshToken(tokenReqDto.getRefreshToken());
         return new ResponseEntity<>(accessToken, HttpStatus.OK);
@@ -82,7 +82,6 @@ public class UserTokenService {
     public ResponseEntity<?> autoLogin(TokenReqDto tokenReqDto, HttpServletRequest request){
 
         String accessToken = jwtTokenProvider.resolveToken(request);
-        System.out.println(SecurityContextHolder.getContext().getAuthentication());
 
         Users user = userRepository.findByUserId(tokenReqDto.getUserId());
         if(!user.getEndDate().before(new Date())){
