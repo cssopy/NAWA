@@ -9,6 +9,7 @@ import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.SmsRepository;
 import com.ssafy.five.domain.repository.UserRepository;
+import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -193,19 +194,21 @@ public class UserService {
     }
 
     @Transactional
-    public void evalUser(EvalUserReqDto evalUserReqDto) {
+    public ResponseEntity<?> evalUser(EvalUserReqDto evalUserReqDto) {
         Users userEntity = userRepository.findByUserId(evalUserReqDto.getUserId());
 
-        int dp;
-        if (evalUserReqDto.getEvalType().equals(EvalType.GOOD)) {
-            dp = 10;
-        } else if (evalUserReqDto.getEvalType().equals(EvalType.BAD)) {
-            dp = -15;
-        } else {
-            dp = 0;
+        if (userEntity != null) {
+            int dp;
+            if (evalUserReqDto.getEvalType().equals(EvalType.GOOD)) {
+                dp = 10;
+            } else if (evalUserReqDto.getEvalType().equals(EvalType.BAD)) {
+                dp = -15;
+            } else {
+                dp = 0;
+            }
+            userEntity.updatePoint(dp);
+            return new ResponseEntity<>(true, HttpStatus.OK);
         }
-        userEntity.updatePoint(dp);
-
-        userRepository.save(userEntity);
+        return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 }

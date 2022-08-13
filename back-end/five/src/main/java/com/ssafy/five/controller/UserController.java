@@ -95,8 +95,8 @@ public class UserController {
 
     @Operation(summary = "사용자 평가", description = "사용자 평가")
     @PostMapping("/user/point")
-    public void evalUser(@RequestBody EvalUserReqDto evalUserReqDto) {
-        userService.evalUser(evalUserReqDto);
+    public ResponseEntity<?> evalUser(@RequestBody EvalUserReqDto evalUserReqDto) {
+        return userService.evalUser(evalUserReqDto);
     }
 
     @Operation(summary = "프로필 이미지 다운로드", description = "프로필 이미지 다운로드")
