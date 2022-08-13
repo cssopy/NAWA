@@ -52,7 +52,6 @@ const Mate1 = ( {navigation} ) => {
   const [ButtonLoading, setButtonLoading] = useState(false);
 
   const searching = async () => {
-    console.log(11111)
     try {
       const response1 = await axios.get(
         `https://dapi.kakao.com/v2/local/search/keyword.json?query=${searchValue}&y=${pickLocation.latitude}&x=${pickLocation.longitude}`,
@@ -64,7 +63,7 @@ const Mate1 = ( {navigation} ) => {
       const results = response1.data.documents
       setSearchingResult(results)
     } catch (error) {
-      console.log(error)
+      Alert.alert('알림', '다시 진행 해주세요')
     }
   }
 
@@ -133,12 +132,11 @@ const Mate1 = ( {navigation} ) => {
               }).start();
   } 
 
-
     return (
       <View style={{ height: SCREEN_HEIGHT}}>
         <View style={styles.topBox}>
           <View style={styles.infoBox}>
-            <Text style={{color:'white', fontWeight:"bold"}}> 위치 설정</Text>
+            <Text style={{color:'white', fontWeight:"bold"}}> 위치 설정하기</Text>
           </View>
           <Progress.Bar style={{marginHorizontal:4, borderColor: 'rgb(0, 197, 145)'}} progress ={gage} width={constants.width - 10} height={6} unfilledColor={'white'} />
         </View>  
@@ -154,7 +152,8 @@ const Mate1 = ( {navigation} ) => {
               onTouch={() => {
                 Keyboard.dismiss()
                 closeSearchBox()
-              }}>
+              }}
+              mapType={4}>
               <Circle coordinate={pickLocation} color={"rgba(255,0,0,0.3)"} radius={distance} /> 
               {!!mylocation && <Marker coordinate={mylocation} caption={{text:'현재 위치', textSize:13}}/>}
             </NaverMapView>
