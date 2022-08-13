@@ -53,7 +53,9 @@ function SignUp({navigation} : SignUpScreenProps) {
     // 아이디 닉네임 중복 / 번호 인증 / 비밀번호 확인test
     const [openId, setOpenId] = useState('');
     const openIdRef = useRef<TextInput | null>(null);
+    const openIdRef = useRef<TextInput | null>(null);
     const [openNickname, setOpenNickname] = useState('');
+    const openNicknameRef = useRef<TextInput | null>(null);
     const openNicknameRef = useRef<TextInput | null>(null);
     const [authNumber, setAuthNumber] = useState('');
     const authNumberRef = useRef<TextInput | null>(null);
@@ -165,6 +167,9 @@ function SignUp({navigation} : SignUpScreenProps) {
     const onChangeNickName = useCallback(text => {
         setNickName(text.trim());
     }, []);
+    const onChangeOpenNickname = useCallback(text => {
+      setOpenNickname(text.trim());
+  }, []);
     const onChangeOpenNickname = useCallback(text => {
       setOpenNickname(text.trim());
   }, []);
