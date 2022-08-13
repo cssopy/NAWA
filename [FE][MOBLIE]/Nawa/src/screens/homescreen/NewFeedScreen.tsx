@@ -4,7 +4,7 @@ import { ScrollView, Dimensions, StyleSheet, Alert, Platform, View } from "react
 import { Form, FormItem } from 'react-native-form-component';
 import { Button, ScreenHeight } from "@rneui/base";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -19,8 +19,8 @@ function NewFeedScreen({ navigation }) {
   const dispatch = useAppDispatch()
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [media, setMedia] = useState({});
-  const [loading, setLoading] = useState(false)
+  const [media, setMedia]: any[] = useState([]);
+  const [profileImage, setProfileImage]: any = useState({});
   
 
 
@@ -43,12 +43,14 @@ function NewFeedScreen({ navigation }) {
         console.log(res.errorMessage)
       } else {
         const data = res.assets
-        const callMedia = {
-          uri: data[0].uri,
-          type: data[0].type,
-          name: data[0].fileName,
-        }
-        setMedia(callMedia)
+        data?.map((file) => {
+          const callMedia = {
+          uri: file.uri,
+          type: file.type,
+          name: file.fileName,
+          }
+          setMedia(media.append(callMedia))
+        })
       }
     })
   }
@@ -69,157 +71,169 @@ function NewFeedScreen({ navigation }) {
         console.log('User Cancelled image picker')
       } else if (res.errorCode) {
         console.log(res.errorMessage)
-      } else if (res.assets) {
-        bring.name = res.assets[0].fileName;
-        bring.type = res.assets[0].type;
-        bring.uri = Platform.OS === 'android' ? res.assets[0].uri : res.assets[0].uri.replace('file://', '');
-        setMedia(bring)
+      } else {
+        const data=res.assets
+        data?.map((file) => {
+          const callMedia = {
+          uri: file.uri,
+          type: file.type,
+          name: file.fileName,
+          }
+          setMedia(media.append(callMedia))
+        })
       }
     })
   }
 
   const openStorage = async () => {
-    const bring = {
-      uri: '',
-      type: '',
-      name: '',
-    };
-
     const option = {
       mediaType: 'mixed',
+      selectionLimit: 0,
+    }
+
+    const bring = {
+      name: '',
+      type: '',
+      uri: '',
     }
 
     await launchImageLibrary(option, (res) => {
+      let result = []
       if(res.didCancel) {
         console.log('User Cancelled image picker')
       } else if(res.errorCode) {
         console.log(res.errorMessage)
-      } else {
-        bring.name = res.assets[0].fileName;
-        bring.type = res.assets[0].type;
-        bring.uri = Platform.OS === 'android' ? res.assets[0].uri : res.assets[0].uri.replace('file://', '');
-        setMedia(bring)
-        console.log(media)
+      } else if(res.assets) {
+        setMedia(undefined)
+        const data = res.assets
+        data.map(file => {
+          bring.name = file.fileName;
+          bring.type = file.type;
+          bring.uri = Platform.OS === 'android' ? file.uri : file.uri.replace('file://', '');
+          result.push(bring)
+          setProfileImage(bring)
+        })
+        setMedia(result)
       }
     })
   }
   
-  const onSubmit = async () => {
-    // const formdata = new FormData();
+  const onSubmit = () => {
+    if ( !title ) {
+      return Alert.alert('알림', '제목은 필수항목입니다')
+    }
+    if ( !content ) {
+      return Alert.alert('알림', '글을 입력해주세요')
+    }
+    const formData = new FormData()
+    const files: any [] = media
+    // console.log(files)
+    // formData.append('uploadfile', files.length > 0 ? files : null);
+    files.map(file => {
+      formData.append('uploadfile', file)
+    })
 
+    let inputs = {
+      "boardTitle": title,
+      "boardContent": content,
+      "userId": whoamI,
+    };
+    const json = JSON.stringify(inputs);
+    // const blob = new Blob([json], { type: 'application/json' });
 
-    // formdata.append(
-    //   "key",
-    //   new Blob([JSON.stringify({
-    //     boardTitle: title,
-    //     boardContent: content,
-    //     userId:myId
-    //   })],
-    //   {
-    //     type: 'application/json'
-    //   }))
+    // formData.append("key", blob);
+    // console.log(formData)
+    // console.log(json)
+    // console.log(typeof(json))
 
-    // formdata.append('uploadfile', media)
+    formData.append('key', inputs)
+    console.log(formData)
 
-    // console.log(formdata)
-
-    // const formData = new FormData();
-    // formData.append('uploadfile', media)
-
-    // const requestOptions = {
-    //   method: 'post',
-    //   body: formData,
-    //   redirect: 'follow',
-    //   headers: {
-    //     Authorization: myId,
-    //   }
-    // }
-    // await fetch(url, requestOptions)
-    // .then(res => console.log(res))
-    // .catch(err => console.log(err))
-
-    // try {
-    //   const response = await fetch('http://i7d205.p.ssafy.io:8080/board/', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data',
-    //     Authorization: myId,
-    //   },
-    //   body: formdata
-    //   })
-    //   const json = await response.json();
-    //   console.log(json)
-    // } catch (err) {
-    //   console.log(err)
-    // }
-    // console.log(formdata)
-
-    const textData = new FormData()
-    const imgData = new FormData()
-    // textData.append('key', new Blob([JSON.stringify({
-    //   boardTitle: title,
-    //   boardContent: content,
-    //   userId: whoamI,
-    //   })]))
-    imgData.append('uploadfile', media)
-
-    await axios({
-      method: 'post',
-      url: url,
-      data: {
-        key: JSON.stringify({
-          boardTitle: title,
-          boardContent: content,
-          userId: whoamI,
-        }),
-
-        // uploadfile: media,
-        imgData
-      },
-      headers: {
-        'Authorization': `Bearer ${myId}`,
-        'Content-Type': 'multipart/form-data',
-        // 'Content-Type': 'multipart/form-data',
-        //  boundary=someArbitraryUniqueString',
-      },
-    }).then(res => {
-    }).catch( async err => {
-      console.log('왜 또', err)
-      try {
-        const refreshToken = await EncryptedStorage.getItem('refreshToken')
-        const response = await axios.put(
-          'http://i7d205.p.ssafy.io:8080/checktoken',
-          {
-            userId: whoamI,
-            refreshToken: refreshToken
-          },
-          );
-          EncryptedStorage.setItem('accessToken', response.data.accessToken)
-          dispatch(
-            userSlice.actions.setUser({
-              accessToken : response.data.accessToken
-            }),
-            )
+    try{
+      axios.post(
+        'http://i7d205.p.ssafy.io:8080/board/',
+        // formData,
+        json,
+        {
+          headers : {
+            // "Content-Type": "multipart/form-data",
+            'Authorization' : `Bearer ${myId}`
           }
-          catch (error) {
-            // EncryptedStorage.removeItem('accessToken')
-            // EncryptedStorage.removeItem('refreshToken')
-            
-            // dispatch(
-            //   userSlice.actions.setUser({
-            //     userId : '',
-            //     nickname: '',
-            //     accessToken: '',
-            //   }),
-            //   )
-            //   console.log('두번째 샛길로')
-            }
+        }
+      ).then(res => console.log('보냈다 200번인가?', res))
+      .catch(err => console.log('일단 보낸거 같긴한데', err))
+      } catch (error) {
+        console.log('또 못 보내?', error)
+      }
+
+    // // 프로필 이미지 전송 => 성공
+    // const formData2 = new FormData()
+
+    // console.log(profileImage)
+    // formData2.append('profileImg', profileImage)
+    // console.log(formData2)
+
+    // await axios.put(
+    //   'http://i7d205.p.ssafy.io:8080/user/profile-img/ssafy',
+    //   formData2,
+    //   {
+    //     headers : {
+    //       'Content-Type': 'multipart/form-data',
+    //       'Authorization' : `Bearer ${myId}`
+    //     }
+    //   }
+    // ).then(res => console.log('보냈다 200번인가?', res))
+    // .catch(err => console.log('?', err))
+    // 여기까지
+
+    // await axios({
+    //   method: 'post',
+    //   url: url,
+    //   data: formData,
+    //   headers: {
+    //     'Authorization': `Bearer ${myId}`,
+    //     'Content-Type': 'multipart/form-data',
+    //     //  boundary=someArbitraryUniqueString',
+    //   },
+    // })
+    // .then(res => { console.log(res)
+    // }).catch( async err => {
+    //   console.log('왜 또', err)
+      // try {
+      //   const refreshToken = await EncryptedStorage.getItem('refreshToken')
+      //   const response = await axios.post(
+      //     'http://i7d205.p.ssafy.io:8080/checktoken',
+      //     {
+      //       userId: whoamI,
+      //       refreshToken: refreshToken
+      //     },
+      //   );
+      //   EncryptedStorage.setItem('accessToken', response.data.accessToken)
+      //   dispatch(
+      //     userSlice.actions.setUser({
+      //       accessToken : response.data.accessToken
+      //     }),
+      //     )
+      //   }
+      //   catch (error) {
+      //     // EncryptedStorage.removeItem('accessToken')
+      //     // EncryptedStorage.removeItem('refreshToken')
+          
+      //     // dispatch(
+      //     //   userSlice.actions.setUser({
+      //     //     userId : '',
+      //     //     nickname: '',
+      //     //     accessToken: '',
+      //     //   }),
+      //     //   )
+      //     //   console.log('두번째 샛길로')
+      //     }
             
             
 
 
       // console.log(err)
-    })
+    // })
 
     // axios.post('http://i7d205.p.ssafy.io:8080/board/',
     // {
@@ -258,6 +272,9 @@ function NewFeedScreen({ navigation }) {
     <ScrollView
       style={styles.safe}
     >
+      <View>
+        { }
+      </View>
       <View
         style={{
           flexDirection: "row",
@@ -289,7 +306,6 @@ function NewFeedScreen({ navigation }) {
         buttonText = "보내기"
         >
         <FormItem
-          textArea
           label="제목"
           value={title}
           returnKeyType="next"

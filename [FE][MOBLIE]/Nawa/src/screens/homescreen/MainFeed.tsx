@@ -45,9 +45,10 @@ function MainFeed() {
       url + 'board/',
       { headers: { Authorization : `Bearer ${myId}` }}
     ).then (res => {
-      console.log(res)
+      console.log('good', res.data)
+      setFeeds(res.data)
     }).catch (err => {
-      console.log(err)
+      console.log('bad', err)
     })
   },[])
 
@@ -61,10 +62,11 @@ function MainFeed() {
         scrollEventThrottle={16}
         bounces={false}
       >
-        <FeedItem />
-        <FeedItem />
-        <FeedItem />
-        <FeedItem />
+        {feeds.map(feed => {
+          return(
+          <FeedItem feed = {feed}/>
+          )
+        })}
       </Animated.ScrollView>
   )
 }
