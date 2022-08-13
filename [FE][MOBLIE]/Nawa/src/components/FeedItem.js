@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from 'react-native'
 
-import UserIcon from "./UserIcon";
+import UserIcon from "./userIcon";
 
 
 

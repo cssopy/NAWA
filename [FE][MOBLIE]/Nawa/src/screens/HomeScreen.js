@@ -1,120 +1,36 @@
-import React, { useRef, useEffect, useState } from "react";
-import { SafeAreaView, Text, Animated, View, StyleSheet, Image, Keyboard } from "react-native";
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import FeedItem from '../components/FeedItem';
-import Search from "../components/Search";
-import constants from '../constants';
+import ChangeFeedScreen from "./homescreen/ChangeFeedScreen";
+import NewFeedScrren from './homescreen/NewFeedScreen';
+import Main from './homescreen/Main'
 
-import DismissKeyboardView from "../components/DismissKeyboardView";
-
-const HEADER_HEIGHT = 60;
+const Stack = createNativeStackNavigator();
 
 const HomeScreen = () => {
-  const [offset, setOffset] = useState(0);
-  const [scrollUp, setScrollUp] = useState(true);
-
-  const animationRef = useRef(new Animated.Value(0)).current;
-  
-
-  const translateY = animationRef.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -HEADER_HEIGHT],
-  });
-
-  const onScroll = (event) => {
-    const currentOffset = event.nativeEvent.contentOffset.y;
-    if (currentOffset < 0) return;
-    setScrollUp(offset >= currentOffset);
-    setOffset(currentOffset);
-  };
-
-  useEffect(() => {
-    Keyboard.dismiss()
-    Animated.timing(animationRef, {
-      toValue: scrollUp ? 0 : 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [scrollUp]);
-
   return (
-    <SafeAreaView>
-        {/* <View style={styles.fixedBox}></View> */}
-      <View>
-        <Animated.View
-          style={{
-            height: HEADER_HEIGHT,
-            backgroundColor: "white",
-            transform: [{ translateY: translateY }],
-            flexDirection : 'row',
-            backgroundColor: "white", 
-            elevation: 8,
-            zIndex:100
-          }}
-        >
-          <View style={{ flex:1, backgroundColor:'rgb(0, 197, 145)', justifyContent:'center', alignItems:'center' }}>
-            <Image
-              source={require('../assets/nawa_white.png')}
-              style={styles.logoImage}
-            /> 
-          </View>
-          <View style={{ flex:4, backgroundColor:'rgb(0, 197, 145)', justifyContent:'center'}}>
-            <Search width={constants.width * 0.65} string='언제 어디서나 나와!' />
-          </View>
-          <View style={{ flex:1, backgroundColor:'rgb(0, 197, 145)', justifyContent:'center', alignItems:'center' }}>
-          <Image
-              source={require('../assets/map.png')}
-              style={styles.map}
-            /> 
-          </View>
-        </Animated.View>
+    <Stack.Navigator
+      screenOptions={{headerShown: false}}
+    >
+      <Stack.Screen
+        name="Main"
+        component={Main}
+        options={{
+          title: "피드"
+        }}
+      />
 
-        <Animated.ScrollView
-          onScroll={onScroll}
-          style={{
-            transform: [{ translateY: translateY }],
-            marginBottom: HEADER_HEIGHT,
-          }}
-          scrollEventThrottle={16}
-          bounces={false}
-        >
-          <FeedItem />
-          <FeedItem />
-          <FeedItem />
-          <FeedItem />
-        </Animated.ScrollView>
-      </View>
-    </SafeAreaView>
+      <Stack.Screen
+        name="NewFeedScrren"
+        component={NewFeedScrren}
+      />
+
+      <Stack.Screen
+        name="ChangeFeedScreen"
+        component={ChangeFeedScreen}
+      />
+    </Stack.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  fixedBox : {
-    backgroundColor : 'black',
-    width : constants.width,
-    height : 30,
-  },
-  first: {
-    color : 'black',
-    fontSize : 18,
-    fontWeight : '900',
-  },
-  logoImage : {
-    width : 50,
-    height : 50,
-    resizeMode : 'contain',
-  },
-  map : {
-    width : 60,
-    height : 60,
-    resizeMode : 'contain',
-    marginTop : 7,
-  }
-})
-
-
-
-
-
 
 export default HomeScreen;
