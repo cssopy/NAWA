@@ -195,20 +195,22 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<?> evalUser(EvalUserReqDto evalUserReqDto) {
-        Users userEntity = userRepository.findByUserId(evalUserReqDto.getUserId());
-
-        if (userEntity != null) {
-            int dp;
-            if (evalUserReqDto.getEvalType().equals(EvalType.GOOD)) {
-                dp = 10;
-            } else if (evalUserReqDto.getEvalType().equals(EvalType.BAD)) {
-                dp = -15;
-            } else {
-                dp = 0;
-            }
-            userEntity.updatePoint(dp);
-            return new ResponseEntity<>(true, HttpStatus.OK);
+        Users user = userRepository.findByUserId(evalUserReqDto.getUserId());
+        if(user == null){
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        } else if(evalUserReqDto.getUserId().equals(getCurrentUserId())){
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+
+        int dp;
+        if (evalUserReqDto.getEvalType().equals(EvalType.GOOD)) {
+            dp = 10;
+        } else if (evalUserReqDto.getEvalType().equals(EvalType.BAD)) {
+            dp = -15;
+        } else {
+            dp = 0;
+        }
+        user.updatePoint(dp);
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 }
