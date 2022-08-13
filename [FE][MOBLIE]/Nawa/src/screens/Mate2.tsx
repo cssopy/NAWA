@@ -67,9 +67,11 @@ const Mate2 = ( {navigation} ) => {
   const stored = async () => {
     dispatch(
       matchingSlice.actions.setC({
-        category : box
-      })
+        category : box,
+        ment : value
+      }),
     )
+    navigation.navigate('Mate3')
   };
 
   useEffect(() => {
@@ -100,7 +102,6 @@ const Mate2 = ( {navigation} ) => {
 
     }
   },[box, value, readWarnings])
-
 
 
 
@@ -353,7 +354,7 @@ const Mate2 = ( {navigation} ) => {
                 }}
                 />
         </View>
-        <Button onPress={() => navigation.navigate('Mate3')} title={finalText} disabled={!canGoNext} type="solid" size="lg"disabledTitleStyle={{color:'red'}} containerStyle={{position:'absolute', bottom:0, width:SCREEN_WIDTH, borderTopLeftRadius:10, borderTopRightRadius:10}}/>
+        <Button onPress={() => stored()} title={finalText} disabled={!canGoNext} type="solid" size="lg"disabledTitleStyle={{color:'red'}} containerStyle={{position:'absolute', bottom:0, width:SCREEN_WIDTH, borderTopLeftRadius:10, borderTopRightRadius:10}}/>
       </>
     );
   }
