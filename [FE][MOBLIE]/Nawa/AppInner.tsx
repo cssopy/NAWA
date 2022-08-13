@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React, {useEffect} from 'react';
-import { Alert } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -53,16 +53,21 @@ const Stack = createNativeStackNavigator();
 function AppInner() {
   //////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
   const dispatch = useAppDispatch()
-  const userId = useSelector((state : RootState) => state.user.userId)
+  const accessToken = useSelector((state : RootState) => state.user.accessToken)
   
   // 자동 로그인
   useEffect(() => {
     const getTokenAndRefresh = async () => {
       try {
-        const userId = await AsyncStorage.getItem('userId');
-        const accessToken = await AsyncStorage.getItem('accessToken');
+        const userId = await EncryptedStorage.getItem('userId');
+        const accessToken = await EncryptedStorage.getItem('accessToken');
         const nickname = await AsyncStorage.getItem('nickname');
         const refreshToken = await EncryptedStorage.getItem('refreshToken');
+        
+        console.log(userId)
+        console.log(accessToken)
+        console.log(refreshToken)
+        
         if (!accessToken) {
           SplashScreen.hide();
           return;
@@ -82,7 +87,7 @@ function AppInner() {
             nickname : nickname
           }),
         );
-        AsyncStorage.setItem(
+        EncryptedStorage.setItem(
           'accessToken',
           response.data.accessToken
         )
@@ -106,7 +111,7 @@ function AppInner() {
       <NavigationContainer>
         {/* <Drawer.Navigator>
         </Drawer.Navigator> */}
-        {!userId ? (
+        {accessToken ? (
           <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {

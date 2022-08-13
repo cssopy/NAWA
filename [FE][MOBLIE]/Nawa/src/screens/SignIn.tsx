@@ -56,32 +56,30 @@ function SignIn({navigation}: SignInScreenProps) {
         userId,
         password,
       });
+
       console.log("login pass")
       dispatch(
         userSlice.actions.setUser({ // 이 액션이 dispatch 되면 
           userId : response.data.userId,
+          nickname : nickname,
           accessToken : response.data.accessToken,
-          nickname : nickname
         }),
         );
       Alert.alert('알림', '로그인 되었습니다.');
-      await AsyncStorage.setItem(
-        'userId',
-        userId
-      );
-      await AsyncStorage.setItem(
-        'accessToken',
-        response.data.accessToken
+      await EncryptedStorage.setItem(
+        'userId', userId
       );
       await EncryptedStorage.setItem(
-        'refreshToken',
-        response.data.refreshToken,
+        'accessToken', response.data.accessToken
+      );
+      await EncryptedStorage.setItem(
+        'refreshToken', response.data.refreshToken,
       );
 
     } catch (error) {
       const errorResponse = (error as AxiosError).response;
       if (errorResponse) {
-        Alert.alert('알림', '옳바르지 않은 아이디 또는 비밀번호 입니다.');
+        Alert.alert('알림', '아이디, 비밀번호를 확인해주세요.');
       }
       
     } finally {
@@ -89,6 +87,11 @@ function SignIn({navigation}: SignInScreenProps) {
     }
   }, [loading, dispatch, userId, password]);
   //////////////////////////////////////////////////////////////////// 끝 //////////////////////////////////////////
+
+
+
+
+
 
   const toSignUp = useCallback(() => {
     navigation.navigate('SignUp');
@@ -117,7 +120,7 @@ function SignIn({navigation}: SignInScreenProps) {
             : styles.loginButtonForm
           }
         >
-          <FormItem
+   <FormItem
             style={styles.textInputForm}
             // isRequired  // 넣으면 칸 안이쁘게 깨짐
             onChangeText={onChangeuserId}

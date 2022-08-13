@@ -32,7 +32,6 @@ const Mate3 = ( {navigation} ) => {
   const [onAir, setOnAir] = useState(false);
   
   const nickname = useSelector((state : RootState) => state.user.nickname);
-  if (!! nickname) {Alert.alert('알림', '닉네임 설정이 필요합니다. 하고 오세요')}
   const category = useSelector((state : RootState) => state.matching.category);
   const location = useSelector((state : RootState) => state.matching.location);
   const distance = useSelector((state : RootState) => state.matching.distance);
@@ -109,7 +108,7 @@ const Mate3 = ( {navigation} ) => {
           settings : nickname
         })
       )      
-      navigation.navigate('Mate4', nickname)
+      navigation.navigate('JoinRTC')
     }
   }
 
@@ -162,16 +161,6 @@ const Mate3 = ( {navigation} ) => {
     setOnLocation(location)
   }
 
-  const conncting = async (targetUser) => {
-    userOut(nickname); 
-    userOut(targetUser);
-    dispatch(
-      matchingSlice.actions.setS({
-        settings : targetUser
-      })
-    )
-    navigation.navigate('Mate4')
-  }
 
 
 
@@ -233,7 +222,17 @@ const Mate3 = ( {navigation} ) => {
           return (
           <View key={idx} style={{flexDirection:"row" , justifyContent:'center', width:constants.width}}>
             <Button style={{flex:5 }} onPress={() => changingTarget(item.location)}>{item.nickname}님 / {(((location.latitude - item.location.latitude)**2 + (location.longitude - item.location.longitude)**2)**0.5).toFixed(3)} km</Button>
-            <Button color='red' style={{flex:2}} onPress={() => {navigation.navigate('Mate4', item.nickname) }}>시작하기</Button>
+            <Button color='red' style={{flex:2}} 
+              onPress={() => {
+                dispatch(
+                  matchingSlice.actions.setS({
+                    settings : item.nickname
+                  })
+                  )
+                  userOut(nickname)
+                  userOut(item.nickname)
+                navigation.navigate('OpenRTC');
+              }}>시작하기</Button>
           </View>
           )  
         }
