@@ -1,15 +1,14 @@
 import React, { useEffect, useRef, useState,  } from "react";
-import {Text, View, StyleSheet, Alert} from 'react-native'
+import {Text, View, StyleSheet, TextInput, KeyboardAvoidingView , Keyboard} from 'react-native'
+import { Button, CheckBox } from "@rneui/themed";
+
 
 import constants from '../constants';
 import {useAppDispatch} from '../store';
 import * as Progress from 'react-native-progress';
 
 import { FAB } from '@rneui/themed';
-import { CheckBox, Icon } from '@rneui/themed';
 
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/reducer';
 import matchingSlice from "../slices/matching";
 
 
@@ -18,332 +17,344 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Materiallcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Foundation from 'react-native-vector-icons/Foundation';
+import { Dimensions } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+
+//멘트 작성
+const LargeTextInput = (props) => {
+  return (
+    <TextInput
+      {...props}
+      editable
+      maxLength={50}
+      placeholder='오늘 운동 땡기는 사람 다 나와 !'
+      placeholderTextColor={'lightgrey'}
+      returnKeyType='next'
+      textContentType="username"
+      autoCapitalize="none"
+    />
+  );
+}
+
 
 
 const Mate2 = ( {navigation} ) => {
-
   const dispatch = useAppDispatch();
-  const [gage, setGage] = useState(0.25);
+  const [gage, setGage] = useState(0.33);
   const [visible, setVisible] = useState(false);
+
   const [disabled, setDisabled] = useState(false);
-  const [check0, setCheck0] = useState(false);
-  const [check1, setCheck1] = useState(false);
-  const [check2, setCheck2] = useState(false);
-  const [check3, setCheck3] = useState(false);
-  const [check4, setCheck4] = useState(false);
-  const [check5, setCheck5] = useState(false);
-  const [check6, setCheck6] = useState(false);
-  const [check7, setCheck7] = useState(false);
-  const [check8, setCheck8] = useState(false);
-  const [check9, setCheck9] = useState(false);
-  const [check10, setCheck10] = useState(false);
-  const [check11, setCheck11] = useState(false);
+  const [box, setBox] = useState<String[]>([]);
+  // const where = useSelector((state:RootState) => state.matching.location)
+  // const distance = useSelector((state:RootState) => state.matching.distance)
+  const [value, onChangeText] = React.useState('');
 
-  const [total, setTotal] = useState(0);
-  const [selectedItems, setSelectedItem] = useState([]);
-  const where = useSelector((state:RootState) => state.matching.location)
-  const distance = useSelector((state:RootState) => state.matching.distance)
-  // const first = useSelector((state : RootState) =>state.matching.category1)
-  // const second = useSelector((state : RootState) =>state.matching.category2)
-  // const third = useSelector((state : RootState) =>state.matching.category3)
+  const [finalText, setFinalText] = useState('');
+  const [canGoNext, setCanGoNext] = useState(false);
+  const [readWarnings, setReadWarnings] = useState(false);
 
-  const count = () => {
-    let countTrue = 0;
-    let items : string[] = [];
-    if (check0) {
-      countTrue += 1;
-      items.push(checkList[0])
-    } 
-    if (check1) {
-      countTrue += 1;
-      items.push(checkList[1])
-    } 
-    if (check2) {
-      countTrue += 1;
-      items.push(checkList[2])
-    } 
-    if (check3) {
-      countTrue += 1;
-      items.push(checkList[3])
-    } 
-    if (check4) {
-      countTrue += 1;
-      items.push(checkList[4])
-    } 
-    if (check5) {
-      countTrue += 1;
-      items.push(checkList[5])
-    } 
-    if (check6) {
-      countTrue += 1;
-      items.push(checkList[6])
-    } 
-    if (check7) {
-      countTrue += 1;
-      items.push(checkList[7])
-    } 
-    if (check8) {
-      countTrue += 1;
-      items.push(checkList[8])
-    } 
-    if (check9) {
-      countTrue += 1;
-      items.push(checkList[9])
-    } 
-    if (check10) {
-      countTrue += 1;
-      items.push(checkList[10])
-    } 
-    if (check11) {
-      countTrue += 1;
-      items.push(checkList[11])
-    } 
-    setTotal(countTrue);
-    setSelectedItem(items);
-    // console.log(countTrue, items)
-    if (countTrue === 3) {
-      setVisible(true);
-      setDisabled(true);
-      setGage(0.5);
-    } else {setVisible(false)}
+
+  const boxing = (target : String) => {
+    if (box.includes(target)) {
+      let newBox = box.filter((item) => item !== target)
+      setBox(newBox)
+    } else {
+      setBox([...box, target])
+    }
   }
   
   const stored = async () => {
     dispatch(
-      matchingSlice.actions.setC1({
-        category1 : selectedItems[0],
-        category2 : selectedItems[1],
-        category3 : selectedItems[2],
-      })
+      matchingSlice.actions.setC({
+        category : box,
+        ment : value
+      }),
     )
-    // console.log(first, second, third)
+    navigation.navigate('Mate3')
   };
 
-
   useEffect(() => {
-    count()
-    console.log(selectedItems)
-  }, [check0, check1, check2, check3, check4, check5, check6, check7, check8, check9, check10, check11])
+    if (1 <= box.length && box.length <= 3) {
+      setGage(0.48)
+    }
+     else {
+      setGage(0.33)
+    }}, [box.length])
+  
+  // 승인 버튼
+  useEffect(() => {
+    if (box.length === 0) {
+      setFinalText('운동을 최소 1개 이상 선택하세요')
+      setCanGoNext(false)
+    } else if (box.length >= 4) {
+      setFinalText('운동은 최대 3개 까지 선택해주세요')
+      setCanGoNext(false)
+    } else if ( value.trim().length < 10) {
+      setFinalText('소개 멘트를 최소 10자 이상 작성하세요')
+      setCanGoNext(false)
+    } else if ( !readWarnings ) {
+      setFinalText('주의사항을 읽고 하단에 체크 해주세요')
+      setCanGoNext(false)
+    } else {
+      setFinalText('나와 광장 입장하기 !')
+      setCanGoNext(true)
+
+    }
+  },[box, value, readWarnings])
+
+
 
     return (
       <>
         <View style={styles.topBox}>
           <View style={styles.infoBox}>
             <Ionicons style={{marginLeft:2}} onPress={() => navigation.navigate('Mate1')} size={22} name='arrow-back-outline' color='white' />
-            <Text style={{color:'black'}}>운동 설정</Text>
+            <Text style={{color:'white'}}>운동 및 멘트 설정하기</Text>
             <Ionicons size={20} name='arrow-forward-outline' color='rgb(0, 197, 145)' />
           </View>
           <Progress.Bar style={{marginHorizontal:4, borderColor: 'rgb(0, 197, 145)'}} progress ={gage} width={constants.width - 10} height={6} unfilledColor={'white'} />
         </View>  
-
-        <View style={{ backgroundColor:'lightgrey', width:constants.width, height:constants.height }}>
-          <Text>{where.longitude} {where.latitude}</Text>
-          <Text>{distance}</Text>
-          {/* <Text>{checkList[0]} : {check0 ? 'yes':''}</Text>
-          <Text>{checkList[1]} : {check1 ? 'yes':''}</Text>
-          <Text>{checkList[2]} : {check2 ? 'yes':''}</Text>
-          <Text>{checkList[3]} : {check3 ? 'yes':''}</Text>
-          <Text>{checkList[4]} : {check4 ? 'yes':''}</Text>
-          <Text>{checkList[5]} : {check5 ? 'yes':''}</Text>
-          <Text>{checkList[6]} : {check6 ? 'yes':''}</Text>
-          <Text>{checkList[7]} : {check7 ? 'yes':''}</Text>
-          <Text>{checkList[8]} : {check8 ? 'yes':''}</Text>
-          <Text>{checkList[9]} : {check9 ? 'yes':''}</Text>
-          <Text>{checkList[10]} : {check10 ? 'yes':''}</Text>
-          <Text>{checkList[11]} : {check11 ? 'yes':''}</Text> */}
-          <Text style={{fontSize: 30, color:'black'}}>3개만 골라야 통과시켜줄거임</Text>
-
-          
-
-          <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
+        <ScrollView onTouchStart={() =>Keyboard.dismiss() }>
+        <View style={{ backgroundColor:'lightgrey', width:SCREEN_WIDTH}}>
+        { !!!box.length && (
+          <View style={{flexDirection:"row", borderRadius:10, backgroundColor:'rgb(0, 197, 145)',justifyContent:'center',  height:50, margin:6, elevation:5}}>
+            <Text style={{fontSize:20, color:'white', alignSelf:'center', fontWeight:"500"}}>운동 선택</Text>
+            <Text style={{fontSize:15, color:'white', alignSelf:"center"}}>  (최대 3개)</Text>
+          </View>
+          )
+        }
+          <View style={{zIndex:2, flexDirection:"row", justifyContent:'center'}}>
+            {box.map((item, idx) => {
+              return (
+              <View key={idx} style={{borderRadius: 20, padding:14, margin:7, backgroundColor: 'rgb(0, 197, 145)', elevation:8 }}>
+                <Text style={{fontSize:15, color:'white', fontWeight:"600"}}>{item}</Text>
+              </View>
+              )
+            })}
+          </View>
+        
+          <View style={{flexDirection:'row', justifyContent:'space-around'}}>
           <CheckBox
             center
-            title={<><Ionicons size={20} name='barbell' color='black' /><Text> {checkList[0]}  </Text></>}
+            title={<><Ionicons size={20} name='barbell' color='black' /><Text style={{color:'black'}}> {checkList[0]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check0}
-            onPress={() => setCheck0(!check0)}
+            checked={box.includes('헬스')}
+            onPress={() => boxing('헬스')}
             disabled={disabled}
           />
           <CheckBox
             center
-            title={<><Materiallcons size={20} name='sports-tennis' color='black' /><Text> {checkList[1]}  </Text></>}
+            title={<><MaterialCommunityIcons size={20} name='badminton' color='black' /><Text style={{color:'black'}}> {checkList[1]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check1}
-            onPress={() => setCheck1(!check1)}
+            checked={box.includes('배드민턴')}
+            onPress={() => boxing('배드민턴')}
             disabled={disabled}
           />
           <CheckBox
             center
-            title={<><Materiallcons size={20} name='directions-run' color='black' /><Text> {checkList[2]}  </Text></>}
+            title={<><Materiallcons size={20} name='directions-run' color='black' /><Text style={{color:'black'}}> {checkList[2]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check2}
-            onPress={() => setCheck2(!check2)}
+            checked={box.includes('러닝')}
+            onPress={() => boxing('러닝')}
             disabled={disabled}
           />
           </View>
-          <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
+          <View style={{flexDirection:'row', justifyContent:'space-around'}}>
           <CheckBox
             center
-            title={<><MaterialCommunityIcons size={20} name='dog-side' color='black' /><Text> {checkList[3]}  </Text></>}
+            title={<><MaterialCommunityIcons size={20} name='dog-side' color='black' /><Text style={{color:'black'}}> {checkList[3]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check3}
-            onPress={() => setCheck3(!check3)}
+            checked={box.includes('애견산책')}
+            onPress={() => boxing('애견산책')}
             disabled={disabled}
           />
           <CheckBox
             center
-            title={<><Materiallcons size={20} name='directions-walk' color='black' /><Text> {checkList[4]}  </Text></>}
+            title={<><Materiallcons size={20} name='directions-walk' color='black' /><Text style={{color:'black'}}> {checkList[4]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check4}
-            onPress={() => setCheck4(!check4)}
+            checked={box.includes('산책')}
+            onPress={() => boxing('산책')}
             disabled={disabled}
           />
           <CheckBox
             center
-            title={<><Foundation size={20} name='mountains' color='black' /><Text> {checkList[5]}  </Text></>}
+            title={<><Foundation size={20} name='mountains' color='black' /><Text style={{color:'black'}}> {checkList[5]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check5}
-            onPress={() => setCheck5(!check5)}
-            disabled={disabled}
-          />
-          </View>
-          <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
-          <CheckBox
-            center
-            title={<><Ionicons size={20} name='bicycle' color='black' /><Text> {checkList[6]}  </Text></>}
-            containerStyle={{backgroundColor:'white'}}
-            iconType="material"
-            iconRight
-            checkedIcon="check"
-            uncheckedIcon="add"
-            checkedColor="rgb(0, 197, 145)"
-            checked={check6}
-            onPress={() => setCheck6(!check6)}
-            disabled={disabled}
-          />
-          <CheckBox
-            center
-            title={<><MaterialCommunityIcons size={20} name='swim' color='black' /><Text> {checkList[7]}  </Text></>}
-            containerStyle={{backgroundColor:'white'}}
-            iconType="material"
-            iconRight
-            checkedIcon="check"
-            uncheckedIcon="add"
-            checkedColor="rgb(0, 197, 145)"
-            checked={check7}
-            onPress={() => setCheck7(!check7)}
-            disabled={disabled}
-          />
-          <CheckBox
-            center
-            title={<><MaterialCommunityIcons size={20} name='bowling' color='black' /><Text> {checkList[8]}  </Text></>}
-            containerStyle={{backgroundColor:'white'}}
-            iconType="material"
-            iconRight
-            checkedIcon="check"
-            uncheckedIcon="add"
-            checkedColor="rgb(0, 197, 145)"
-            checked={check8}
-            onPress={() => setCheck8(!check8)}
+            checked={box.includes('등산')}
+            onPress={() => boxing('등산')}
             disabled={disabled}
           />
           </View>
-          <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
+          <View style={{flexDirection:'row', justifyContent:'space-around'}}>
           <CheckBox
             center
-            title={<><MaterialCommunityIcons size={20} name='baseball-bat' color='black' /><Text> {checkList[9]}  </Text></>}
+            title={<><Ionicons size={20} name='bicycle' color='black' /><Text style={{color:'black'}}> {checkList[6]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check9}
-            onPress={() => setCheck9(!check9)}
+            checked={box.includes('자전거')}
+            onPress={() => boxing('자전거')}
             disabled={disabled}
           />
           <CheckBox
             center
-            title={<><MaterialCommunityIcons size={20} name='basketball' color='black' /><Text> {checkList[10]}  </Text></>}
+            title={<><MaterialCommunityIcons size={20} name='swim' color='black' /><Text style={{color:'black'}}> {checkList[7]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check10}
-            onPress={() => setCheck10(!check10)}
+            checked={box.includes('수영')}
+            onPress={() => boxing('수영')}
             disabled={disabled}
           />
           <CheckBox
             center
-            title={<><Ionicons size={20} name='football' color='black' /><Text> {checkList[11]}  </Text></>}
+            title={<><MaterialCommunityIcons size={20} name='bowling' color='black' /><Text  style={{color:'black'}}> {checkList[8]}  </Text></>}
             containerStyle={{backgroundColor:'white'}}
             iconType="material"
             iconRight
             checkedIcon="check"
             uncheckedIcon="add"
             checkedColor="rgb(0, 197, 145)"
-            checked={check11}
-            onPress={() => setCheck11(!check11)}
+            checked={box.includes('볼링')}
+            onPress={() => boxing('볼링')}
             disabled={disabled}
           />
           </View>
+          <View style={{flexDirection:'row', justifyContent:'space-around'}}>
+          <CheckBox
+            center
+            title={<><MaterialCommunityIcons size={20} name='baseball-bat' color='black' /><Text style={{color:'black'}}> {checkList[9]}  </Text></>}
+            containerStyle={{backgroundColor:'white'}}
+            iconType="material"
+            iconRight
+            checkedIcon="check"
+            uncheckedIcon="add"
+            checkedColor="rgb(0, 197, 145)"
+            checked={box.includes('당구')}
+            onPress={() => boxing('당구')}
+            disabled={disabled}
+          />
+          <CheckBox
+            center
+            title={<><MaterialCommunityIcons size={20} name='basketball' color='black' /><Text style={{color:'black'}}> {checkList[10]}  </Text></>}
+            containerStyle={{backgroundColor:'white'}}
+            iconType="material"
+            iconRight
+            checkedIcon="check"
+            uncheckedIcon="add"
+            checkedColor="rgb(0, 197, 145)"
+            checked={box.includes('농구')}
+            onPress={() => boxing('농구')}
+            disabled={disabled}
+          />
+          <CheckBox
+            center
+            title={<><Ionicons size={20} name='football' color='black' /><Text style={{color:'black'}}> {checkList[11]}  </Text></>}
+            containerStyle={{backgroundColor:'white'}}
+            iconType="material"
+            iconRight
+            checkedIcon="check"
+            uncheckedIcon="add"
+            checkedColor="rgb(0, 197, 145)"
+            checked={box.includes('풋살')}
+            onPress={() => boxing('풋살')}
+            disabled={disabled}
+          />
+          </View>
+       
+        
+        <View style={{borderRadius:10, backgroundColor:'rgb(0, 197, 145)',justifyContent:'center',  height:50, margin:7,marginTop:35, elevation:8}}>
+          <Text style={{fontSize:20, color:'white', alignSelf:'center', fontWeight:"500"}}>소개 멘트 작성</Text>
         </View>
-        <View style={{position:"absolute", flexDirection:"row", bottom:10, alignSelf:'center'}}>
+        <View style={{borderRadius:10, backgroundColor:'white',justifyContent:'center', marginHorizontal:15}}  >
+            <LargeTextInput
+              multiline
+              numberOfLines={2}
+              onChangeText={text => onChangeText(text)}
+              value={value}
+              style={{padding: 10}}
+              color={'black'}
+            />
+        </View>
+
+        <View style={{borderRadius:10, backgroundColor:'rgb(0, 197, 145)',justifyContent:'center',  height:50, margin:7,marginTop:35, elevation:8}}>
+          <Text style={{fontSize:20, color:'white', alignSelf:'center', fontWeight:"500"}}>주의사항</Text>
+        </View>
+        <View style={{borderRadius:10, backgroundColor:'white',justifyContent:'center', marginHorizontal:15, marginBottom:50, padding:10}}>
+          <Text style={{ fontSize:17,color:'black', marginTop:10}}>1. 다른 나와인들을 따뜻하게 대해 주세요.</Text>
+          <Text style={{ fontSize:17,color:'black', marginTop:10}}>2. 부적절한 닉네임이나 소개멘트는</Text>
+          <Text style={{ fontSize:17,color:'black'}}>    제재 대상입니다.</Text>
+          <Text style={{ fontSize:17,color:'black', marginTop:10}}>3. 신고 누적 5회시 7일 정지 입니다.</Text>
+          <Text style={{ fontSize:17,color:'black', marginTop:10}}>4. 신고 누적 10회시 20년 정지 입니다.</Text>
+          <Text style={{ fontSize:17,color:'black', marginTop:10}}>5. 악의적인 신고 역시 검토 후</Text>
+          <Text style={{ fontSize:17,color:'black'}}>    제재 대상입니다.</Text>
+          <Text style={{ fontSize:17,color:'black', marginTop:10}}>6. 신고 상대방의 의사에 따라 법적 대응이</Text>
+          <Text style={{ fontSize:17,color:'black'}}>    이루어 질 수도 있습니다.</Text>
+          <CheckBox
+            center
+            title="매너있는 나와인으로 함께 할게요 !"
+            checked={readWarnings}
+            onPress={() => setReadWarnings(!readWarnings)}
+            containerStyle={{marginTop:30}}
+          />
+        </View>
+
+        
+          
+        </View>
+      </ScrollView>
+        <View style={{position:"absolute", flexDirection:"row", bottom:300, alignSelf:'center'}}>
           <FAB
                 style={{marginHorizontal:2}}
-                onPress={() => {setTotal(0); setSelectedItem([]); setDisabled(false); setVisible(false); setGage(0.25); } }
+                color='red'
+                onPress={() => {setBox([]); setDisabled(false); setVisible(false); setGage(0.25); } }
                 visible={visible}
                 disabled={!visible}
-                title="AGAIN"
+                title="최대 3개까지만 선택해주세요 !"
                 icon={{
                   name: 'refresh',
                   color: 'white',
                 }}
                 />
-          <FAB
-                style={{marginHorizontal:2}}
-                onPress={() => {stored(); navigation.navigate('Mate3'); }}
-                visible={visible}
-                disabled={!visible}
-                title="NEXT"
-                icon={{
-                  name: 'check',
-                  color: 'white',
-                }}
-                />
         </View>
+        <Button onPress={() => stored()} title={finalText} disabled={!canGoNext} type="solid" size="lg"disabledTitleStyle={{color:'red'}} containerStyle={{position:'absolute', bottom:0, width:SCREEN_WIDTH, borderTopLeftRadius:10, borderTopRightRadius:10}}/>
       </>
     );
   }
@@ -366,7 +377,8 @@ const styles = StyleSheet.create({
     marginHorizontal : 0,
     marginBottom : 2,
     width : constants.width - 6,
-    height : 20
+    height : 20,
+    zIndex:5
   },
 })
 

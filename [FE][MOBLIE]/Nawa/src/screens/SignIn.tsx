@@ -50,36 +50,36 @@ function SignIn({navigation}: SignInScreenProps) {
 //////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
     try {
       setLoading(true);
+      const nickname = await AsyncStorage.getItem('nickname')
+
       const response = await axios.post(`http://i7d205.p.ssafy.io:8080/token/login`, {
         userId,
         password,
       });
+
       console.log("login pass")
       dispatch(
         userSlice.actions.setUser({ // 이 액션이 dispatch 되면 
           userId : response.data.userId,
-          nickname : '',
+          nickname : nickname,
           accessToken : response.data.accessToken,
         }),
         );
       Alert.alert('알림', '로그인 되었습니다.');
       await EncryptedStorage.setItem(
-        'userId',
-        userId
+        'userId', userId
       );
       await EncryptedStorage.setItem(
-        'accessToken',
-        response.data.accessToken
+        'accessToken', response.data.accessToken
       );
       await EncryptedStorage.setItem(
-        'refreshToken',
-        response.data.refreshToken,
+        'refreshToken', response.data.refreshToken,
       );
 
     } catch (error) {
       const errorResponse = (error as AxiosError).response;
       if (errorResponse) {
-        Alert.alert('알림', '에러임');
+        Alert.alert('알림', '아이디, 비밀번호를 확인해주세요.');
       }
       
     } finally {
@@ -87,6 +87,11 @@ function SignIn({navigation}: SignInScreenProps) {
     }
   }, [loading, dispatch, userId, password]);
   //////////////////////////////////////////////////////////////////// 끝 //////////////////////////////////////////
+
+
+
+
+
 
   const toSignUp = useCallback(() => {
     navigation.navigate('SignUp');
@@ -115,7 +120,7 @@ function SignIn({navigation}: SignInScreenProps) {
             : styles.loginButtonForm
           }
         >
-          <FormItem
+   <FormItem
             style={styles.textInputForm}
             // isRequired  // 넣으면 칸 안이쁘게 깨짐
             onChangeText={onChangeuserId}
@@ -133,6 +138,7 @@ function SignIn({navigation}: SignInScreenProps) {
             blurOnSubmit={false}
             underneathText= "아이디"
             autoCapitalize= 'none'
+            textInputStyle={styles.textinput}         
           />
         <FormItem
           style={styles.textInputForm}
@@ -149,6 +155,7 @@ function SignIn({navigation}: SignInScreenProps) {
           ref={passwordRef}
           onSubmitEditing={onSubmit}
           autoCapitalize= 'none'
+          textInputStyle={styles.textinput}         
         />
       </Form>
       <Form 
@@ -211,8 +218,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 10,
     borderRadius: 5,
-    autoCapitalize: "none"
+    autoCapitalize: "none",
   },
+  textinput : {
+    color : 'black'
+  }
 });
 
 export default SignIn;

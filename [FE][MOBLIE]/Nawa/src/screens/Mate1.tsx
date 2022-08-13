@@ -52,7 +52,6 @@ const Mate1 = ( {navigation} ) => {
   const [ButtonLoading, setButtonLoading] = useState(false);
 
   const searching = async () => {
-    console.log(11111)
     try {
       const response1 = await axios.get(
         `https://dapi.kakao.com/v2/local/search/keyword.json?query=${searchValue}&y=${pickLocation.latitude}&x=${pickLocation.longitude}`,
@@ -64,7 +63,7 @@ const Mate1 = ( {navigation} ) => {
       const results = response1.data.documents
       setSearchingResult(results)
     } catch (error) {
-      console.log(error)
+      Alert.alert('알림', '다시 진행 해주세요')
     }
   }
 
@@ -91,9 +90,9 @@ const Mate1 = ( {navigation} ) => {
 
   useEffect (() => {
     if (distance < 130) {
-      setZoom(16);
+      setZoom(17);
     } else if (distance < 200) {
-      setZoom(15);
+      setZoom(16);
     } else if (distance < 350) {
       setZoom(15);
     } else if (distance < 600) {
@@ -133,12 +132,11 @@ const Mate1 = ( {navigation} ) => {
               }).start();
   } 
 
-
     return (
       <View style={{ height: SCREEN_HEIGHT}}>
         <View style={styles.topBox}>
           <View style={styles.infoBox}>
-            <Text style={{color:'black', fontWeight:"bold"}}> 위치 설정</Text>
+            <Text style={{color:'white', fontWeight:"bold"}}> 위치 설정하기</Text>
           </View>
           <Progress.Bar style={{marginHorizontal:4, borderColor: 'rgb(0, 197, 145)'}} progress ={gage} width={constants.width - 10} height={6} unfilledColor={'white'} />
         </View>  
@@ -154,7 +152,8 @@ const Mate1 = ( {navigation} ) => {
               onTouch={() => {
                 Keyboard.dismiss()
                 closeSearchBox()
-              }}>
+              }}
+              mapType={4}>
               <Circle coordinate={pickLocation} color={"rgba(255,0,0,0.3)"} radius={distance} /> 
               {!!mylocation && <Marker coordinate={mylocation} caption={{text:'현재 위치', textSize:13}}/>}
             </NaverMapView>
@@ -206,7 +205,7 @@ const Mate1 = ( {navigation} ) => {
             {mapLoading ? 
               <ActivityIndicator style={{flex:1, textAlign:"center",alignSelf:"flex-end" }}  name='locate' size={40} color='red' />
               :
-              <Ionicons onPress={() => {getLocation(); setMapLoading(true); setGage(0.2)}} style={{flex:1 ,textAlign:"center",alignSelf:"flex-end" }}  name='locate' size={35} color='red' />
+              <Ionicons onPress={() => {getLocation(); setMapLoading(true); setGage(0.33)}} style={{flex:1 ,textAlign:"center",alignSelf:"flex-end" }}  name='locate' size={35} color='red' />
             }
             <Slider
             flex={4}
@@ -237,7 +236,7 @@ const Mate1 = ( {navigation} ) => {
               }}
             />
             <Button
-              title={ButtonLoading? <ActivityIndicator color='black'></ActivityIndicator> : '완료'}
+              title={ButtonLoading? <ActivityIndicator color='white'></ActivityIndicator> : '완료'}
               onPress={() => {
                 setButtonLoading(true)
                 dispatch(
@@ -246,8 +245,8 @@ const Mate1 = ( {navigation} ) => {
                     distance : distance
                   }),
                 )
-                setButtonLoading(false)
-                navigation.navigate('Mate2')
+                setTimeout(() => {setButtonLoading(false); navigation.navigate('Mate2')}, 500)
+                
               }}
               containerStyle={{
                 flex:1,
@@ -263,7 +262,7 @@ const Mate1 = ( {navigation} ) => {
 
           <View style={{ flexDirection:"column", position: "absolute", top: SCREEN_HEIGHT/2 - 40,alignSelf:'center' , alignItems:"center" }}>
             <Ionicons name='locate' size={35} color='black' />
-            <Text style={{fontWeight:"700", color:'black'}}>{`매칭거리 ${(distance*0.001).toFixed(1)}km`}</Text>
+            <Text style={{fontWeight:"700", color:'black'}}>{`매칭거리 ${(distance*0.001).toFixed(2)}km`}</Text>
           </View>
         </View>
       </View>

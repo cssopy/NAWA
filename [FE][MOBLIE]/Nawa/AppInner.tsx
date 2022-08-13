@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React, {useEffect} from 'react';
-import { Alert } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -24,6 +24,9 @@ import axios, { AxiosError } from 'axios';
 import userSlice from './src/slices/user';
 import SplashScreen from 'react-native-splash-screen';
 import AsyncStorage from '@react-native-community/async-storage';
+
+
+
 
 SplashScreen.show()
 
@@ -50,21 +53,21 @@ const Stack = createNativeStackNavigator();
 function AppInner() {
   //////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
   const dispatch = useAppDispatch()
-  const userId = useSelector((state : RootState) => state.user.userId)
+  const accessToken = useSelector((state : RootState) => state.user.accessToken)
   
   // 자동 로그인
   useEffect(() => {
     const getTokenAndRefresh = async () => {
       try {
-        const userId = await EncryptedStorage.getItem('userId')
-        const accessToken = await EncryptedStorage.getItem('accessToken')
-        const refreshToken = await EncryptedStorage.getItem('refreshToken')
-
+        const userId = await EncryptedStorage.getItem('userId');
+        const accessToken = await EncryptedStorage.getItem('accessToken');
+        const nickname = await AsyncStorage.getItem('nickname');
+        const refreshToken = await EncryptedStorage.getItem('refreshToken');
+        
         console.log(userId)
         console.log(accessToken)
         console.log(refreshToken)
-
-
+        
         if (!accessToken) {
           SplashScreen.hide();
           return;
@@ -83,7 +86,8 @@ function AppInner() {
         dispatch(
           userSlice.actions.setUser({ // redux state는 값이 변하면, useselector로 참조하고 있는 모든 컴포넌트가 다시 렌더링.
             userId : response.data.userId,
-            accessToken : response.data.accessToken
+            accessToken : response.data.accessToken,
+            nickname : nickname
           }),
         );
         EncryptedStorage.setItem(
@@ -111,7 +115,7 @@ function AppInner() {
       <NavigationContainer>
         {/* <Drawer.Navigator>
         </Drawer.Navigator> */}
-        {userId ? (
+        {accessToken ? (
           <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
