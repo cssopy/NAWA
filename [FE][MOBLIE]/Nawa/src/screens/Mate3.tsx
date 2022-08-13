@@ -12,11 +12,9 @@ import NaverMapView, {Circle, Marker, Path} from "react-native-nmap";
 
 import matchingSlice from "../slices/matching";
 import Swiper from "react-native-swiper";
-import { Icon } from "@rneui/themed";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Materiallcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Foundation from 'react-native-vector-icons/Foundation';
+
+import WhatCateGory from "../components/WhatCateGory";
 
 // firebase 클라우드
 import firestore from '@react-native-firebase/firestore';
@@ -43,177 +41,7 @@ const Mate3 = ( {navigation} ) => {
   
   const [target, setTarget] = useState({longitude : location.longitude , latitude : location.latitude})
  
-  const checkList = ['헬스', '배드민턴', '러닝', '애견산책', '산책', '등산', '자전거', '수영', '볼링', '당구', '농구', '풋살']
-  const whatCategory = (item, idx) => {
-    if (item === '헬스' ) {
-      return ( 
-        <View key={idx} style={{flexDirection:"column"}}>
-        <Icon
-        raised
-        size={15}
-        iconStyle={{fontSize:20}}
-        name='barbell'
-        type='ionicon'
-        color='#f50'
-        />
-        </View>
-      )
-    } 
-    else if (item === '배드민턴' ) {
-      return ( 
-        <View key={idx} style={{flexDirection:"column"}}>
-        <Icon
-        raised
-        size={15}
-        iconStyle={{fontSize:20}}
-        name='badminton'
-        type='material-community'
-        color='#f50'
-        />
-        </View>
-      )
-    }
-    else if (item === '러닝' ) {
-      return ( 
-        <View key={idx} style={{flexDirection:"column"}}>
-        <Icon
-        raised
-        size={15}
-        iconStyle={{fontSize:20}}
-        name='directions-run'
-        type='material'
-        color='#f50'
-        />
-        </View>
-      )
-    }
-    else if (item === '애견산책' ) {
-      return ( 
-        <View key={idx} style={{flexDirection:"column"}}>
-        <Icon
-        raised
-        size={15}
-        iconStyle={{fontSize:20}}
-        name='guide-dog'
-        type='foundation'
-        color='#f50'
-        />
-        </View>
-      )
-    }
-    else if (item === '산책' ) {
-      return ( 
-        <View key={idx} style={{flexDirection:"column"}}>
-        <Icon
-        raised
-        size={15}
-        iconStyle={{fontSize:20}}
-        name='directions-walk'
-        type='material'
-        color='#f50'
-        />
-        </View>
-      )
-    }
-    else if (item === '등산' ) {
-      return ( 
-        <View key={idx} style={{flexDirection:"column"}}>
-        <Icon
-        raised
-        size={15}
-        iconStyle={{fontSize:20}}
-        name='mountains'
-        type='foundation'
-        color='#f50'
-        />
-        </View>
-      )
-    }
-    else if (item === '자전거' ) {
-      return ( 
-        <View key={idx} style={{flexDirection:"column"}}>
-        <Icon
-        raised
-        size={15}
-        iconStyle={{fontSize:20}}
-        name='bicycle'
-        type='ionicon'
-        color='#f50'
-        />
-        </View>
-      )
-    }
-    else if (item === '수영' ) {
-      return ( 
-        <View key={idx} style={{flexDirection:"column"}}>
-        <Icon
-        raised
-        size={15}
-        iconStyle={{fontSize:20}}
-        name='swim'
-        type='material-community'
-        color='#f50'
-        />
-        </View>
-      )
-    }
-    else if (item === '볼링' ) {
-      return ( 
-        <View key={idx} style={{flexDirection:"column"}}>
-        <Icon
-        raised
-        size={15}
-        iconStyle={{fontSize:20}}
-        name='bowling'
-        type='material-community'
-        color='#f50'
-        />
-        </View>
-      )
-    }
-    else if (item === '당구' ) {
-      return ( 
-        <View key={idx} style={{flexDirection:"column"}}>
-        <Icon
-        raised
-        size={15}
-        iconStyle={{fontSize:20}}
-        name='baseball-bat'
-        type='material-community'
-        color='#f50'
-        />
-        </View>
-      )
-    }
-    else if (item === '농구' ) {
-      return ( 
-        <View key={idx} style={{flexDirection:"column"}}>
-        <Icon
-        raised
-        size={15}
-        iconStyle={{fontSize:20}}
-        name='basketball'
-        type='material-community'
-        color='#f50'
-        />
-        </View>
-      )
-    }
-    else if (item === '풋살' ) {
-      return ( 
-        <View key={idx} style={{flexDirection:"column"}}>
-        <Icon
-        raised
-        size={15}
-        iconStyle={{fontSize:20}}
-        name='football'
-        type='ionicon'
-        color='#f50'
-        />
-        </View>
-      )
-    }
-  }
+  
 
   const userMannerPoint = () => {
 
@@ -347,7 +175,7 @@ const Mate3 = ( {navigation} ) => {
         <View style={styles.topBox}>
           <View style={styles.infoBox}>
             <Ionicons style={{marginLeft:2}} onPress={() => navigation.navigate('Mate2')} size={22} name='arrow-back-outline' color='white' />
-            <Text style={{color:'black'}}>난입 준비</Text>
+            <Text style={{color:'white'}}>난입 준비</Text>
             <Ionicons size={20} name='arrow-forward-outline' color='rgb(0, 197, 145)' />
           </View>
           <Progress.Bar style={{marginHorizontal:4, borderColor: 'rgb(0, 197, 145)'}} progress ={0.75} width={constants.width - 10} height={6} unfilledColor={'white'} />
@@ -401,7 +229,7 @@ const Mate3 = ( {navigation} ) => {
                         
                         
                         {item.category.map((item, idx) => {
-                          return (whatCategory(item, idx))
+                          return (WhatCateGory(item, idx))
                         })}
                       
                       </View>

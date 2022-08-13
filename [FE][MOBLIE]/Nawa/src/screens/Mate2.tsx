@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState,  } from "react";
-import {Text, View, StyleSheet, Alert} from 'react-native'
+import {Text, View, StyleSheet, TextInput, KeyboardAvoidingView , Keyboard} from 'react-native'
+import { Button, CheckBox } from "@rneui/themed";
+
 
 import constants from '../constants';
 import {useAppDispatch} from '../store';
 import * as Progress from 'react-native-progress';
 
 import { FAB } from '@rneui/themed';
-import { CheckBox } from '@rneui/themed';
 
 import matchingSlice from "../slices/matching";
 
@@ -17,7 +18,25 @@ import Materiallcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Foundation from 'react-native-vector-icons/Foundation';
 import { Dimensions } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+
+//멘트 작성
+const LargeTextInput = (props) => {
+  return (
+    <TextInput
+      {...props}
+      editable
+      maxLength={50}
+      placeholder='오늘 운동 땡기는 사람 다 나와 !'
+      placeholderTextColor={'lightgrey'}
+      returnKeyType='next'
+      textContentType="username"
+      autoCapitalize="none"
+    />
+  );
+}
+
 
 
 const Mate2 = ( {navigation} ) => {
@@ -29,6 +48,11 @@ const Mate2 = ( {navigation} ) => {
   const [box, setBox] = useState<String[]>([]);
   // const where = useSelector((state:RootState) => state.matching.location)
   // const distance = useSelector((state:RootState) => state.matching.distance)
+  const [value, onChangeText] = React.useState('');
+
+  const [finalText, setFinalText] = useState('');
+  const [canGoNext, setCanGoNext] = useState(false);
+  const [readWarnings, setReadWarnings] = useState(false);
 
 
   const boxing = (target : String) => {
@@ -49,34 +73,66 @@ const Mate2 = ( {navigation} ) => {
   };
 
   useEffect(() => {
-    if (box.length === 3) {
-      setDisabled(true)
-      setVisible(true)
-      setGage(0.66)
-    } else {
+    if (1 <= box.length && box.length <= 3) {
+      setGage(0.48)
+    }
+     else {
       setGage(0.33)
     }}, [box.length])
   
+  // 승인 버튼
+  useEffect(() => {
+    if (box.length === 0) {
+      setFinalText('운동을 최소 1개 이상 선택하세요')
+      setCanGoNext(false)
+    } else if (box.length >= 4) {
+      setFinalText('운동은 최대 3개 까지 선택해주세요')
+      setCanGoNext(false)
+    } else if ( value.trim().length < 10) {
+      setFinalText('소개 멘트를 최소 10자 이상 작성하세요')
+      setCanGoNext(false)
+    } else if ( !readWarnings ) {
+      setFinalText('주의사항을 읽고 하단에 체크 해주세요')
+      setCanGoNext(false)
+    } else {
+      setFinalText('나와 광장 입장하기 !')
+      setCanGoNext(true)
+
+    }
+  },[box, value, readWarnings])
+
+
+
 
     return (
       <>
         <View style={styles.topBox}>
           <View style={styles.infoBox}>
             <Ionicons style={{marginLeft:2}} onPress={() => navigation.navigate('Mate1')} size={22} name='arrow-back-outline' color='white' />
-            <Text style={{color:'black'}}>운동 설정</Text>
+            <Text style={{color:'white'}}>운동 및 멘트 설정하기</Text>
             <Ionicons size={20} name='arrow-forward-outline' color='rgb(0, 197, 145)' />
           </View>
           <Progress.Bar style={{marginHorizontal:4, borderColor: 'rgb(0, 197, 145)'}} progress ={gage} width={constants.width - 10} height={6} unfilledColor={'white'} />
         </View>  
-
-        <View style={{ backgroundColor:'lightgrey', width:SCREEN_WIDTH, height:constants.height - 100, marginVertical:5}}>
-          <View style={{backgroundColor:'white', borderRadius:20, alignItems:'center', marginHorizontal:3, marginVertical:4}}>
-            <Text style={{fontSize: 18, color:'black'}}>원하는 운동 3가지를 골라주세요 !</Text>
-            <Text style={{fontSize: 18, color:'black'}}>같은 운동을 선택한 메이트를 먼저 찾아 줍니다 !</Text>
-            <Text style={{fontSize: 30, color:'black'}}>{box.length} / 3</Text>
+        <ScrollView onTouchStart={() =>Keyboard.dismiss() }>
+        <View style={{ backgroundColor:'lightgrey', width:SCREEN_WIDTH}}>
+        { !!!box.length && (
+          <View style={{flexDirection:"row", borderRadius:10, backgroundColor:'rgb(0, 197, 145)',justifyContent:'center',  height:50, margin:6, elevation:5}}>
+            <Text style={{fontSize:20, color:'white', alignSelf:'center', fontWeight:"500"}}>운동 선택</Text>
+            <Text style={{fontSize:15, color:'white', alignSelf:"center"}}>  (최대 3개)</Text>
           </View>
-          
-
+          )
+        }
+          <View style={{zIndex:2, flexDirection:"row", justifyContent:'center'}}>
+            {box.map((item, idx) => {
+              return (
+              <View key={idx} style={{borderRadius: 20, padding:14, margin:7, backgroundColor: 'rgb(0, 197, 145)', elevation:8 }}>
+                <Text style={{fontSize:15, color:'white', fontWeight:"600"}}>{item}</Text>
+              </View>
+              )
+            })}
+          </View>
+        
           <View style={{flexDirection:'row', justifyContent:'space-around'}}>
           <CheckBox
             center
@@ -241,43 +297,63 @@ const Mate2 = ( {navigation} ) => {
             disabled={disabled}
           />
           </View>
-        <View style={{zIndex:2, flexDirection:"row", justifyContent:'center'}}>
-          {box.map((item, idx) => {
-            return (
-            <View key={idx} style={{borderRadius: 20, padding:14, margin:10, backgroundColor: 'lightgreen', elevation:8 }}>
-              <Text style={{fontSize:25}}>{item}</Text>
-            </View>
-            )
-          })}
+       
+        
+        <View style={{borderRadius:10, backgroundColor:'rgb(0, 197, 145)',justifyContent:'center',  height:50, margin:7,marginTop:35, elevation:8}}>
+          <Text style={{fontSize:20, color:'white', alignSelf:'center', fontWeight:"500"}}>소개 멘트 작성</Text>
         </View>
+        <View style={{borderRadius:10, backgroundColor:'white',justifyContent:'center', marginHorizontal:15}}  >
+            <LargeTextInput
+              multiline
+              numberOfLines={2}
+              onChangeText={text => onChangeText(text)}
+              value={value}
+              style={{padding: 10}}
+              color={'black'}
+            />
         </View>
 
+        <View style={{borderRadius:10, backgroundColor:'rgb(0, 197, 145)',justifyContent:'center',  height:50, margin:7,marginTop:35, elevation:8}}>
+          <Text style={{fontSize:20, color:'white', alignSelf:'center', fontWeight:"500"}}>주의사항</Text>
+        </View>
+        <View style={{borderRadius:10, backgroundColor:'white',justifyContent:'center', marginHorizontal:15, marginBottom:50, padding:10}}>
+          <Text style={{ fontSize:17,color:'black', marginTop:10}}>1. 다른 나와인들을 따뜻하게 대해 주세요.</Text>
+          <Text style={{ fontSize:17,color:'black', marginTop:10}}>2. 부적절한 닉네임이나 소개멘트는</Text>
+          <Text style={{ fontSize:17,color:'black'}}>    제재 대상입니다.</Text>
+          <Text style={{ fontSize:17,color:'black', marginTop:10}}>3. 신고 누적 5회시 7일 정지 입니다.</Text>
+          <Text style={{ fontSize:17,color:'black', marginTop:10}}>4. 신고 누적 10회시 20년 정지 입니다.</Text>
+          <Text style={{ fontSize:17,color:'black', marginTop:10}}>5. 악의적인 신고 역시 검토 후</Text>
+          <Text style={{ fontSize:17,color:'black'}}>    제재 대상입니다.</Text>
+          <Text style={{ fontSize:17,color:'black', marginTop:10}}>6. 신고 상대방의 의사에 따라 법적 대응이</Text>
+          <Text style={{ fontSize:17,color:'black'}}>    이루어 질 수도 있습니다.</Text>
+          <CheckBox
+            center
+            title="매너있는 나와인으로 함께 할게요 !"
+            checked={readWarnings}
+            onPress={() => setReadWarnings(!readWarnings)}
+            containerStyle={{marginTop:30}}
+          />
+        </View>
 
-
-        <View style={{position:"absolute", flexDirection:"row", bottom:10, alignSelf:'center'}}>
+        
+          
+        </View>
+      </ScrollView>
+        <View style={{position:"absolute", flexDirection:"row", bottom:300, alignSelf:'center'}}>
           <FAB
                 style={{marginHorizontal:2}}
+                color='red'
                 onPress={() => {setBox([]); setDisabled(false); setVisible(false); setGage(0.25); } }
                 visible={visible}
                 disabled={!visible}
-                title="다시 !"
+                title="최대 3개까지만 선택해주세요 !"
                 icon={{
                   name: 'refresh',
                   color: 'white',
                 }}
                 />
-          <FAB
-                style={{marginHorizontal:2}}
-                onPress={() => {stored(); navigation.navigate('Mate3'); }}
-                visible={visible}
-                disabled={!visible}
-                title="완료 !"
-                icon={{
-                  name: 'check',
-                  color: 'white',
-                }}
-                />
         </View>
+        <Button onPress={() => navigation.navigate('Mate3')} title={finalText} disabled={!canGoNext} type="solid" size="lg"disabledTitleStyle={{color:'red'}} containerStyle={{position:'absolute', bottom:0, width:SCREEN_WIDTH, borderTopLeftRadius:10, borderTopRightRadius:10}}/>
       </>
     );
   }

@@ -138,7 +138,7 @@ const Mate1 = ( {navigation} ) => {
       <View style={{ height: SCREEN_HEIGHT}}>
         <View style={styles.topBox}>
           <View style={styles.infoBox}>
-            <Text style={{color:'black', fontWeight:"bold"}}> 위치 설정</Text>
+            <Text style={{color:'white', fontWeight:"bold"}}> 위치 설정</Text>
           </View>
           <Progress.Bar style={{marginHorizontal:4, borderColor: 'rgb(0, 197, 145)'}} progress ={gage} width={constants.width - 10} height={6} unfilledColor={'white'} />
         </View>  
