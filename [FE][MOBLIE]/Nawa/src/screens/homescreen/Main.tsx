@@ -1,29 +1,31 @@
 import React from "react";
-import { Dimensions } from "react-native"
-import { FAB } from "@rneui/base";
 
-import MainNavbar from "./MainNavbar";
-import MainFeed from "./MainFeed";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Dimensions, StyleSheet } from "react-native";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+import Feeds from './Feeds'
+import FeedDetail from "./FeedDetail";
 
+
+const Stack = createNativeStackNavigator();
 
 function Main ({ navigation }) {
   return (
-    <>
-      <MainNavbar />
-      <MainFeed />
-      <FAB
-          visible={true}
-          onPress={() => {navigation.navigate('NewFeedScrren')}}
-          placement="right"
-          icon={{ name: 'add', color: 'white'}}
-          color="red"
-          style={{
-            height:SCREEN_HEIGHT * 0.1
-          }}
-        />
-    </>
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+    >
+      <Stack.Screen
+        name="Feeds"
+        component={Feeds}
+      />
+
+      <Stack.Screen
+        name="FeedDetail"
+        component={FeedDetail}
+
+      />
+      
+    </Stack.Navigator>
   )
 }
 
