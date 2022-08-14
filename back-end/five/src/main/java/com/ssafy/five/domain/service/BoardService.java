@@ -1,11 +1,10 @@
 package com.ssafy.five.domain.service;
 
+import com.ssafy.five.controller.dto.BoardReqDto;
 import com.ssafy.five.controller.dto.FileDto;
 import com.ssafy.five.controller.dto.req.GetUserTypeBoardReqDto;
 import com.ssafy.five.controller.dto.req.OnOffBoardLikeReqDto;
-import com.ssafy.five.controller.dto.req.RegistBoardReqDto;
-import com.ssafy.five.controller.dto.req.UpdateBoardReqDto;
-import com.ssafy.five.controller.dto.res.GetBoardResDto;
+import com.ssafy.five.controller.dto.res.BoardResDto;
 import com.ssafy.five.domain.entity.Board;
 import com.ssafy.five.domain.entity.EnumType.BoardType;
 import com.ssafy.five.domain.entity.EnumType.FileType;
@@ -22,14 +21,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,102 +40,105 @@ public class BoardService {
     private final LikeBoardRepository likeBoardRepository;
 
     @Transactional(rollbackFor = {Exception.class})
-    public void regist(RegistBoardReqDto registBoardReqDto, MultipartFile[] multipartFiles) throws Exception {
-        // 파일 중 이미지가 있는지 여부
-        boolean existImage = false;
-        // 파일 중 영상이 있는지 여부
-        boolean existVideo = false;
+    public Long save(BoardReqDto boardReqDto) throws Exception {
+        boardReqDto.setBoardDate(new Date());
+        boardReqDto.setBoardUpdate(new Date());
+        boardReqDto.setBoardType(BoardType.GENERAL);
+        boardReqDto.setBoardHit(0);
+        boardReqDto.setBoardLikes(0);
+        Board boardEntity = boardRepository.save(boardReqDto.toEntity());
 
-        // 파일 정보 저장 리스트
-        List<FileDto> list = new ArrayList<>();
+        if (boardEntity != null) {
+            return boardEntity.getBoardId();
+        } else {
+            throw new Exception("게시글 내용 등록 실패");
+        }
+    }
 
-        // 파일을 서버 로컬에 저장
-        if (multipartFiles != null) {
-            for (MultipartFile file : multipartFiles) {
-                if (!file.isEmpty()) {
-                    String newFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-                    String uploadpath;
-                    FileType fileType;
+    public List<BoardResDto> findAll() {
+        List<Board> list = boardRepository.findAll();
+        return list.stream().map(BoardResDto::new).collect(Collectors.toList());
+    }
 
-                    // 파일 중 비디오 타입이 있다면
-                    if (file.getContentType().split("/")[0].equals("video")) {
-                        existVideo = true;
-                        uploadpath = "VIDEO/";
+    @Transactional(rollbackFor = {Exception.class})
+    public void update(BoardReqDto boardReqDto) throws Exception {
+        // 게시글 DB 정보 업데이트
+        boardReqDto.setBoardUpdate(new Date());
+        Board boardEntity = boardRepository.save(boardReqDto.toEntity());
+        if (boardEntity == null) {
+            throw new Exception("게시글 수정 실패");
+        }
 
-                        fileType = FileType.VIDEO;
-                    }
-                    // 파일 중 이미지 타입이 있다면
-                    else if (file.getContentType().split("/")[0].equals("image")) {
-                        existImage = true;
-                        uploadpath = "IMAGE/";
-
-                        fileType = FileType.IMAGE;
-                    } else {
-                        uploadpath = "GENERAL/";
-
-                        fileType = FileType.GENERAL;
-                    }
-
-                    list.add(new FileDto(newFileName, fileType, (int) file.getSize()));
-
-                    // UUID+파일원본이름을 가진 새로운 파일 객체를 생성하여 로컬에 저장
-                    File newFile = new File(uploadpath, newFileName);
-                    try {
-                        file.transferTo(newFile);
-                    } catch (IOException e) {
-                        throw new Exception("파일 로컬 저장 실패");
-                    }
-                }
+        // 파일 DB 정보 업데이트
+        for (FileDto fileDto : boardReqDto.getFiles()) {
+            Files filesEntity = fileRepository.findById(fileDto.getFileId()).orElseThrow(() -> new FileNotFoundException());
+            if (filesEntity != null) {
+                fileRepository.deleteById(fileDto.getFileId());
             }
         }
 
-        // 파일 중 영상 파일이 있다면
-        Board boardEntity = null;
-        if (existVideo) {
-            boardEntity = boardRepository.save(registBoardReqDto.toEntity(BoardType.VIDEO));
+        // 게시물 타입 다시 확인
+        boolean existVideo = false;
+        boolean existImage = false;
+        List<Files> files = fileRepository.findAllByBoard(boardEntity);
+        if (files != null) {
+            for (Files file : files) {
+                if (file.getFileType().equals(FileType.VIDEO)) {
+                    existVideo = true;
+                } else if (file.getFileType().equals(FileType.IMAGE)) {
+                    existImage = true;
+                }
+            }
+
+            if (existVideo) {
+                boardEntity = boardRepository.save(Board.builder()
+                        .user(boardEntity.getUser())
+                        .boardId(boardEntity.getBoardId())
+                        .boardTitle(boardEntity.getBoardTitle())
+                        .boardContent(boardEntity.getBoardContent())
+                        .boardDate(boardEntity.getBoardDate())
+                        .boardUpdate(boardEntity.getBoardUpdate())
+                        .boardHit(boardEntity.getBoardHit())
+                        .boardLikes(boardEntity.getBoardLikes())
+                        .boardType(BoardType.VIDEO).build());
+            } else if (existImage) {
+                boardEntity = boardRepository.save(Board.builder()
+                        .user(boardEntity.getUser())
+                        .boardId(boardEntity.getBoardId())
+                        .boardTitle(boardEntity.getBoardTitle())
+                        .boardContent(boardEntity.getBoardContent())
+                        .boardDate(boardEntity.getBoardDate())
+                        .boardUpdate(boardEntity.getBoardUpdate())
+                        .boardHit(boardEntity.getBoardHit())
+                        .boardLikes(boardEntity.getBoardLikes())
+                        .boardType(BoardType.IMAGE).build());
+            }
+        } else {
+            boardEntity = boardRepository.save(Board.builder()
+                    .user(boardEntity.getUser())
+                    .boardId(boardEntity.getBoardId())
+                    .boardTitle(boardEntity.getBoardTitle())
+                    .boardContent(boardEntity.getBoardContent())
+                    .boardDate(boardEntity.getBoardDate())
+                    .boardUpdate(boardEntity.getBoardUpdate())
+                    .boardHit(boardEntity.getBoardHit())
+                    .boardLikes(boardEntity.getBoardLikes())
+                    .boardType(BoardType.GENERAL).build());
         }
-        // 영상 파일은 없고 이미지 파일은 있다면
-        else if (existImage) {
-            boardEntity = boardRepository.save(registBoardReqDto.toEntity(BoardType.IMAGE));
-        }
-        // 영상, 이미지 파일이 없다면
-        else {
-            boardEntity = boardRepository.save(registBoardReqDto.toEntity(BoardType.GENERAL));
-        }
-        // board 엔티티 저장에 실패하면
         if (boardEntity == null) {
             throw new Exception("게시글 DB 저장 실패");
         }
 
-        // db에 파일 정보 저장
-        for (FileDto item : list) {
-            Files fileEntity = fileRepository.save(Files.builder()
-                    .board(boardEntity)
-                    .fileName(item.getFileName())
-                    .fileType(item.getFileType())
-                    .fileSize(item.getFileSize())
-                    .build());
-
-            // 파일 DB에 저장 실패하면
-            if (fileEntity == null) {
-                throw new Exception("파일정보 DB 저장 실패");
+        // 파일 로컬 정보 업데이트
+        for (FileDto fileDto : boardReqDto.getFiles()) {
+            File file = new File(bpath + "/" + fileDto.getFileType() + "/" + fileDto.getFileName());
+            if (file != null) {
+                if (file.exists()) {
+                    if (!file.delete()) {
+                        throw new Exception("로컬에 저장된 파일 삭제 실패");
+                    }
+                }
             }
-        }
-    }
-
-    public List<GetBoardResDto> findAll() {
-        List<Board> list = boardRepository.findAll();
-        return list.stream().map(GetBoardResDto::new).collect(Collectors.toList());
-    }
-
-    @Transactional(rollbackFor = {Exception.class})
-    public void update(UpdateBoardReqDto updateBoardReqDto) throws Exception {
-        int result = boardRepository.updateBoard(updateBoardReqDto.getBoardTitle(),
-                updateBoardReqDto.getBoardContent(),
-                updateBoardReqDto.getBoardId(),
-                new Date());
-        if (result == 0) {
-            throw new Exception("게시글 수정 실패");
         }
     }
 
@@ -161,25 +160,27 @@ public class BoardService {
                 File dfile = new File(bpath + "/" + file.getFileType() + "/" + file.getFileName());
                 // 해당하는 이름의 파일이 존재하면 삭제
                 if (dfile.exists()) {
-                    dfile.delete();
+                    if (!dfile.delete()) {
+                        throw new Exception("로컬에 저장된 파일 삭제 실패");
+                    }
                 }
             }
         }
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public GetBoardResDto findById(Long boardId) throws Exception {
+    public BoardResDto findById(Long boardId) throws Exception {
         int result = boardRepository.updateHit(boardId);
         if (result == 0) {
             throw new Exception("게시글 조회수 반영 실패");
         }
         Board entity = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException());
-        return new GetBoardResDto(entity);
+        return new BoardResDto(entity);
     }
 
-    public List<GetBoardResDto> findAllByBoardType(BoardType boardType) {
+    public List<BoardResDto> findAllByBoardType(BoardType boardType) {
         List<Board> boards = boardRepository.findAllByBoardType(boardType);
-        return boards.stream().map(GetBoardResDto::new).collect(Collectors.toList());
+        return boards.stream().map(BoardResDto::new).collect(Collectors.toList());
     }
 
     @Transactional(rollbackFor = {Exception.class})
@@ -234,23 +235,23 @@ public class BoardService {
         }
     }
 
-    public List<GetBoardResDto> findAllByUser(String userId) {
+    public List<BoardResDto> findAllByUser(String userId) {
         Users usersEntity = userRepository.findByUserId(userId);
         List<Board> likeBoards = likeBoardRepository.findAllByUser(usersEntity);
-        return likeBoards.stream().map(GetBoardResDto::new).collect(Collectors.toList());
+        return likeBoards.stream().map(BoardResDto::new).collect(Collectors.toList());
     }
 
-    public List<GetBoardResDto> findAllByUserAndType(GetUserTypeBoardReqDto getUserTypeBoardReqDto) {
+    public List<BoardResDto> findAllByUserAndType(GetUserTypeBoardReqDto getUserTypeBoardReqDto) {
         Users userEntity = userRepository.findByUserId(getUserTypeBoardReqDto.getUserId());
         return boardRepository.findAllByUserAndType(userEntity, getUserTypeBoardReqDto.getBoardType());
     }
 
-    public List<GetBoardResDto> findRandomVideo() {
+    public List<BoardResDto> findRandomVideo() {
         List<Board> boards = boardRepository.findRandomVideo();
-        return boards.stream().map(GetBoardResDto::new).collect(Collectors.toList());
+        return boards.stream().map(BoardResDto::new).collect(Collectors.toList());
     }
 
-    public List<GetBoardResDto> findAllByUserLatest(String userId, String time) {
+    public List<BoardResDto> findAllByUserLatest(String userId, String time) {
         Users userEntity = userRepository.findByUserId(userId);
 
         List<Board> boards = null;
@@ -259,6 +260,6 @@ public class BoardService {
         } else if (time.equals("OLD")) {
             boards = boardRepository.findAllByUserOLD(userEntity);
         }
-        return boards.stream().map(GetBoardResDto::new).collect(Collectors.toList());
+        return boards.stream().map(BoardResDto::new).collect(Collectors.toList());
     }
 }

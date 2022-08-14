@@ -9,7 +9,6 @@ import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.SmsRepository;
 import com.ssafy.five.domain.repository.UserRepository;
-import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -45,10 +44,9 @@ public class UserService {
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
-        if(userRepository.findByEmailIdAndEmailDomain(signUpReqDto.getEmailId(), signUpReqDto.getEmailDomain()) != null){
+        if (userRepository.findByEmailIdAndEmailDomain(signUpReqDto.getEmailId(), signUpReqDto.getEmailDomain()) != null) {
             return new ResponseEntity<>(false, HttpStatus.CONFLICT);
         }
-
         Calendar cal = Calendar.getInstance();
         cal.set(2022, 0, 1);
 
@@ -70,13 +68,13 @@ public class UserService {
                         .build())
                 .build();
 
+        userRepository.save(user);
 
 //        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(() -> new RuntimeException("인증되지 않은 휴대폰"));
 
 //        if (!msg.isAuth()) {
 //            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
 //        }
-        userRepository.save(user);
 //        smsRepository.delete(msg);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
@@ -196,9 +194,9 @@ public class UserService {
     @Transactional
     public ResponseEntity<?> evalUser(EvalUserReqDto evalUserReqDto) {
         Users user = userRepository.findByUserId(evalUserReqDto.getUserId());
-        if(user == null){
+        if (user == null) {
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
-        } else if(evalUserReqDto.getUserId().equals(getCurrentUserId())){
+        } else if (evalUserReqDto.getUserId().equals(getCurrentUserId())) {
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 

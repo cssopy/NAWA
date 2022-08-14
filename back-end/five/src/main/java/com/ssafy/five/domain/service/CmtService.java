@@ -2,7 +2,7 @@ package com.ssafy.five.domain.service;
 
 import com.ssafy.five.controller.dto.req.RegistCmtReqDto;
 import com.ssafy.five.controller.dto.req.UpdateCmtReqDto;
-import com.ssafy.five.controller.dto.res.GetCmtResDto;
+import com.ssafy.five.controller.dto.res.CmtResDto;
 import com.ssafy.five.domain.entity.Board;
 import com.ssafy.five.domain.entity.Comment;
 import com.ssafy.five.domain.entity.Users;
@@ -38,10 +38,10 @@ public class CmtService {
         }
     }
 
-    public List<GetCmtResDto> findALLByBoardId(Long boardId) {
+    public List<CmtResDto> findALLByBoardId(Long boardId) {
         Board boardEntity = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException());
         List<Comment> list = cmtRepository.findALLByBoard(boardEntity);
-        return list.stream().map(GetCmtResDto::new).collect(Collectors.toList());
+        return list.stream().map(CmtResDto::new).collect(Collectors.toList());
     }
 
     @Transactional(rollbackFor = {Exception.class})

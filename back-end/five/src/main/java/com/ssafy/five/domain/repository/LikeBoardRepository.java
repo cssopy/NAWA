@@ -13,6 +13,6 @@ public interface LikeBoardRepository extends JpaRepository<LikeBoard, Long> {
     @Query("SELECT lb from LikeBoard lb WHERE lb.users=:users AND lb.board=:board")
     LikeBoard findByUserAndBoard(Users users, Board board);
 
-    @Query("SELECT b FROM LikeBoard lb LEFT JOIN Board b ON lb.users=b.user")
+    @Query("SELECT b FROM LikeBoard lb LEFT JOIN Board b ON lb.board=b")
     List<Board> findAllByUser(Users users);
 }
