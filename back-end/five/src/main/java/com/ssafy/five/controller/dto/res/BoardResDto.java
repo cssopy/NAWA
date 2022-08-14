@@ -5,10 +5,11 @@ import com.ssafy.five.domain.entity.EnumType.BoardType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 
 @Getter
-public class GetBoardResDto {
+public class BoardResDto {
 
     private Long boardId;
     private String userId;
@@ -17,12 +18,15 @@ public class GetBoardResDto {
     private BoardType boardType;
     private int boardHit;
     private int boardLikes;
+
+    private Date boardDate;
+    private Date boardUpdate;
     @Setter
-    private List<GetCmtResDto> comments;
+    private List<CmtResDto> comments;
     @Setter
     private List<FileResDto> files;
 
-    public GetBoardResDto(Board entity) {
+    public BoardResDto(Board entity) {
         this.boardId = entity.getBoardId();
         this.userId = entity.getUser().getUserId();
         this.boardTitle = entity.getBoardTitle();
@@ -30,6 +34,8 @@ public class GetBoardResDto {
         this.boardType = entity.getBoardType();
         this.boardHit = entity.getBoardHit();
         this.boardLikes = entity.getBoardLikes();
+        this.boardDate = entity.getBoardDate();
+        this.boardUpdate = entity.getBoardUpdate();
     }
 
 }

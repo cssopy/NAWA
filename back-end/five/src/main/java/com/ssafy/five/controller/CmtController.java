@@ -2,7 +2,7 @@ package com.ssafy.five.controller;
 
 import com.ssafy.five.controller.dto.req.RegistCmtReqDto;
 import com.ssafy.five.controller.dto.req.UpdateCmtReqDto;
-import com.ssafy.five.controller.dto.res.GetCmtResDto;
+import com.ssafy.five.controller.dto.res.CmtResDto;
 import com.ssafy.five.domain.service.CmtService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,7 @@ public class CmtController {
             cmtService.regist(registCmtReqDto);
             return new ResponseEntity<>(true, HttpStatus.valueOf(201));
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }
@@ -32,8 +33,8 @@ public class CmtController {
     @Operation(summary = "댓글 조회", description = "댓글 리스트 또느 null 반환")
     @GetMapping("/{boardId}")
     public ResponseEntity<?> getCmt(@PathVariable Long boardId) {
-        List<GetCmtResDto> getCmtResDto = cmtService.findALLByBoardId(boardId);
-        return new ResponseEntity<>(getCmtResDto, HttpStatus.valueOf(200));
+        List<CmtResDto> cmtResDto = cmtService.findALLByBoardId(boardId);
+        return new ResponseEntity<>(cmtResDto, HttpStatus.valueOf(200));
     }
 
     @Operation(summary = "댓글 수정", description = "댓글 수정 성공시 true, 실패시 false 반환")
@@ -43,6 +44,7 @@ public class CmtController {
             cmtService.updateCmt(updateCmtReqDto);
             return new ResponseEntity<>(true, HttpStatus.valueOf(201));
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }
@@ -54,6 +56,7 @@ public class CmtController {
             cmtService.deleteByCmtId(cmtId);
             return new ResponseEntity<>(true, HttpStatus.valueOf(200));
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(400));
         }
     }

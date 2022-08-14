@@ -11,13 +11,10 @@ import lombok.ToString;
 @ToString
 public class FileDto extends Files {
 
+    private Long boardId;
+    private Long fileId;
     private String fileName;
     private FileType fileType;
-    private int fileSize;
+    private Long fileSize;
 
-    public FileDto(String newFileName, FileType fileType, int fileSize) {
-        this.fileName = newFileName;
-        this.fileType = fileType;
-        this.fileSize = fileSize;
-    }
 }

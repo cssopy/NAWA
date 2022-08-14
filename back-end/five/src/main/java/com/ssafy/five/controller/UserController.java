@@ -44,8 +44,7 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "(CONFLICT) 이메일 중복")
     })
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpReqDto signUpReqDto) {
-
+    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpReqDto signUpReqDto) throws Exception {
         return userService.signUp(signUpReqDto);
 
     }
@@ -133,6 +132,9 @@ public class UserController {
         return userService.evalUser(evalUserReqDto);
     }
 
+    @Value("${app.firebase-bucket}")
+    private String firebaseBucket;
+
     @Operation(summary = "프로필 이미지 다운로드", description = "프로필 이미지 다운로드")
     @GetMapping("/user/profile-img/{userId}")
     public ResponseEntity<?> getProfileImg(@PathVariable String userId) throws Exception {
@@ -150,7 +152,7 @@ public class UserController {
 
     @Operation(summary = "프로필 이미지 업데이트", description = "프로필 이미지 업데이트")
     @PutMapping("/user/profile-img/{userId}")
-    public ResponseEntity<?> updateProfileImg(@PathVariable String userId, @RequestParam(name = "profileImg") MultipartFile profileImg) {
+    public ResponseEntity<?> updateProfileImg(@PathVariable String userId, @RequestParam MultipartFile profileImg) {
         try {
             profileImgService.save(userId, profileImg);
             return new ResponseEntity<>(true, HttpStatus.valueOf(201));

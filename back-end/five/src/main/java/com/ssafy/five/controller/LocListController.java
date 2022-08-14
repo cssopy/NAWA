@@ -23,6 +23,7 @@ public class LocListController {
             locListService.save(locListReqDto);
             return new ResponseEntity<>(true, HttpStatus.valueOf(201));
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }
@@ -35,6 +36,7 @@ public class LocListController {
             locList = locListService.findAllByUserId(userId);
             return new ResponseEntity<>(locList, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.valueOf(400));
         }
     }
@@ -46,6 +48,7 @@ public class LocListController {
             locListService.deleteByLocId(locId);
             return new ResponseEntity<>(true, HttpStatus.valueOf(200));
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(400));
         }
     }
