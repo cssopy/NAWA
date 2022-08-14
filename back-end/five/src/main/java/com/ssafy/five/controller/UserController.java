@@ -132,9 +132,6 @@ public class UserController {
         return userService.evalUser(evalUserReqDto);
     }
 
-    @Value("${app.firebase-bucket}")
-    private String firebaseBucket;
-
     @Operation(summary = "프로필 이미지 다운로드", description = "프로필 이미지 다운로드")
     @GetMapping("/user/profile-img/{userId}")
     public ResponseEntity<?> getProfileImg(@PathVariable String userId) throws Exception {
