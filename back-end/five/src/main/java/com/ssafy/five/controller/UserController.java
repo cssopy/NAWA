@@ -36,8 +36,7 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "회원가입된 아이디로 회원가입 시도할시 false, 휴대폰 인증이 안되있을 경우 false, 휴대폰 인증 완료시 휴대폰번호와 인증번호를 저장한 DB 삭제 후 true 반환")
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpReqDto signUpReqDto) {
-
+    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpReqDto signUpReqDto) throws Exception {
         return userService.signUp(signUpReqDto);
 
     }
@@ -98,6 +97,9 @@ public class UserController {
     public void evalUser(@RequestBody EvalUserReqDto evalUserReqDto) {
         userService.evalUser(evalUserReqDto);
     }
+
+    @Value("${app.firebase-bucket}")
+    private String firebaseBucket;
 
     @Operation(summary = "프로필 이미지 다운로드", description = "프로필 이미지 다운로드")
     @GetMapping("/user/profile-img/{userId}")
