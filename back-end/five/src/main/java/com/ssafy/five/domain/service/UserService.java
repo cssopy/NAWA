@@ -41,6 +41,13 @@ public class UserService {
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
+<<<<<<< Updated upstream
+=======
+        if (userRepository.findByEmailIdAndEmailDomain(signUpReqDto.getEmailId(), signUpReqDto.getEmailDomain()) != null) {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+
+>>>>>>> Stashed changes
         Calendar cal = Calendar.getInstance();
         cal.set(2022, 0, 1);
 
@@ -62,6 +69,7 @@ public class UserService {
                         .build())
                 .build();
 
+<<<<<<< Updated upstream
         userRepository.save(user);
 
 //        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(()->new RuntimeException("인증되지 않은 휴대폰"));
@@ -69,6 +77,15 @@ public class UserService {
 //        if(!msg.isAuth()){
 //            return false;
 //        }
+=======
+
+//        Messages msg = smsRepository.findById(user.getNumber()).orElseThrow(() -> new RuntimeException("인증되지 않은 휴대폰"));
+//
+//        if (!msg.isAuth()) {
+//            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+//        }
+        userRepository.save(user);
+>>>>>>> Stashed changes
 //        smsRepository.delete(msg);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }

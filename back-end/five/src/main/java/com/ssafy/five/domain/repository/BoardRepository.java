@@ -1,6 +1,6 @@
 package com.ssafy.five.domain.repository;
 
-import com.ssafy.five.controller.dto.res.GetBoardResDto;
+import com.ssafy.five.controller.dto.res.BoardResDto;
 import com.ssafy.five.domain.entity.Board;
 import com.ssafy.five.domain.entity.EnumType.BoardType;
 import com.ssafy.five.domain.entity.Users;
@@ -26,7 +26,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByBoardType(BoardType boardType);
 
     @Query("SELECT b from Board b WHERE b.user=:user AND b.boardType=:boardType")
-    List<GetBoardResDto> findAllByUserAndType(Users user, BoardType boardType);
+    List<BoardResDto> findAllByUserAndType(Users user, BoardType boardType);
 
     @Query(value = "SELECT * FROM Board WHERE boardType='VIDEO' ORDER BY RAND() LIMIT 1", nativeQuery = true)
     List<Board> findRandomVideo();

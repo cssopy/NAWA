@@ -10,8 +10,10 @@ public class FileResDto {
     private Long fileId;
     private String fileName;
     private FileType fileType;
+    private Long fileSize;
 
-    private int fileSize;
+    public FileResDto() {
+    }
 
     public FileResDto(Files filesEntity) {
         this.fileId = filesEntity.getFileId();

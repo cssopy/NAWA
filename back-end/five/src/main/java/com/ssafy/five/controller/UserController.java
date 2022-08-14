@@ -116,7 +116,7 @@ public class UserController {
 
     @Operation(summary = "프로필 이미지 업데이트", description = "프로필 이미지 업데이트")
     @PutMapping("/user/profile-img/{userId}")
-    public ResponseEntity<?> updateProfileImg(@PathVariable String userId, @RequestParam(name = "profileImg") MultipartFile profileImg) {
+    public ResponseEntity<?> updateProfileImg(@PathVariable String userId, @RequestParam MultipartFile profileImg) {
         try {
             profileImgService.save(userId, profileImg);
             return new ResponseEntity<>(true, HttpStatus.valueOf(201));
