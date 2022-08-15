@@ -36,4 +36,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("SELECT b FROM Board b WHERE b.user=:user ORDER BY b.boardId DESC, b.boardDate DESC")
     List<Board> findAllByUserNEW(Users user);
+
+    @Query(value = "SELECT * FROM nawa.board as b ORDER BY b.boardId DESC, b.boardDate DESC LIMIT :startNum, 10", nativeQuery = true)
+    List<Board> findAllOrderByNEW(int startNum);
+
+    @Query(value = "SELECT * FROM nawa.board as b ORDER BY b.boardDate LIMIT :startNum, 10", nativeQuery = true)
+    List<Board> findAllOrderByOLD(int startNum);
+
 }
