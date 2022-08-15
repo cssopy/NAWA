@@ -100,6 +100,8 @@ function FindInfo({navigation} : FindInfoScreenProps) {
                 Alert.alert('비밀번호 찾기', '임시 비밀번호를 이메일로 발송하였습니다.')
             }
             else {
+                setEmailpwCheck(false)
+                setUserIdCheck(false)
                 Alert.alert('비밀번호 찾기', '아이디와 이메일에 해당하는 정보가 없습니다.')
             }
             

@@ -14,7 +14,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import MatingScreen from './src/screens/Matching';
 import ChattingScreen from './src/screens/ChattingScreen';
 import SettingScreen from './src/screens/SettingScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
+import ProfileScreen from './src/screens/profileScreen';
 import SignUp from './src/screens/SignUp';
 import SignIn from './src/screens/SignIn';
 import FindInfo from './src/screens/FindInfo';
@@ -97,6 +97,7 @@ function AppInner() {
           'refreshToken',
           response.data.refreshToken
         )
+				
 
         // catch((reason: AxiosError) => {
         //   if (reason.response!.status === 400) {
@@ -124,7 +125,6 @@ function AppInner() {
           }),
         )
         Alert.alert('알림', '다시 로그인 해주세요');
-
       } finally {
         SplashScreen.hide();
       }
