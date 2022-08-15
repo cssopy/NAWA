@@ -1,7 +1,6 @@
 package com.ssafy.five.controller;
 
 import com.ssafy.five.controller.dto.req.*;
-import com.ssafy.five.controller.dto.res.FindUserResDto;
 import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.service.ProfileImgService;
 import com.ssafy.five.domain.service.UserService;

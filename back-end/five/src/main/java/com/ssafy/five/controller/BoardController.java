@@ -54,6 +54,9 @@ public class BoardController {
     @GetMapping("/")
     public ResponseEntity<?> getBoard() {
         List<BoardResDto> boards = boardService.findAll();
+        for (BoardResDto board : boards) {
+            board.setFiles(fileService.getFilesByBoardId(board.getBoardId()));
+        }
         return new ResponseEntity<>(boards, HttpStatus.valueOf(200));
     }
 
@@ -142,5 +145,5 @@ public class BoardController {
         return new ResponseEntity<>(boards, HttpStatus.valueOf(200));
     }
 
-    
+
 }
