@@ -262,4 +262,23 @@ public class BoardService {
         }
         return boards.stream().map(BoardResDto::new).collect(Collectors.toList());
     }
+
+    public List<BoardResDto> findAllOrderByTime(String time, int startNum) {
+        List<Board> boards = null;
+        if (time.equals("NEW")) {
+            boards = boardRepository.findAllOrderByNEW(startNum);
+        } else if (time.equals("OLD")) {
+            boards = boardRepository.findAllOrderByOLD(startNum);
+        }
+        return boards.stream().map(BoardResDto::new).collect(Collectors.toList());
+    }
+
+    public int isLikedBoard(String userId, Long boardId) {
+        LikeBoard likeBoardEntity = likeBoardRepository.findByUserIdAndBoardId(userId, boardId);
+        if (likeBoardEntity == null) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
 }
