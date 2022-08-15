@@ -42,6 +42,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
+                .antMatchers("/api/nawa**")
+                .permitAll()
+
+                .and()
+                .authorizeRequests()
                 .antMatchers("/api/user/**", "/api/board/**", "/api/loc-list/**", "/api/comment/**", "/api/add-mate/**", "/api/mate/**", "/api/block/**", "/api/calendar/**", "/api/location-list/**", "/api/chat/**", "/api/report/**")
                 .access("hasRole('USER') or hasRole('ADMIN')")
                 .antMatchers("/api/admin/**")
@@ -59,6 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         corsConfiguration.addAllowedOriginPattern("*");
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
