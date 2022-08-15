@@ -75,7 +75,7 @@ function AppInner() {
 
         const response = await axios({
           method : 'put',
-          url : 'http://i7d205.p.ssafy.io:8080/autoLogin',
+          url : 'http://i7d205.p.ssafy.io/api/autoLogin',
           data : {
 						userId: userId,
             refreshToken: refreshToken

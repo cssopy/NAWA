@@ -68,7 +68,7 @@ function SignUp({navigation} : SignUpScreenProps) {
     // setOpenId(e)
     try {
       console.log(openId, "&", userId)
-      const response = await axios.get(`http://i7d205.p.ssafy.io:8080/userId/${openId}`, {
+      const response = await axios.get(`http://i7d205.p.ssafy.io:8080/api/userId/${openId}`, {
       }).then(response => {
         setUserId(openId)
         setIdCheck(true)

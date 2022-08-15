@@ -24,7 +24,7 @@ const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
     
     const animationRef = useRef(new Animated.Value(0)).current;
     
-    const url = 'http://i7d205.p.ssafy.io:8080/'
+    const url = 'http://i7d205.p.ssafy.io/api/'
     const myId = useSelector((state: RootState) => state.user.accessToken)
     
     const translateY = animationRef.interpolate({
@@ -37,8 +37,6 @@ const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
         url + 'board/',
         { headers: { Authorization : `Bearer ${myId}` }}
       ).then (res => {
-        console.log('nice data')
-        // console.log(res.data[0])
         setFeeds(res.data)
       }).catch (err => {
         console.log('bad', err)
@@ -46,18 +44,13 @@ const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
     },[isFocused])
 
     const onPressListHandler = (data: object) => {
-      navigation.navigate('Main', {screen: 'FeedDetail', data})
-      // console.log(data)
+      navigation.navigate('Main', {screen: 'FeedDetail', params: data})
     };
 
     const onefeed = ({item}) => one(item)
 
     const one = (item: object) => {
-      // console.log(Object.keys(item))
-      // console.log(item)
-      // console.log(item.boardTitle, datas)
       const datas = item.files
-      // console.log(datas)
       let image: string[] = []
       datas.map(data => {
         if (data.fileType === 'IMAGE') {

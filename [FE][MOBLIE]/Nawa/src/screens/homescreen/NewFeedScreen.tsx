@@ -32,7 +32,7 @@ function NewFeedScreen({ navigation }) {
 
   const whoamI = useSelector((state : RootState) => state.user.userId)
   const myId = useSelector((state: RootState) => state.user.accessToken)
-  const url = 'http://i7d205.p.ssafy.io:8080/board/'
+  const url = 'http://i7d205.p.ssafy.io/api/board/'
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 
@@ -239,8 +239,8 @@ function NewFeedScreen({ navigation }) {
           label="제목"
           value={title}
           returnKeyType="next"
-          placeholder="제목을 입력해주세요"
           onChangeText={setTitle}
+          placeholder="제목을 입력해주세요"
         />
         <FormItem
           textArea

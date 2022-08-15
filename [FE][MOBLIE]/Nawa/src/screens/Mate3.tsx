@@ -14,7 +14,7 @@ import matchingSlice from "../slices/matching";
 import Swiper from "react-native-swiper";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import WhatCateGory from "../components/WhatCateGory";
+import WhatCateGory from "../components/WhatCategory";
 
 // firebase 클라우드
 import firestore from '@react-native-firebase/firestore';
