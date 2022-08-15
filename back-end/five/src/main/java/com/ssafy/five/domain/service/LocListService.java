@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class LocListService {
@@ -30,12 +33,13 @@ public class LocListService {
         }
     }
 
-    public LocListResDto findAllByUserId(String userId) throws Exception {
+    public List<LocListResDto> findAllByUserId(String userId) throws Exception {
         Users userEntity = userRepository.findByUserId(userId);
         if (userEntity == null) {
             throw new Exception("해당하는 유저를 찾을 수 없음");
         }
-        return new LocListResDto(locListRepository.findAllByUser(userEntity));
+        List<LocationList> list = locListRepository.findAllByUser(userEntity);
+        return list.stream().map(LocListResDto::new).collect(Collectors.toList());
     }
 
     @Transactional(rollbackFor = {Exception.class})

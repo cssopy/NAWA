@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/loc-list")
@@ -31,7 +33,7 @@ public class LocListController {
     @Operation(summary = "사용자 주소 즐겨찾기 리스트 반환", description = "사용자 주소 즐겨찾기 리스트 또는 null 반환")
     @GetMapping("/{userId}")
     public ResponseEntity<?> getLocListByUserId(@PathVariable String userId) {
-        LocListResDto locList = null;
+        List<LocListResDto> locList = null;
         try {
             locList = locListService.findAllByUserId(userId);
             return new ResponseEntity<>(locList, HttpStatus.OK);
