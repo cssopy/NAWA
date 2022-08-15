@@ -10,27 +10,28 @@ import axios from 'axios';
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
 import UserIcon from "../../components/userIcon";
+import Video, { FilterType } from "react-native-video";
 
 function Feeds ({ navigation }) {
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+  const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
+  const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
+  const [feeds, setFeeds] = useState([]);
 
+  const isFocused = useIsFocused()
+  
+  const animationRef = useRef(new Animated.Value(0)).current;
+  
+  const url = 'http://i7d205.p.ssafy.io/api/'
+  const myId = useSelector((state: RootState) => state.user.accessToken)
+  
+  const translateY = animationRef.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -HEADER_HEIGHT],
+  });
+  
   const MainFeed = () => {
-    const [feeds, setFeeds] = useState([]);
-
-    const isFocused = useIsFocused()
-    
-    const animationRef = useRef(new Animated.Value(0)).current;
-    
-    const url = 'http://i7d205.p.ssafy.io/api/'
-    const myId = useSelector((state: RootState) => state.user.accessToken)
-    
-    const translateY = animationRef.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, -HEADER_HEIGHT],
-    });
     
     useEffect(() => {
       axios.get(
@@ -51,13 +52,15 @@ const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
 
     const one = (item: object) => {
       const datas = item.files
-      let image: string[] = []
+      console.log(datas)
+      let image: object[] = []
       datas.map(data => {
-        if (data.fileType === 'IMAGE') {
+        if (data.fileType === 'IMAGE' || data.fileType === 'VIDEO') {
           // console.log(data.fileType, data.fileName)
+          const type: string = data.fileType
           const fileUrl: string = url + 'file/' + `${data.fileType}/` + `${data.fileName}`
-          image.push(fileUrl)
-          // console.log('had image', console.log(fileUrl))
+          image.push({fileUrl, type})
+          // console.log('had image', fileUrl, '&&', data.fileType)
         }
       })
       return (
@@ -68,22 +71,34 @@ const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
         }}
         >
           <View style={ styles.feedItem }>
-            { (image.length >= 1) &&
-              <View
+            { (image[0].type === 'IMAGE') && 
+              <Image
+                source={{ uri: image[0].fileUrl }}
                 style={{
-                  alignItems: 'center',
+                  width: SCREEN_WIDTH * 0.8,
+                  height: SCREEN_HEIGHT * 0.3,
                 }}
-              >
-                <Image
-                  source={{ uri: image[0] }}
-                  style={{
-                    width: SCREEN_WIDTH * 0.8,
-                    height: SCREEN_HEIGHT * 0.3,
-                    resizeMode: 'cover',
-                  }}
-                />
-              </View>
+              />
             }
+            {/* { (image[0].type === 'IMAGE') ?
+              <Image
+                source={{ uri: image[0].fileUrl }}
+                style={{
+                  width: SCREEN_WIDTH * 0.8,
+                  height: SCREEN_HEIGHT * 0.4,
+                  resizeMode: 'cover'
+                }}
+                // key={}
+              />
+            : 
+              <Video
+                source={{ uri: image[0].fileUrl }}
+                style={{
+                  width: SCREEN_WIDTH * 0.8,
+                  height: SCREEN_HEIGHT * 0.4,
+                  }}
+              />
+            } */}
             <View style={ styles.underBar }>
               <View style={styles.userIcon}><UserIcon /></View>
               <View style={styles.textBox}><Text style={styles.text}>{item.boardTitle}</Text></View>
@@ -94,31 +109,32 @@ const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
       }
 
     return (
-        <Animated.FlatList
-        data={feeds.reverse()}
-        renderItem={onefeed}
-        style={{
-          backgroundColor: "white",
-          transform: [{ translateY: translateY }],
-          elevation: 8,
-        }}
-        nestedScrollEnabled
-        ></Animated.FlatList>
-        )
-      }
+      <Animated.FlatList
+      data={feeds.reverse()}
+      renderItem={onefeed}
+      style={{
+        backgroundColor: "white",
+        transform: [{ translateY: translateY }],
+        elevation: 8,
+      }}
+      nestedScrollEnabled
+      ></Animated.FlatList>
+    )
+  }
 
   return (
     <>
-        <MainNavbar />
-        <MainFeed />
-        <FAB
-          onPress={() => {navigation.navigate('NewFeedScreen')}}
-          placement="right"
-          icon={{ name: 'add', color: 'white'}}
-          color="red"
-          />
-      </>
-    )
+      <MainNavbar />
+      <MainFeed />
+      <FAB
+
+        onPress={() => {navigation.navigate('NewFeedScreen')}}
+        placement="right"
+        icon={{ name: 'add', color: 'white'}}
+        color="red"
+        />
+    </>
+  )
 }
 
 const styles = StyleSheet.create({

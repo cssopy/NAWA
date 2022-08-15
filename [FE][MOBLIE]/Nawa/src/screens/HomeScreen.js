@@ -30,6 +30,11 @@ const HomeScreen = () => {
         name="FeedDetail"
         component={FeedDetail}
       />
+
+      <Stack.Screen
+        name="ChangeFeedScreen"
+        component={ChangeFeedScreen}
+      />
     </Stack.Navigator>
   );
 };

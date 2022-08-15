@@ -14,19 +14,21 @@ function FeedDetail({ route, navigation }) {
   // console.log(route)
 
   const [title, setTitle] = useState<string>('')
-  const [userId, setUserId] = useState<string>('')
   const [content, setContent] = useState<string>('')
   const [newcomment, setNewComment] = useState<string>('')
 
   const [hits, setHits] = useState<number>(0)
   const [likes, setLikes] = useState<number>(0)
+  const [iLike, setILike] = useState<number>(0)
 
   const [files, setFiles] = useState<any>([])
   const [comments, setComments] = useState<any>([])
 
+  const [ticTok, setTicTok] = useState<boolean>(false)
+
   const whoamI = useSelector((state : RootState) => state.user.userId)
   const myId = useSelector((state: RootState) => state.user.accessToken)
-  const { boardId } = route.params;
+  const { boardId, userId } = route.params;
   const url = 'http://i7d205.p.ssafy.io/api/'
 
   const createComment = () => {
@@ -50,7 +52,8 @@ function FeedDetail({ route, navigation }) {
       }}
     ).then(res => {
       console.log(res.data)
-      console.log(comments)
+      // console.log(comments)
+      setTicTok(!ticTok)
     }).catch(err => 
       console.log('you get error at detail', err))
   }
@@ -78,14 +81,42 @@ function FeedDetail({ route, navigation }) {
       setTitle(datas.boardtitle)
       setContent(datas.boardContent)
       setHits(datas.boardHit)
-      setUserId(datas.userId)
       setComments(datas.comments)
       setFiles(datas.files)
       setLikes(datas.boradLikes)
+      axios.get(
+        `${url}board/like/${userId}/${boardId}/`,
+        { headers: { Authorization : `Bearer ${myId}` }}
+      ).then(res => {
+        console.log(res.data)
+        setILike(res.data);
+        console.log('nice check')
+      }
+      ).catch(err => {
+        console.log('좋아요 체크 오류', err)
+      })
     }).catch (err => {
       console.log('you get error at detail', err)
     })
-  },[createComment])
+  },[ticTok])
+
+  const likeBorad = () => {
+    axios.post(
+      `${url}board/like`,
+      JSON.stringify({
+        boardId,
+        userId,
+      }),
+      { headers: {
+        "Content-Type": "application/json",
+        'Authorization' : `Bearer ${myId}`
+      }}
+    ).then(() => {
+      console.log('like?unlike?');
+      setTicTok(!ticTok);
+    }
+    )
+  }
 
   return (
     <View>
@@ -106,7 +137,7 @@ function FeedDetail({ route, navigation }) {
         <View><Text>Hits: { hits }</Text></View>
         <View><Text>Id: { boardId }</Text></View>
       </View>
-      {( whoamI === userId ) &&
+      {( whoamI === userId ) ?
         <View
           style={{
             flexDirection: "row",
@@ -116,19 +147,27 @@ function FeedDetail({ route, navigation }) {
         >
           <Button
             title="수정하기"
-            onPress={() => navigation.navigate('ChangeFeedScreen',
-              {
-                title,
-                content,
-                files,
-              }
-            )}
+            onPress={() => navigation.navigate('ChangeFeedScreen', boardId)}
             containerStyle={styles.button}
           />
 
           <Button
             title="삭제하기"
             onPress={deleteFeed}
+            containerStyle={styles.button}
+          />
+        </View>
+        :
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: 'flex-end',
+            marginVertical: SCREEN_HEIGHT * 0.025,
+          }}
+        >
+          <Button
+            title={ !iLike ? "좋아요" : "좋아요 취소"}
+            onPress={likeBorad}
             containerStyle={styles.button}
           />
         </View>
