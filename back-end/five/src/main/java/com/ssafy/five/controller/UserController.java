@@ -1,7 +1,6 @@
 package com.ssafy.five.controller;
 
 import com.ssafy.five.controller.dto.req.*;
-import com.ssafy.five.controller.dto.res.FindUserResDto;
 import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.service.ProfileImgService;
 import com.ssafy.five.domain.service.UserService;
@@ -97,9 +96,6 @@ public class UserController {
     public void evalUser(@RequestBody EvalUserReqDto evalUserReqDto) {
         userService.evalUser(evalUserReqDto);
     }
-
-    @Value("${app.firebase-bucket}")
-    private String firebaseBucket;
 
     @Operation(summary = "프로필 이미지 다운로드", description = "프로필 이미지 다운로드")
     @GetMapping("/user/profile-img/{userId}")
