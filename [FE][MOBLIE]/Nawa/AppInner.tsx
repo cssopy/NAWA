@@ -14,7 +14,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import MatingScreen from './src/screens/Matching';
 import ChattingScreen from './src/screens/ChattingScreen';
 import SettingScreen from './src/screens/SettingScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
+import ProfileScreen from './src/screens/profileScreen';
 import SignUp from './src/screens/SignUp';
 import SignIn from './src/screens/SignIn';
 import FindInfo from './src/screens/FindInfo';
@@ -72,14 +72,17 @@ function AppInner() {
           SplashScreen.hide();
           return;
         }
-        const response = await axios.put(
-          'http://i7d205.p.ssafy.io:8080/user/autoLogin',
-          {
-            userId: userId,
-            accessToken: accessToken,
+
+        const response = await axios({
+          method : 'put',
+          url : 'http://i7d205.p.ssafy.io:8080/autoLogin',
+          data : {
+						userId: userId,
             refreshToken: refreshToken
-          },
-        );
+					},
+					headers : {"Authorization" : `Bearer ${accessToken}`}
+				});
+
         dispatch(
           userSlice.actions.setUser({ // redux state는 값이 변하면, useselector로 참조하고 있는 모든 컴포넌트가 다시 렌더링.
             userId : response.data.userId,
@@ -95,10 +98,11 @@ function AppInner() {
           'refreshToken',
           response.data.refreshToken
         )
+				
 
       } catch (error) {
+				
         Alert.alert('알림', '다시 로그인 해주세요');
-
       } finally {
         SplashScreen.hide();
       }
