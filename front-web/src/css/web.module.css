@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
+* {
+  font-family: 'Jua', sans-serif;
+}
+
+.firstbg {
+    max-height: 800px;
+    overflow: hidden;
+    position: relative;
+}
+
+.downloadbg {
+  background-image: url(../../public/img/Download.jpg);
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copyright {
+    text-align: center;
+    margin: 0 10px;
+}
+
+video {
+    width: 100%;
+}
+
+.text {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+}
+
+.text span {
+    color: #F2A1CE;
+    text-align: center;
+    font-size: 75px;
+    @media (max-width: 600px) {
+      
+    }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.link {
+  text-decoration: none;
+  color: black;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
