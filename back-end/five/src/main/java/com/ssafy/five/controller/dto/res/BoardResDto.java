@@ -28,7 +28,7 @@ public class BoardResDto {
 
     public BoardResDto(Board entity) {
         this.boardId = entity.getBoardId();
-        this.userId = entity.getUser().getUserId();
+        this.userId = entity.getUsers().getUserId();
         this.boardTitle = entity.getBoardTitle();
         this.boardContent = entity.getBoardContent();
         this.boardType = entity.getBoardType();
