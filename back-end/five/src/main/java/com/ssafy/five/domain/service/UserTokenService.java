@@ -85,7 +85,7 @@ public class UserTokenService {
 
         Users user = userRepository.findByUserId(tokenReqDto.getUserId());
         if(!user.getEndDate().before(new Date())){
-            return new ResponseEntity<>(false, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
         // ref 토큰 유효성 만료시
