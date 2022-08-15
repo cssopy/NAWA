@@ -37,55 +37,6 @@ function NewFeedScreen({ navigation, route }) {
   const url = 'http://i7d205.p.ssafy.io/api/board/'
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-
-  // const openCamera = () => {
-  //   const option = {
-  //     mediaType: 'photo',
-  //   };
-    
-  //   launchCamera(option, (res) => {
-  //     if(res.didCancel) {
-  //       console.log('User Cancelled image picker')
-  //     } else if(res.errorCode) {
-  //       console.log(res.errorMessage)
-  //     } else {
-  //       const data = res.assets
-  //       data?.map((file) => {
-  //         const callMedia = {
-  //         uri: file.uri,
-  //         type: file.type,
-  //         name: file.fileName,
-  //         }
-  //       })
-  //     }
-  //   })
-  // }
-
-  // const openVideo = () => {
-
-  //   const option = {
-  //     mediaType: 'video',
-  //   };
-    
-  //   launchCamera(option, (res) => {
-  //     if(res.didCancel) {
-  //       console.log('User Cancelled image picker')
-  //     } else if (res.errorCode) {
-  //       console.log(res.errorMessage)
-  //     } else {
-  //       const data=res.assets
-  //       data?.map((file) => {
-  //         const callMedia = {
-  //         uri: file.uri,
-  //         type: file.type,
-  //         name: file.fileName,
-  //         }
-  //         setMedia(media.append(callMedia))
-  //       })
-  //     }
-  //   })
-  // }
-
   const openStorage = () => {
 
     launchImageLibrary(

@@ -171,31 +171,35 @@ function FeedDetail({ route, navigation }) {
             containerStyle={styles.button}
           />
         </View>
+      }
+      <View>
+        <Form
+          onButtonPress={createComment}
+          buttonText="보내기"
+        >
+          <FormItem
+            value={newcomment}
+            onChangeText={setNewComment}
+            placeholder="댓글을 입력해주세요"
+          />
+        </Form>
+      </View>
+      <ScrollView
+        style={comments}
+        >
+        <Text>Comments</Text>
+        { comments && 
+          comments.map(comment => {
+            // console.log(comment)
+            return (<View
+              key={ comment.cmtId }
+              >
+                <View><Text>{ comment.cmtContent }</Text></View>
+              </View>)
+          })
         }
-        <View>
-          <Form
-            onButtonPress={createComment}
-            buttonText="보내기"
-          >
-            <FormItem
-              value={newcomment}
-              onChangeText={setNewComment}
-              placeholder="댓글을 입력해주세요"
-            />
-          </Form>
-        </View>
-        <ScrollView
-          style={comments}
-          >
-          <Text>Comments</Text>
-          { comments && 
-            comments.map(comment => {
-              // console.log(comment)
-              return (<View key={ comment.cmtId }><Text>{ comment.cmtContent }</Text></View>)
-            })
-          }
       </ScrollView>
-      {/* <Text>Here is Feed Detail</Text> */}
+      
     </View>
   )
 }
