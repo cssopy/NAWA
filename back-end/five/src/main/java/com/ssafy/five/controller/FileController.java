@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/file")
+@RequestMapping("/api/file")
 public class FileController {
 
     @Value("${spring.servlet.multipart.location}")

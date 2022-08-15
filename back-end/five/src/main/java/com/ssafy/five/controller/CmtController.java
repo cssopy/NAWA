@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/cmt")
+@RequestMapping("/api/cmt")
 public class CmtController {
     private final CmtService cmtService;
 

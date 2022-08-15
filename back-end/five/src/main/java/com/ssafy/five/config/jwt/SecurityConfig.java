@@ -42,9 +42,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user/**", "/board/**", "/loc-list/**", "/comment/**", "/add-mate/**", "/mate/**", "/block/**", "/calendar/**", "/location-list/**", "/chat/**", "/report/**")
+                .antMatchers("/api/nawa**")
+                .permitAll()
+
+                .and()
+                .authorizeRequests()
+                .antMatchers("/api/user/**", "/api/board/**", "/api/loc-list/**", "/api/comment/**", "/api/add-mate/**", "/api/mate/**", "/api/block/**", "/api/calendar/**", "/api/location-list/**", "/api/chat/**", "/api/report/**")
                 .access("hasRole('USER') or hasRole('ADMIN')")
-                .antMatchers("/admin/**")
+                .antMatchers("/api/admin/**")
                 .access("hasRole('ADMIN')")
                 .anyRequest()
                 .permitAll()

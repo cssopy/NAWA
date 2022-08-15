@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/add-mate")
+@RequestMapping("/api/add-mate")
 public class AddMateController {
 
     private final AddMateService addMateService;
