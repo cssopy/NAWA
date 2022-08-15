@@ -10,7 +10,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/mate")
+@RequestMapping("/api/mate")
 public class MateController {
 
     private final MateService mateService;

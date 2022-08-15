@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/loc-list")
+@RequestMapping("/api/loc-list")
 public class LocListController {
 
     private final LocListService locListService;
