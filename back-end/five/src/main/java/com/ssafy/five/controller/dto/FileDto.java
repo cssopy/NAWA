@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class FileDto extends Files {
+public class FileDto {
 
     private Long boardId;
     private Long fileId;
