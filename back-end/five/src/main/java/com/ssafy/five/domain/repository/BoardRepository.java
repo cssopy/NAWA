@@ -25,17 +25,17 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("SELECT b from Board b WHERE b.boardType = :boardType")
     List<Board> findAllByBoardType(BoardType boardType);
 
-    @Query("SELECT b from Board b WHERE b.user=:user AND b.boardType=:boardType")
-    List<BoardResDto> findAllByUserAndType(Users user, BoardType boardType);
+    @Query("SELECT b from Board b WHERE b.users=:users AND b.boardType=:boardType")
+    List<BoardResDto> findAllByUserAndType(Users users, BoardType boardType);
 
     @Query(value = "SELECT * FROM nawa.board WHERE boardType='VIDEO' ORDER BY RAND() LIMIT 1", nativeQuery = true)
     List<Board> findRandomVideo();
 
-    @Query("SELECT b FROM Board b WHERE b.user=:user ORDER BY b.boardDate")
-    List<Board> findAllByUserOLD(Users user);
+    @Query("SELECT b FROM Board b WHERE b.users=:users ORDER BY b.boardDate")
+    List<Board> findAllByUserOLD(Users users);
 
-    @Query("SELECT b FROM Board b WHERE b.user=:user ORDER BY b.boardId DESC, b.boardDate DESC")
-    List<Board> findAllByUserNEW(Users user);
+    @Query("SELECT b FROM Board b WHERE b.users=:users ORDER BY b.boardId DESC, b.boardDate DESC")
+    List<Board> findAllByUserNEW(Users users);
 
     @Query(value = "SELECT * FROM nawa.board as b ORDER BY b.boardId DESC, b.boardDate DESC LIMIT :startNum, 10", nativeQuery = true)
     List<Board> findAllOrderByNEW(int startNum);
