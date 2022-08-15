@@ -110,7 +110,7 @@ public class FileService {
         // 파일 중 영상 파일이 있다면
         if (existVideo) {
             boardEntity = boardRepository.save(Board.builder()
-                    .user(boardEntity.getUser())
+                    .users(boardEntity.getUsers())
                     .boardId(boardEntity.getBoardId())
                     .boardTitle(boardEntity.getBoardTitle())
                     .boardContent(boardEntity.getBoardContent())
@@ -123,7 +123,7 @@ public class FileService {
         // 영상 파일은 없고 이미지 파일은 있다면
         else if (existImage) {
             boardEntity = boardRepository.save(Board.builder()
-                    .user(boardEntity.getUser())
+                    .users(boardEntity.getUsers())
                     .boardId(boardEntity.getBoardId())
                     .boardTitle(boardEntity.getBoardTitle())
                     .boardContent(boardEntity.getBoardContent())
@@ -134,7 +134,7 @@ public class FileService {
                     .boardType(BoardType.IMAGE).build());
         } else {
             boardEntity = boardRepository.save(Board.builder()
-                    .user(boardEntity.getUser())
+                    .users(boardEntity.getUsers())
                     .boardId(boardEntity.getBoardId())
                     .boardTitle(boardEntity.getBoardTitle())
                     .boardContent(boardEntity.getBoardContent())

@@ -92,7 +92,7 @@ public class BoardService {
 
             if (existVideo) {
                 boardEntity = boardRepository.save(Board.builder()
-                        .user(boardEntity.getUser())
+                        .users(boardEntity.getUsers())
                         .boardId(boardEntity.getBoardId())
                         .boardTitle(boardEntity.getBoardTitle())
                         .boardContent(boardEntity.getBoardContent())
@@ -103,7 +103,7 @@ public class BoardService {
                         .boardType(BoardType.VIDEO).build());
             } else if (existImage) {
                 boardEntity = boardRepository.save(Board.builder()
-                        .user(boardEntity.getUser())
+                        .users(boardEntity.getUsers())
                         .boardId(boardEntity.getBoardId())
                         .boardTitle(boardEntity.getBoardTitle())
                         .boardContent(boardEntity.getBoardContent())
@@ -115,7 +115,7 @@ public class BoardService {
             }
         } else {
             boardEntity = boardRepository.save(Board.builder()
-                    .user(boardEntity.getUser())
+                    .users(boardEntity.getUsers())
                     .boardId(boardEntity.getBoardId())
                     .boardTitle(boardEntity.getBoardTitle())
                     .boardContent(boardEntity.getBoardContent())
@@ -196,7 +196,7 @@ public class BoardService {
 
             // 게시글 좋아요 수 감소
             boardEntity = boardRepository.save(Board.builder()
-                    .user(users)
+                    .users(users)
                     .boardId(board.getBoardId())
                     .boardTitle(board.getBoardTitle())
                     .boardContent(board.getBoardContent())
@@ -217,7 +217,7 @@ public class BoardService {
 
             // 게시글 좋아요 수 증가
             boardEntity = boardRepository.save(Board.builder()
-                    .user(users)
+                    .users(users)
                     .boardId(board.getBoardId())
                     .boardTitle(board.getBoardTitle())
                     .boardContent(board.getBoardContent())
