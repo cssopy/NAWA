@@ -27,11 +27,6 @@ const HomeScreen = () => {
       />
 
       <Stack.Screen
-        name="ChangeFeedScreen"
-        component={ChangeFeedScreen}
-      />
-
-      <Stack.Screen
         name="FeedDetail"
         component={FeedDetail}
       />

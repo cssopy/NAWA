@@ -26,6 +26,8 @@ function NewFeedScreen({ navigation }) {
     name: '',
     type: '',
     uri: '',
+    width: 0,
+    height: 0,
   })
 
   const whoamI = useSelector((state : RootState) => state.user.userId)
@@ -86,7 +88,7 @@ function NewFeedScreen({ navigation }) {
 
     launchImageLibrary(
       {
-        mediaType: 'mixed',
+        mediaType: 'photo',
         selectionLimit: 0,
       },
       (res) => {
@@ -98,10 +100,14 @@ function NewFeedScreen({ navigation }) {
         setFlag(false)
       } else if(res.assets) {
         const media = res.assets[0]
+        console.log(media)
         setFile({
           name: media.fileName as string,
           type: media.type as string,
-          uri: Platform.OS === 'android' ? media.uri as string : media.uri?.replace('file://', '') as string});
+          uri: Platform.OS === 'android' ? media.uri as string : media.uri?.replace('file://', '') as string,
+          width: media.width as number,
+          height: media.height as number,
+        });
         setFlag(true)
       }
     })
@@ -183,10 +189,21 @@ function NewFeedScreen({ navigation }) {
       style={styles.safe}
     >
       { flag &&
-        <Image
-          source={{uri : file.uri}}
-          
-        />
+        <View
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: SCREEN_HEIGHT * 0.01,
+          }}
+        >
+          <Image
+            source={{uri : file.uri}}
+            style={{
+              width: file.width * 0.2,
+              height: file.height * 0.2,
+            }}
+          />
+        </View>
       }
       <View
         style={{
