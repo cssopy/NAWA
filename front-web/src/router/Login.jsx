@@ -15,9 +15,9 @@ const App = () => {
     const [loginPassword, setLoginPassword] = useState(""); // 코드 추가
     const [user, setUser] = useState({}); // 코드 추가
 
-    onAuthStateChanged(auth, (currentUser) => {
-        setUser(currentUser);
-    });
+    // onAuthStateChanged(auth, (currentUser) => {
+    //     setUser(currentUser);
+    // });
 
     //회원가입
     const register = async () => {
