@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import {
-    createUserWithEmailAndPassword,
-    onAuthStateChanged, // 코드 추가
-    signInWithEmailAndPassword, // 코드 추가
-    signOut, // 코드추가
-} from "firebase/auth";
-import { auth } from "../firebase-config";
+// import {
+//     createUserWithEmailAndPassword,
+//     onAuthStateChanged, // 코드 추가
+//     signInWithEmailAndPassword, // 코드 추가
+//     signOut, // 코드추가
+// } from "firebase/auth";
+// import { auth } from "../firebase-config";
 
 const App = () => {
     const [registerEmail, setRegisterEmail] = useState("");
@@ -15,19 +15,19 @@ const App = () => {
     const [loginPassword, setLoginPassword] = useState(""); // 코드 추가
     const [user, setUser] = useState({}); // 코드 추가
 
-    onAuthStateChanged(auth, (currentUser) => {
-        setUser(currentUser);
-    });
+    // onAuthStateChanged(auth, (currentUser) => {
+    //     setUser(currentUser);
+    // });
 
     //회원가입
     const register = async () => {
         try {
-            const user = await createUserWithEmailAndPassword(
-                auth,
-                registerEmail,
-                registerPassword
-            );
-            console.log(user);
+            // const user = await createUserWithEmailAndPassword(
+            //     auth,
+            //     registerEmail,
+            //     registerPassword
+            // );
+            // console.log(user);
         } catch (error) {
             console.log(error.message);
         }
@@ -36,12 +36,12 @@ const App = () => {
     //로그인
     const login = async () => {
         try {
-            const user = await signInWithEmailAndPassword(
-                auth,
-                loginEmail,
-                loginPassword
-            );
-            console.log(user);
+            // const user = await signInWithEmailAndPassword(
+            //     auth,
+            //     loginEmail,
+            //     loginPassword
+            // );
+            // console.log(user);
         } catch (error) {
             console.log(error.message);
         }
@@ -49,7 +49,7 @@ const App = () => {
 
     //로그아웃
     const logout = async () => {
-        await signOut(auth);
+        // await signOut(auth);
     };
 
     return (
