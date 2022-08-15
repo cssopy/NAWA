@@ -22,17 +22,11 @@ function NewFeedScreen({ navigation }) {
   const [flag, setFlag] = useState<boolean>(false)
   // const [profileImage, setProfileImage]: any = useState({});
 
-  const [file, setFile] = useState({
-    name: '',
-    type: '',
-    uri: '',
-    width: 0,
-    height: 0,
-  })
+  const [file, setFile] = useState<object[]>([])
 
   const whoamI = useSelector((state : RootState) => state.user.userId)
   const myId = useSelector((state: RootState) => state.user.accessToken)
-  const url = 'http://i7d205.p.ssafy.io:8080/board/'
+  const url = 'http://i7d205.p.ssafy.io/api/board/'
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 
@@ -88,7 +82,7 @@ function NewFeedScreen({ navigation }) {
 
     launchImageLibrary(
       {
-        mediaType: 'photo',
+        mediaType: 'mixed',
         selectionLimit: 0,
       },
       (res) => {
@@ -99,15 +93,21 @@ function NewFeedScreen({ navigation }) {
         console.log(res.errorMessage)
         setFlag(false)
       } else if(res.assets) {
-        const media = res.assets[0]
-        console.log(media)
-        setFile({
-          name: media.fileName as string,
-          type: media.type as string,
-          uri: Platform.OS === 'android' ? media.uri as string : media.uri?.replace('file://', '') as string,
-          width: media.width as number,
-          height: media.height as number,
-        });
+        const medias = res.assets
+        console.log(medias)
+        let files: object[] = []
+        medias.forEach(media => {
+          const once = {
+            name: media.fileName as string,
+            type: media.type as string,
+            uri: Platform.OS === 'android' ? media.uri as string : media.uri?.replace('file://', '') as string,
+            width: media.width as number,
+            height: media.height as number,
+          }
+          files.push(once)
+        })
+        console.log('저장소에서 가져옴', files)
+        setFile(files);
         setFlag(true)
       }
     })
@@ -139,16 +139,18 @@ function NewFeedScreen({ navigation }) {
       }
     ).then(res => {
       console.log('보냈다 200번인가?', flag, file)
-      if (file.name) {
+      if (file.length > 0) {
         console.log('보낸다 미디어')
         const formData = new FormData()
-        formData.append('uploadfile', file)
+        file.forEach(f => {
+          formData.append('uploadfile', f)
+        })
         axios.post(
           url + `files/${res.data}`,
           formData,
           {
             headers : {
-              'Content-Type': 'multipart/form-data; boundary=someArbitraryUniqueString',
+              'Content-Type': 'multipart/form-data',
               'Authorization' : `Bearer ${myId}`
             }
           }
@@ -188,7 +190,7 @@ function NewFeedScreen({ navigation }) {
     <ScrollView
       style={styles.safe}
     >
-      { flag &&
+      {/* { flag &&
         <View
           style={{
             display: 'flex',
@@ -204,7 +206,7 @@ function NewFeedScreen({ navigation }) {
             }}
           />
         </View>
-      }
+      } */}
       <View
         style={{
           flexDirection: "row",
@@ -239,8 +241,8 @@ function NewFeedScreen({ navigation }) {
           label="제목"
           value={title}
           returnKeyType="next"
-          placeholder="제목을 입력해주세요"
           onChangeText={setTitle}
+          placeholder="제목을 입력해주세요"
         />
         <FormItem
           textArea
