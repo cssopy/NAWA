@@ -2,8 +2,6 @@ import React,  {useRef, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
-  Text,
-  TextInput,
   View,
   
 } from 'react-native';
@@ -32,13 +30,11 @@ const JoinRTC = ({navigation}) => {
   const [remoteStream, setRemoteStream] = useState(null);
   const [webcamStarted, setWebcamStarted] = useState(false);
   const [localStream, setLocalStream] = useState(null);
-  const [channelId, setChannelId] = useState(null);
   const [onAir, setOnAir] = useState(false);
   const pc = useRef();
 
   // 유저 정보 가져와라
   const roomInfo = useSelector((state : RootState) => state.matching.settings)
-    console.log(roomInfo)
 
   // 구글 STUN 서버 설정
   const servers = {
@@ -94,8 +90,7 @@ const JoinRTC = ({navigation}) => {
     const offerCandidates = channelDoc.collection('offerCandidates');
     const answerCandidates = channelDoc.collection('answerCandidates');
 
-     // 데이터 채널 개설
-     const dataChannel = pc.current.createDataChannel();
+
 
     pc.current.onicecandidate = async event => {
       if (event.candidate) {
@@ -133,6 +128,7 @@ const JoinRTC = ({navigation}) => {
     // When answered, add candidate to peer connection
     answerCandidates.onSnapshot(snapshot => {
         snapshot.docChanges().forEach(change => {
+          console.log(change)
           if (change.type === 'added') {
             const data = change.doc.data();
             pc.current.addIceCandidate(new RTCIceCandidate(data));
@@ -148,7 +144,7 @@ const JoinRTC = ({navigation}) => {
 
       const db = firestore();
       const roomRef = db.collection('MATCHING_GUMI').doc(roomInfo);
-      const calleeCandidates = await roomRef.collection('calleeCandidates').get();
+      const calleeCandidates = await roomRef.collection('answerCandidates').get();
       calleeCandidates.forEach(async candidate => {
         await candidate.ref.delete();
       });
@@ -160,9 +156,38 @@ const JoinRTC = ({navigation}) => {
 
       await roomRef.delete();
 
-      // const channelDoc = firestore().collection('MATCHING_GUMI').doc(roomInfo).delete()
+      const rejected = async (roomInfo) => {
+        firestore()
+          .collection('dataChannel')
+          .doc(roomInfo)
+          .delete()
+          .then( () => {
+          })
+      }
+      rejected(roomInfo)
+
+
       navigation.navigate('Mate3');
     }
+
+    // 연결 종료시
+    // useEffect( () => {
+    //     async function onResult(QuerySnapshot) {
+    //       const onWaiting = await firestore().collection('MATCHING_GUMI').doc(roomInfo).get();
+    //       if (!!!onWaiting.data()) {
+            
+    //         endCall()
+    //         return ;
+    //       }
+    //     }
+
+    //     function onError(error) {
+    //       console.error(error);
+    //     }
+
+    //     firestore().collection('MATCHING_GUMI').doc(roomInfo).onSnapshot(onResult, onError);
+    // },[])
+
 
 
 

@@ -63,7 +63,7 @@ function AppInner() {
         const accessToken = await EncryptedStorage.getItem('accessToken');
         const nickname = await AsyncStorage.getItem('nickname');
         const refreshToken = await EncryptedStorage.getItem('refreshToken');
-        
+
         console.log(userId)
         console.log(accessToken)
         console.log(refreshToken)
@@ -72,14 +72,16 @@ function AppInner() {
           SplashScreen.hide();
           return;
         }
-        const response = await axios.put(
-          'http://i7d205.p.ssafy.io:8080/user/autoLogin',
-          {
+        const response = await axios({
+          method : 'put',
+          url : 'http://i7d205.p.ssafy.io/api/autoLogin',
+          data : {
             userId: userId,
-            accessToken: accessToken,
             refreshToken: refreshToken
+            // refreshToken: 'sdssd'
           },
-        );
+          headers : {"Authorization" : `Bearer ${accessToken}`}
+        });
         dispatch(
           userSlice.actions.setUser({ // redux state는 값이 변하면, useselector로 참조하고 있는 모든 컴포넌트가 다시 렌더링.
             userId : response.data.userId,
@@ -96,7 +98,31 @@ function AppInner() {
           response.data.refreshToken
         )
 
-      } catch (error) {
+        // catch((reason: AxiosError) => {
+        //   if (reason.response!.status === 400) {
+        //     // Handle 400
+        //   } else {
+        //     // Handle else
+        //   }
+        //   console.log(reason.message)
+        // })
+
+
+
+
+      } catch (error)  {
+        if (error.response.status === 401) {
+        }
+
+        EncryptedStorage.removeItem('accessToken')
+        EncryptedStorage.removeItem('refreshToken')
+        dispatch(
+          userSlice.actions.setUser({
+            userId : '',
+            accessToken : '',
+            nickname : ''
+          }),
+        )
         Alert.alert('알림', '다시 로그인 해주세요');
 
       } finally {

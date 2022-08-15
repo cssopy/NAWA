@@ -68,7 +68,7 @@ function SignUp({navigation} : SignUpScreenProps) {
     // setOpenId(e)
     try {
       console.log(openId, "&", userId)
-      const response = await axios.get(`http://i7d205.p.ssafy.io:8080/userId/${openId}`, {
+      const response = await axios.get(`http://i7d205.p.ssafy.io:8080/api/userId/${openId}`, {
       }).then(response => {
         setUserId(openId)
         setIdCheck(true)
@@ -94,7 +94,7 @@ function SignUp({navigation} : SignUpScreenProps) {
   const [nicknameCheck, setNicknameCheck] = useState(false)
   const checkNickname = async () => {
     try {
-      const response = await axios.get(`http://i7d205.p.ssafy.io:8080/nickname/${openNickname}`, {
+      const response = await axios.get(`http://i7d205.p.ssafy.io:8080/api/nickname/${openNickname}`, {
       }).then(response => {
         setNickName(openNickname)
         setNicknameCheck(true)
@@ -117,7 +117,7 @@ function SignUp({navigation} : SignUpScreenProps) {
   const [sendNumber, setSendNumber] = useState(false)
   const sendAuthNumber = async () => {
     try {
-      const response = await axios.post(`http://i7d205.p.ssafy.io:8080/sms`, {
+      const response = await axios.post(`http://i7d205.p.ssafy.io:8080/api/sms`, {
         "recipientPhoneNumber": number});
       console.log(number)
       setSendNumber(true)
@@ -134,7 +134,7 @@ function SignUp({navigation} : SignUpScreenProps) {
   const checkAuthNumber = async () => {
     
     try {
-      const response = await axios.post(`http://i7d205.p.ssafy.io:8080/sms/check`, {
+      const response = await axios.post(`http://i7d205.p.ssafy.io:8080/api/sms/check`, {
         "certNumber": authNumber, 
         "recipientPhoneNumber": number});
       console.log("Authentication Pass", "번호인증완료")
@@ -223,7 +223,7 @@ function SignUp({navigation} : SignUpScreenProps) {
   try {
     setLoading(true);
     console.log(`${date.getFullYear()}${ date.getMonth()+1 >9 ? (date.getMonth()+1) : "0"+(date.getMonth()+1) }${ date.getDate()>9 ? date.getDate() : "0"+date.getDate()}`)
-    const response = await axios.post('http://i7d205.p.ssafy.io:8080/signup', {
+    const response = await axios.post('http://i7d205.p.ssafy.io:8080/api/signup', {
         userId : userId,
         password : password,
         birth : `${date.getFullYear()}${ date.getMonth()+1 >9 ? (date.getMonth()+1) : "0"+(date.getMonth()+1) }${ date.getDate()>9 ? date.getDate() : "0"+date.getDate()}`,
@@ -243,7 +243,6 @@ function SignUp({navigation} : SignUpScreenProps) {
         nickname : nickName,
       }),
     )
-    
     navigation.navigate('SignIn')
   } catch (error) {
     const errorResponse = (error as AxiosError).response;
