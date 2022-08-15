@@ -75,12 +75,18 @@ const Mate2 = ( {navigation} ) => {
   };
 
   useEffect(() => {
+    let gage = 0.33
     if (1 <= box.length && box.length <= 3) {
-      setGage(0.48)
+      gage += 0.22
     }
-     else {
-      setGage(0.33)
-    }}, [box.length])
+    if (value.length >= 10) {
+      gage += 0.22
+    }
+    if (readWarnings) {
+      gage += 0.23
+    }
+    setGage(gage)
+    }, [box.length, value, readWarnings])
   
   // 승인 버튼
   useEffect(() => {

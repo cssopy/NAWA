@@ -14,7 +14,6 @@ import { RootState } from '../store/reducer';
 import { FAB } from '@rneui/themed';
 import NaverMapView,{ NaverMapViewProps, Circle, Marker, Path, Polyline, Polygon,  } from 'react-native-nmap'
 import location from 'react-native-nmap'
-
 import { ScreenHeight, SearchBar } from "@rneui/base";
 import { Animated } from "react-native";
 import { useEffect } from "react";
@@ -50,6 +49,11 @@ const Mate1 = ( {navigation} ) => {
   const [searchingResult, setSearchingResult] = useState([]);
   const [mapLoading, setMapLoading] = useState(false);
   const [ButtonLoading, setButtonLoading] = useState(false);
+
+  const userId = useSelector((state : RootState) => state.user.userId);
+  const accessToken = useSelector((state : RootState) => state.user.accessToken);
+  const [loc, setLoc] = useState([]);
+
 
   const searching = async () => {
     try {
@@ -88,6 +92,7 @@ const Mate1 = ( {navigation} ) => {
     
   )};
 
+  //지도 auto 줌
   useEffect (() => {
     if (distance < 130) {
       setZoom(17);
@@ -107,6 +112,82 @@ const Mate1 = ( {navigation} ) => {
     },[distance])
     
 
+
+  // 1. 즐겨찾기 조회, 저장
+  const getLoc = async () => {
+    try {
+    const response = await axios({
+      method : 'get',
+      url : `http://i7d205.p.ssafy.io/api/loc-list/${userId}`,
+      headers : {"Authorization" : `Bearer ${accessToken}`}
+    });
+    setLoc(response.data)
+    console.log(response.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  useEffect(() => {
+    getLoc()
+  },[dispatch])
+  
+
+// ({latitude: Number(item.y), longitude:Number(item.x)})}  
+                      
+//                     {item.place_name}</Text>
+//               {item.road_address_name}</Text>
+  
+  // 즐겨찾기 추가
+  const addLoc = async (item) => {
+    try {
+      if (loc.length >= 10) {
+        Alert.alert('알림', '즐겨찾기는 최대 10개 까지 가능합니다.')
+      } else {
+        const response = await axios({
+          method : 'post',
+          url : `http://i7d205.p.ssafy.io/api/loc-list/`,
+          headers : {"Authorization" : `Bearer ${accessToken}`},
+          data : {
+            "locAddress" : item.address_name,
+            "locLat" : item.y,
+            "locLng" : item.x,
+            "userId" : userId
+          }
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+    getLoc()
+  }
+
+  // 즐겨찾기 삭제
+  const delLoc = async (item) => {
+    loc.forEach(() => {
+      
+    })
+    
+    
+    try {
+      const response = await axios({
+          method : 'delete',
+          url : `http://i7d205.p.ssafy.io/api/loc-list/`,
+          headers : {"Authorization" : `Bearer ${accessToken}`},
+          data : {
+            "locAddress" : item.address_name,
+            "locLat" : item.y,
+            "locLng" : item.x,
+            "userId" : userId
+          }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+    getLoc()
+  }
+
+
+  // 창 open or close
   useEffect(() => {
     searchValue ? openSearchBox() : closeSearchBox()
     if (searchValue.length > 1) {searching()}
@@ -168,9 +249,16 @@ const Mate1 = ( {navigation} ) => {
               <View>
                 <ScrollView style={{width : constants.width-20, maxHeight : 230, paddingTop : 40, paddingBottom:30 }}>
                   {searchingResult.map((item, idx) => (
-                      <Pressable onTouchStart={() => {Keyboard.dismiss()}} onPress={() => setPickLocation({latitude: Number(item.y), longitude:Number(item.x)})}  key={idx} style={{flexDirection:'column', backgroundColor:'white', height:45, marginVertical:2, borderRadius:5, paddingHorizontal:5}}>
-                        <Text style={{color:'black',fontWeight:"700" , fontSize:17}}>{item.place_name}</Text>
-                        <Text style={{marginTop:1,color:'black',fontWeight:"300" , fontSize:13}}>{item.road_address_name}</Text>
+                      <Pressable onTouchStart={() => {Keyboard.dismiss()}} onPress={() => setPickLocation({latitude: Number(item.y), longitude:Number(item.x)})}  key={idx} style={{flexDirection:'row', backgroundColor:'white', height:45, marginVertical:2, borderRadius:5, paddingHorizontal:5}}>
+                        <View style={{flex:7}}>
+                          <Text style={{color:'black',fontWeight:"700" , fontSize:17}}>{item.place_name}</Text>
+                          <Text style={{marginTop:1,color:'black',fontWeight:"300" , fontSize:13}}>{item.road_address_name}</Text>
+                        </View>
+                        {/* { if (item.place_name in loc ?
+                          <Ionicons style={{flex:1, alignSelf:'center'}} name='star-outline' size={30} color='black' />
+                        :  
+                      } */}
+                      <Ionicons onPress={() => addLoc(item)} style={{flex:1, alignSelf:'center'}} name='star' size={30} color='yellow' />
                       </Pressable>
                     ))
                   }
@@ -188,7 +276,7 @@ const Mate1 = ( {navigation} ) => {
               <SearchBar
                 platform="android"
                 containerStyle={{borderBottomLeftRadius:15, borderBottomRightRadius:15, top:-1, elevation:8}}
-                inputContainerStyle={{height:20}}
+                inputContainerStyle={{height:30}}
                 inputStyle={{fontSize:14,}}
                 onClear={() => setSearchingResult([])}
                 onChangeText={newVal => setSearchValue(newVal)}
@@ -196,10 +284,27 @@ const Mate1 = ( {navigation} ) => {
                 placeholderTextColor="#888"
                 value={searchValue}
                 onSubmitEditing = {searching}
-                onFocus={() => openSearchBox()}/>
+                onFocus={() => openSearchBox()}
+              />
             </View>
-            <Ionicons style={{flex:1, textAlign:"center", backgroundColor:'white',borderBottomLeftRadius:15,borderBottomRightRadius:15, marginLeft:8, elevation:8 }}  name='menu' size={35} color='black' />
+
+            <Button onPress={() => {}} color={'warning'} containerStyle={{flex:1, borderBottomLeftRadius:15,borderBottomRightRadius:15, marginLeft:8, elevation:8}}>
+              <Ionicons name='star' size={30} color='white' />
+            </Button>
+
           </View>
+
+          {false && <View style={{position:"absolute", width:SCREEN_WIDTH, height:SCREEN_HEIGHT,backgroundColor:'black', opacity:0.3, zIndex:6}}></View>}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={false}
+            >
+            <ScrollView style={{position:"absolute", flexDirection:"column", width:SCREEN_WIDTH/4*3, height:400, top:SCREEN_HEIGHT/2- 200, backgroundColor:'white', elevation:10, borderRadius:10, alignSelf:'center'}}>
+            </ScrollView>
+          </Modal>
+
+
 
           <View style={{position: "absolute", flexDirection:'row', marginHorizontal:10, alignContent:"center",justifyContent:'flex-start', bottom:100}}>
             {mapLoading ? 

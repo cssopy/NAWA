@@ -52,7 +52,7 @@ function SignIn({navigation}: SignInScreenProps) {
       setLoading(true);
       const nickname = await AsyncStorage.getItem('nickname')
 
-      const response = await axios.post(`http://i7d205.p.ssafy.io/api/token/login`, {
+      const response = await axios.post(`http://i7d205.p.ssafy.io:8080/api/token/login`, {
         userId,
         password,
       });

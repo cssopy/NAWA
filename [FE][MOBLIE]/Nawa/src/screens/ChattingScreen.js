@@ -9,14 +9,13 @@ import store from '../store';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { RootState } from '../store/reducer';
 
-import SockJS from "sockjs-client"
-import axios from 'axios';
-import { Stomp } from '@stomp/stompjs';
 
-import ChattingRoom from './ChattingRoom';
-import ChattingMain from './ChattingMain';
+import axios from 'axios';
+
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import SockJS from "sockjs-client"
+import * as StompJS from '@stomp/stompjs'
 
 
 const TextEncodingPolyfill = require('text-encoding');
@@ -29,6 +28,7 @@ Object.assign(global, {
 
 const ChattingScreen = () => {
     const userId = useSelector((state : RootState) => state.user.userId)
+    const accessToken = useSelector((state : RootState) => state.user.accessToken)
     const [roomId, setRoomId] = useState('')
     const [room, setRoom] = useState({})
     const [message, setMessage] = useState('')
@@ -36,13 +36,23 @@ const ChattingScreen = () => {
     const messageRef = useRef(null);
 
 
-    var sock = new SockJS("http://i7d205.p.ssafy.io:8080/ws-stomp");
-    var ws = Stomp.over(sock);
-    var reconnect = 0;
 
-    const onChangeText = useCallback(text => {
-        setMessage(text.trim());
-      }, []);
+
+    const client = new StompJS.Client({
+        brokerURL: 'ws://i7d205.p.ssafy.io:8080/nawa/websocket',
+        debug: function (str) {
+            console.log(str);
+        },
+        onConnect: () => {
+            //subscribe 나 웹소켓 연결됬을때, 실행할 코드 넣으면 됩니다
+        }
+    });
+    client.activate(); //  연결
+ 
+    //  연결해제
+    // client.deactivate(); 
+
+
 
 
     // methods
@@ -63,32 +73,33 @@ const ChattingScreen = () => {
     function connect() {
         // pub/sub event
         ws.connect({}, function(frame) {
-            ws.subscribe("http://i7d205.p.ssafy.io:8080//sub/chat/room/" + roomId, function(message) {
+            ws.subscribe("/sub/chat/room/" + roomId, function(message) {
                 var recv = JSON.parse(message.body);
                 recvMessage(recv);
             });
-            // ws.send("http://i7d205.p.ssafy.io:8080//pub/chat/message", {}, JSON.stringify({roomId:vm.$data.roomId, userName:'system', chatContent:vm.$data.userName+"님이 입장하셨습니다.", chatDate:new Date()}));
+            ws.send("http://i7d205.p.ssafy.io:8080/pub/chat/message", {}, JSON.stringify({roomId:vm.$data.roomId, userName:'system', chatContent:vm.$data.userName+"님이 입장하셨습니다.", chatDate:new Date()}));
         }, function(error) {
-            if(reconnect++ <= 5) {
-                setTimeout(function() {
-                    console.log("connection reconnect");
-                    sock = new SockJS("http://i7d205.p.ssafy.io:8080/ws-stomp");
-                    ws = Stomp.over(sock);
-                    connect();
-                },10*1000);
-            }
+            console.log(error)
+            // if(reconnect++ <= 5) {
+            //     setTimeout(function() {
+            //         console.log("connection reconnect");
+            //         sock = new SockJS("http://i7d205.p.ssafy.io:8080/ws-stomp");
+            //         ws = Stomp.over(sock);
+            //         connect();
+            //     },10*1000);
+            // }
         });
     }
 
-    useEffect(() => {
-        const func1 = () => {
-            findRoom();
-            findChats();
-            connect();
-        }
-        func1()
-        return 
-    })
+    // useEffect(() => {
+    //     const func1 = () => {
+    //         // findRoom();
+    //         // findChats();
+    //         connect();
+    //     }
+    //     func1()
+    //     return 
+    // })
 
     const Stack = createNativeStackNavigator()
     return (
