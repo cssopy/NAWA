@@ -41,10 +41,12 @@ public class UserService {
     @Transactional
     public ResponseEntity<?> signUp(SignUpReqDto signUpReqDto) {
         if (userRepository.existsById(signUpReqDto.getUserId()) || userRepository.existsByNickname(signUpReqDto.getNickname())) {
+            log.info("이미 존재하는 아이디 또는 닉네임입니다.");
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
         if (userRepository.findByEmailIdAndEmailDomain(signUpReqDto.getEmailId(), signUpReqDto.getEmailDomain()) != null) {
+            log.info("중복된 이메일입니다.");
             return new ResponseEntity<>(false, HttpStatus.CONFLICT);
         }
         Calendar cal = Calendar.getInstance();
@@ -76,6 +78,7 @@ public class UserService {
 //            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
 //        }
 //        smsRepository.delete(msg);
+        log.info("정상 회원가입되었습니다.");
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
@@ -85,9 +88,11 @@ public class UserService {
         Users user = userRepository.findByUserId(userId);
 
         if (user != null) {
+            log.info("이미 존재하는 아이디입니다.");
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
+        log.info("사용 가능한 아이디입니다.");
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
@@ -109,6 +114,7 @@ public class UserService {
                     .build();
             return new ResponseEntity<>(findUserResDto, HttpStatus.OK);
         }
+        log.info("존재하지 않는 유저입니다.");
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
@@ -125,13 +131,16 @@ public class UserService {
             if (!user1.getNumber().equals(updateUserReqDto.getNumber())) {
                 Messages msg = smsRepository.findById(updateUserReqDto.getNumber()).orElseThrow(() -> new RuntimeException("인증되지 않은 휴대폰"));
                 if (!msg.isAuth()) {
+                    log.info("인증되지 않은 번호입니다.");
                     return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
                 }
                 user1.updateNumber(updateUserReqDto.getNumber());
                 smsRepository.delete(msg);
             }
+            log.info("회원 정보가 수정되었습니다.");
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
+        log.info("존재하지 않는 유저입니다.");
         return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
@@ -140,8 +149,10 @@ public class UserService {
         Users user = userRepository.findByUserId(userId);
         if (user != null && user.getUserId().equals(getCurrentUserId())) {
             userRepository.deleteById(userId);
+            log.info("정상 탈퇴되었습니다.");
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
+        log.info("존재하지 않는 유저입니다.");
         return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
@@ -153,6 +164,7 @@ public class UserService {
         if (user != null) {
             return new ResponseEntity<>(user.getUserId(), HttpStatus.OK);
         }
+        log.info("존재하지 않는 유저입니다.");
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 
     }
@@ -176,9 +188,10 @@ public class UserService {
 
             // 메일 전송
             mailService.sendMailWithNewPwd(user.getEmailId() + "@" + user.getEmailDomain(), newPwd);
-
+            log.info("정상적으로 메일이 전송되었습니다.");
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
+        log.info("존재하지 않는 유저입니다.");
         return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
@@ -186,8 +199,10 @@ public class UserService {
     public ResponseEntity<?> availableNickname(String nickname) {
         Users user = userRepository.findByNickname(nickname);
         if (user != null) {
+            log.info("이미 존재하는 닉네임입니다.");
             return new ResponseEntity<>(false, HttpStatus.CONFLICT);
         }
+        log.info("사용 가능한 닉네임입니다.");
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
@@ -195,8 +210,10 @@ public class UserService {
     public ResponseEntity<?> evalUser(EvalUserReqDto evalUserReqDto) {
         Users user = userRepository.findByUserId(evalUserReqDto.getUserId());
         if (user == null) {
+            log.info("존재하지 않는 유저입니다.");
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
         } else if (evalUserReqDto.getUserId().equals(getCurrentUserId())) {
+            log.info("자신을 평가할 수 없습니다.");
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
@@ -209,6 +226,7 @@ public class UserService {
             dp = 0;
         }
         user.updatePoint(dp);
+        log.info("정상적으로 평가되었습니다.");
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 }
