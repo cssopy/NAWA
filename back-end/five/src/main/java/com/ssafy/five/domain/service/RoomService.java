@@ -5,11 +5,13 @@ import com.ssafy.five.domain.entity.Room;
 import com.ssafy.five.domain.repository.RoomRepository;
 import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -28,6 +30,7 @@ public class RoomService {
         if (userId == null || userRepository.findById(userId).isEmpty()) {
             Map<String, Boolean> response = new HashMap<>();
             response.put("result", false);
+            log.info("존재하지 않는 유저입니다.");
             return response;
         } else {
             List<Room> allRooms = roomRepository.findAllByRoomUserId1OrRoomUserId2(userId, userId);
@@ -43,6 +46,7 @@ public class RoomService {
             Map<String, List> allRoom = new HashMap<>();
             allRoom.put("allRooms", allRoomsDto);
             response.put("result", allRoom);
+            log.info("방 찾기 성공하였습니다.");
             return response;
         }
     }
