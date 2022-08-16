@@ -9,6 +9,7 @@ import com.ssafy.five.domain.repository.BlockRepository;
 import com.ssafy.five.domain.repository.MateRepository;
 import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -40,15 +42,20 @@ public class BlockService {
         // 차단은 한 번만 가능합니다!
         if (From == null) {
             response.put("result", 401);
+            log.info("존재하지 않는 유저입니다. (from)");
         } else if (To == null) {
             response.put("result", 400);
+            log.info("존재하지 않는 유저입니다. (to)");
         } else if (blockRepository.findByBlockFromAndBlockTo(From, To).isPresent()) {
             response.put("result", 403);
+            log.info("이미 차단한 상태입니다.");
         } else if (blockReqDto.getBlockTo().equals(blockReqDto.getBlockFrom())) {
             response.put("result", 410);
+            log.info("자신을 차단할 수 없습니다.");
         } else {
             blockRepository.save(blockReqDto.addBlock(From, To));
             response.put("result", 200);
+            log.info("정상 차단되었습니다.");
 
             // 메이트 관계일 경우, 손절까지 도와드립니다.
             mateRepository.findByMateUserId1AndMateUserId2(From, To).ifPresent(mate -> mateService.deleteMate(mate.getMateId(), blockReqDto.getBlockFrom()));
@@ -70,6 +77,7 @@ public class BlockService {
         if (user.isEmpty()) {
             Map<String, Boolean> response = new HashMap<>();
             response.put("result", false);
+            log.info("존재하지 않는 유저입니다.");
             return response;
         } else {
             List<Block> allBlockList = blockRepository.findByBlockFrom(user.get());
@@ -77,6 +85,7 @@ public class BlockService {
             Map<String, List> blockers = new HashMap<>();
             blockers.put("blockers", allBlockList.stream().map(BlockResDto::new).collect(Collectors.toList()));
             response.put("result", blockers);
+            log.info("정상 조회되었습니다.");
             return response;
         }
 
@@ -89,8 +98,10 @@ public class BlockService {
         if (block.isPresent()) {
             blockRepository.delete(block.get());
             response.put("result", true);
+            log.info("차단을 해제하였습니다.");
         } else {
             response.put("result", false);
+            log.info("차단 상태가 아닙니다.");
         }
         return response;
     }

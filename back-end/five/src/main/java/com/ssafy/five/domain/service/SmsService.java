@@ -10,6 +10,7 @@ import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.SmsRepository;
 import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -27,6 +28,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -48,6 +50,7 @@ public class SmsService {
     public SmsResponse sendSms(String recipientPhoneNumber) throws JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
         Users userByNum = userRepository.findByNumber(recipientPhoneNumber);
         if(userByNum!=null){
+            log.info("인증된 전화번호입니다.");
             return null;
         }
         Long time = System.currentTimeMillis();
@@ -83,6 +86,7 @@ public class SmsService {
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         SmsResponse smsResponse = restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/" + this.serviceId + "/messages"), body, SmsResponse.class);
 
+        log.info("인증번호 전송 완료했습니다.");
         return smsResponse;
     }
 
@@ -91,9 +95,11 @@ public class SmsService {
         if(messages != null) {
             if (messages.getReceiver().equals(recipientPhoneNumber) && messages.getContent().equals(certNumber)) {
                 messages.setAuth(true);
+                log.info("인증되었습니다.");
                 return new ResponseEntity<>(true, HttpStatus.OK);
             }
         }
+        log.info("인증에 실패하였습니다.");
         return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
     }
 

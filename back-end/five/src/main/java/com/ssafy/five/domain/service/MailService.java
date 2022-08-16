@@ -1,8 +1,10 @@
 package com.ssafy.five.domain.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.SimpleEmail;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class MailService {
 
@@ -24,7 +26,9 @@ public class MailService {
                     "New Password : " + newPwd);
             try {
                 simpleEmail.send();
+                log.info("이메일로 임시 비밀번호 전송 완료되었습니다.");
             } catch (Exception e) {
+                log.info("이메일 전송에 실패하였습니다.");
                 e.printStackTrace();
             }
         } catch (Exception e) {

@@ -8,6 +8,7 @@ import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.CalenderRepository;
 import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class CalendarService {
         if (user == null) {
             Map<String, Integer> response = new HashMap<>();
             response.put("result", 401);
+            log.info("존재하지 않는 유저입니다.");
             return response;
         } else if (calendar == null) {
             calenderRepository.save(calReqDto.saveTodo(user));
@@ -41,10 +44,12 @@ public class CalendarService {
             Map<String, List> calendars = new HashMap<>();
             calendars.put("calendars", calenderRepository.findByUsers(user).stream().map(CalResDto::new).collect(Collectors.toList()));
             response.put("result", calendars);
+            log.info("todo 등록이 완료되었습니다.");
             return response;
         } else {
             Map<String, Integer> response = new HashMap<>();
             response.put("result", 403);
+            log.info("이미 todo 등록이 되어있습니다.");
             return response;
         }
     }
@@ -54,12 +59,14 @@ public class CalendarService {
         if (user.isEmpty()) {
             Map<String, Boolean> response = new HashMap<>();
             response.put("result", false);
+            log.info("존재하지 않는 유저입니다.");
             return response;
         } else {
             Map<String, Map> response = new HashMap<>();
             Map<String, List> calendars = new HashMap<>();
             calendars.put("calendars", calenderRepository.findByUsers(user.get()).stream().map(CalResDto::new).collect(Collectors.toList()));
             response.put("result", calendars);
+            log.info("todo 조회를 하였습니다.");
             return response;
         }
     }
@@ -71,6 +78,7 @@ public class CalendarService {
         if (user.isEmpty()) {
             Map<String, Integer> response = new HashMap<>();
             response.put("result", 401);
+            log.info("존재하지 않는 유저입니다.");
             return response;
         } else if (calendar != null && calendar.getCalId().equals(calReqDto.getCalId())) {
             calenderRepository.save(calReqDto.updateTodo(user.get()));
@@ -78,10 +86,12 @@ public class CalendarService {
             Map<String, List> calendars = new HashMap<>();
             calendars.put("calendars", calenderRepository.findByUsers(user.get()).stream().map(CalResDto::new).collect(Collectors.toList()));
             response.put("result", calendars);
+            log.info("todo 수정하였습니다.");
             return response;
         } else {
             Map<String, Integer> response = new HashMap<>();
             response.put("result", 403);
+            log.info("이미 todo가 등록되었거나, 본인의 todo가 아닙니다.");
             return response;
         }
     }
@@ -92,6 +102,7 @@ public class CalendarService {
         if (!Todo.isPresent()) {
             Map<String, Boolean> response = new HashMap<>();
             response.put("result", false);
+            log.info("todo를 찾지 못하였습니다.");
             return response;
         } else {
             calenderRepository.delete(Todo.get());
@@ -99,6 +110,7 @@ public class CalendarService {
             Map<String, List> calendars = new HashMap<>();
             calendars.put("calendars", calenderRepository.findByUsers(Todo.get().getUsers()).stream().map(CalResDto::new).collect(Collectors.toList()));
             response.put("result", calendars);
+            log.info("todo 삭제하였습니다.");
             return response;
         }
     }
