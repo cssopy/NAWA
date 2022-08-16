@@ -63,6 +63,10 @@ public class UserTokenService {
     public ResponseEntity<?> logout(String userId){
         // 현재 유저 아이디로 Users 가져오기
         Users user = userRepository.findByUserId(userId);
+        if(user == null){
+            log.info("현재 로그인한 아이디가 아닙니다.");
+            throw new UserNotFoundException();
+        }
         // RefreshTable 가져오기
         // 테이블이 있다면
         if(user.getRefreshToken() != null){
@@ -95,20 +99,6 @@ public class UserTokenService {
         if(!user.getEndDate().before(new Date())){
             log.info("정지된 상태입니다.");
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-        }
-
-        // ref 토큰 유효성 만료시
-        if(!jwtTokenProvider.validateToken(tokenReqDto.getRefreshToken())){
-            log.info("다시 로그인해주세요.");
-            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED); //401 로그인다시
-        }
-
-        // acc 토큰 유효성 만료시
-        if(!jwtTokenProvider.validateToken(accessToken)){
-            TokenResDto tokenResDto = jwtTokenProvider.createToken(user.getUserId(), jwtTokenProvider.getUserRoles(accessToken));
-            user.updateRefreshToken(tokenReqDto.getRefreshToken());
-            log.info("자동 로그인되었습니다.");
-            return new ResponseEntity<>(tokenResDto, HttpStatus.OK);
         }
 
         // acc, ref 토큰 유효할 때
