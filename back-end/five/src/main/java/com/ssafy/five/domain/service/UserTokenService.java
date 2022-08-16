@@ -33,14 +33,17 @@ public class UserTokenService {
     public ResponseEntity<?> login(String userId, String password) throws Exception {
         Users user = userRepository.findByUserId(userId);
         if(user == null){
+            log.info("존재하지 않는 유저입니다.");
             throw new UserNotFoundException();
         }
 
         if(!passwordEncoder.matches(password, user.getPassword())){
+            log.info("비밀번호가 틀렸습니다.");
             return new ResponseEntity<>("비밀번호가 틀렸습니다.", HttpStatus.BAD_REQUEST);
         }
 
         if(!user.getEndDate().before(new Date())){
+            log.info("정지된 사용자입니다.");
             return new ResponseEntity<>("정지된 사용자입니다.", HttpStatus.FORBIDDEN);
         }
 
@@ -51,6 +54,7 @@ public class UserTokenService {
 
         user.updateRefreshToken(tokenResDto.getRefreshToken());
 
+        log.info("정상 로그인되었습니다.");
         // userId, acc, ref 반환
         return new ResponseEntity<>(tokenResDto, HttpStatus.OK);
     }
@@ -63,8 +67,10 @@ public class UserTokenService {
         // 테이블이 있다면
         if(user.getRefreshToken() != null){
             user.setRefreshToken(null);
+            log.info("정상 로그아웃되었습니다.");
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
+        log.info("이미 로그아웃 상태입니다.");
         return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
     }
 
@@ -72,9 +78,11 @@ public class UserTokenService {
     public ResponseEntity<?> validateRefreshToken(TokenReqDto tokenReqDto){
         // 해당 유저의 refreshToken이 아닐경우 , 만료시 걸림
         if(!jwtTokenProvider.getUserId(tokenReqDto.getRefreshToken()).equals(tokenReqDto.getUserId())){
+            log.info("해당 유저의 토큰이 아니거나 만료된 토큰입니다.");
             return new ResponseEntity<>("해당 유저의 토큰이 아닙니다", HttpStatus.BAD_REQUEST);
         }
         String accessToken = jwtTokenProvider.validateRefreshToken(tokenReqDto.getRefreshToken());
+        log.info("access Token 재발급되었습니다.");
         return new ResponseEntity<>(accessToken, HttpStatus.OK);
     }
 
@@ -85,11 +93,13 @@ public class UserTokenService {
 
         Users user = userRepository.findByUserId(tokenReqDto.getUserId());
         if(!user.getEndDate().before(new Date())){
+            log.info("정지된 상태입니다.");
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
         // ref 토큰 유효성 만료시
         if(!jwtTokenProvider.validateToken(tokenReqDto.getRefreshToken())){
+            log.info("다시 로그인해주세요.");
             return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED); //401 로그인다시
         }
 
@@ -97,6 +107,7 @@ public class UserTokenService {
         if(!jwtTokenProvider.validateToken(accessToken)){
             TokenResDto tokenResDto = jwtTokenProvider.createToken(user.getUserId(), jwtTokenProvider.getUserRoles(accessToken));
             user.updateRefreshToken(tokenReqDto.getRefreshToken());
+            log.info("자동 로그인되었습니다.");
             return new ResponseEntity<>(tokenResDto, HttpStatus.OK);
         }
 
