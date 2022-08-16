@@ -40,19 +40,24 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<?> signUp(SignUpReqDto signUpReqDto) {
-        if (userRepository.existsById(signUpReqDto.getUserId()) || userRepository.existsByNickname(signUpReqDto.getNickname())) {
-            log.info("이미 존재하는 아이디 또는 닉네임입니다.");
+        if (userRepository.existsById(signUpReqDto.getUserId())) {
+            log.info("이미 존재하는 아이디입니다.");
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+
+        if(userRepository.existsByNickname(signUpReqDto.getNickname())){
+            log.info("이미 존재하는 닉네임입니다.");
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
         if (userRepository.findByEmailIdAndEmailDomain(signUpReqDto.getEmailId(), signUpReqDto.getEmailDomain()) != null) {
             log.info("중복된 이메일입니다.");
-            return new ResponseEntity<>(false, HttpStatus.CONFLICT);
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
         if (userRepository.findByNumber(signUpReqDto.getNumber()) != null){
             log.info("중복된 전화번호입니다.");
-            return new ResponseEntity<>(false, HttpStatus.CONFLICT);
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
         Calendar cal = Calendar.getInstance();
@@ -210,7 +215,7 @@ public class UserService {
         Users user = userRepository.findByNickname(nickname);
         if (user != null) {
             log.info("이미 존재하는 닉네임입니다.");
-            return new ResponseEntity<>(false, HttpStatus.CONFLICT);
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
         log.info("사용 가능한 닉네임입니다.");
         return new ResponseEntity<>(true, HttpStatus.OK);

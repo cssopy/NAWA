@@ -28,15 +28,15 @@ public class ReportService {
 
     @Transactional
     public Map<String, Integer> reported(ReportReqDto reportReqDto) {
-        Users user = userRepository.findById(reportReqDto.getReportTo()).get();
-        Optional<Users> me = userRepository.findById(reportReqDto.getReportFrom());
+        Users user = userRepository.findByUserId(reportReqDto.getReportTo());
+        Users me = userRepository.findByUserId(reportReqDto.getReportFrom());
 
         Map<String, Integer> response = new HashMap<>();
 
-        if (user.equals(null)) {
+        if (user == null) {
             response.put("result", 400);
             log.info("존재하지 않는 유저입니다. (to)");
-        } else if (me.isEmpty()) {
+        } else if (me == null) {
             response.put("result", 401);
             log.info("존재하지 않는 유저입니다. (from)");
         } else if (reportReqDto.getReportTo().equals(reportReqDto.getReportFrom())) {
