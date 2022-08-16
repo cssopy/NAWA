@@ -74,10 +74,11 @@ public class FileService {
                     log.info("로컬에 파일을 저장하였습니다.");
 
                     // UUID+파일원본이름을 가진 새로운 파일 객체를 생성하여 로컬에 저장
+                    File newFile = null;
                     if (fileDto.getFileType().equals(FileType.VIDEO)) {
-                        File newFile = new File(uploadpath, fileDto.getFileName() + ".mp4");
+                        newFile = new File(uploadpath, fileDto.getFileName() + ".mp4");
                     } else {
-                        File newFile = new File(uploadpath, fileDto.getFileName());
+                        newFile = new File(uploadpath, fileDto.getFileName());
                     }
                     try {
                         file.transferTo(newFile);
