@@ -80,9 +80,9 @@ public class UserTokenService {
 
     @Transactional
     public ResponseEntity<?> validateRefreshToken(TokenReqDto tokenReqDto){
-        // 해당 유저의 refreshToken이 아닐경우 , 만료시 걸림
+        // 해당 유저의 refreshToken이 아닐경우 , 만료시 getUserId에서 걸림
         if(!jwtTokenProvider.getUserId(tokenReqDto.getRefreshToken()).equals(tokenReqDto.getUserId())){
-            log.info("해당 유저의 토큰이 아니거나 만료된 토큰입니다.");
+            log.info("해당 유저의 토큰이 아닙니다.");
             return new ResponseEntity<>("해당 유저의 토큰이 아닙니다", HttpStatus.BAD_REQUEST);
         }
         String accessToken = jwtTokenProvider.validateRefreshToken(tokenReqDto.getRefreshToken());
