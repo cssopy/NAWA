@@ -8,6 +8,7 @@ public class LocListResDto {
     private String userId;
     private Long locId;
     private String locAddress;
+    private String locName;
     private double locLat;
     private double locLng;
 
@@ -15,6 +16,7 @@ public class LocListResDto {
         this.locId = locationListEntity.getLocId();
         this.userId = locationListEntity.getUser().getUserId();
         this.locAddress = locationListEntity.getLocAddress();
+        this.locName = locationListEntity.getLocName();
         this.locLat = locationListEntity.getLocLat();
         this.locLng = locationListEntity.getLocLng();
     }
