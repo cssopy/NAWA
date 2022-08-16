@@ -49,6 +49,12 @@ public class UserService {
             log.info("중복된 이메일입니다.");
             return new ResponseEntity<>(false, HttpStatus.CONFLICT);
         }
+
+        if (userRepository.findByNumber(signUpReqDto.getNumber()) != null){
+            log.info("중복된 전화번호입니다.");
+            return new ResponseEntity<>(false, HttpStatus.CONFLICT);
+        }
+
         Calendar cal = Calendar.getInstance();
         cal.set(2022, 0, 1);
 
@@ -147,13 +153,17 @@ public class UserService {
     @Transactional
     public ResponseEntity<?> deleteUser(String userId) {
         Users user = userRepository.findByUserId(userId);
-        if (user != null && user.getUserId().equals(getCurrentUserId())) {
-            userRepository.deleteById(userId);
-            log.info("정상 탈퇴되었습니다.");
-            return new ResponseEntity<>(true, HttpStatus.OK);
+        if(user == null){
+            log.info("존재하지 않는 유저입니다.");
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
         }
-        log.info("존재하지 않는 유저입니다.");
-        return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        if(!user.getUserId().equals(getCurrentUserId())){
+            log.info("다른 유저를 탈퇴시킬 수 없습니다.");
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+        userRepository.deleteById(userId);
+        log.info("정상 탈퇴되었습니다.");
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @Transactional
