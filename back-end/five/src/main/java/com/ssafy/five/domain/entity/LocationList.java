@@ -29,6 +29,8 @@ public class LocationList {
     @NotNull
     private Users user;
 
+    @Column(name = "locName", nullable = false, columnDefinition = "varchar(255)")
+    private String locName;
     @Column(name = "locAddres", nullable = false, columnDefinition = "varchar(255)")
     private String locAddress;
 
