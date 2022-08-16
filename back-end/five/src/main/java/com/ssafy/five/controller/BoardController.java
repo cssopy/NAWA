@@ -177,4 +177,10 @@ public class BoardController {
         return new ResponseEntity<>(boards, HttpStatus.valueOf(200));
     }
 
+    @Operation(summary = "게시글 수 반환", description = "게시글 수 반환")
+    @GetMapping("/count")
+    public ResponseEntity<?> countAll() {
+        return new ResponseEntity<>(boardService.countAll(), HttpStatus.valueOf(200));
+    }
+
 }

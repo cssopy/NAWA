@@ -312,4 +312,8 @@ public class BoardService {
             return 1;
         }
     }
+
+    public Long countAll() {
+        return boardRepository.count();
+    }
 }
