@@ -50,7 +50,7 @@ public class SmsService {
     public SmsResponse sendSms(String recipientPhoneNumber) throws JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
         Users userByNum = userRepository.findByNumber(recipientPhoneNumber);
         if(userByNum!=null){
-            log.info("인증된 전화번호입니다.");
+            log.info("사용중인 전화번호입니다.");
             return null;
         }
         Long time = System.currentTimeMillis();
