@@ -10,6 +10,7 @@ import com.ssafy.five.domain.repository.BoardRepository;
 import com.ssafy.five.domain.repository.FileRepository;
 import com.ssafy.five.exception.BoardNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileService {
@@ -35,6 +37,7 @@ public class FileService {
     public void saveFiles(Long boardId, MultipartFile[] uploadfile) throws Exception {
         Board boardEntity = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException());
         if (boardEntity == null) {
+            log.info("존재하지 않는 게시글입니다.");
             throw new Exception("해당하는 게시물 없음");
         }
 
@@ -68,15 +71,18 @@ public class FileService {
                         fileDto.setFileType(FileType.GENERAL);
                     }
                     list.add(fileDto);
+                    log.info("로컬에 파일을 저장하였습니다.");
 
                     // UUID+파일원본이름을 가진 새로운 파일 객체를 생성하여 로컬에 저장
                     File newFile = new File(uploadpath, fileDto.getFileName());
                     try {
                         file.transferTo(newFile);
                     } catch (IOException e) {
+                        log.info("로컬에 파일 저장 실패하였습니다.");
                         throw new Exception("파일 로컬 저장 실패");
                     }
                 } else {
+                    log.info("빈 파일을 저장할 수 없습니다.");
                     throw new Exception("빈 파일을 저장할 수 없음");
                 }
             }
@@ -102,8 +108,10 @@ public class FileService {
 
             // 파일 DB에 저장 실패하면
             if (fileEntity == null) {
+                log.info("파일정보 DB에 저장 실패하였습니다.");
                 throw new Exception("파일정보 DB 저장 실패");
             }
+            log.info("파일정보 DB에 저장하였습니다.");
         }
 
         // 게시글 타입 수정
@@ -146,8 +154,10 @@ public class FileService {
         }
         // board 엔티티 저장에 실패하면
         if (boardEntity == null) {
+            log.info("게시글 DB에 저장 실패하였습니다.");
             throw new Exception("게시글 DB 저장 실패");
         }
+        log.info("게시글 DB에 저장하였습니다.");
     }
 
     public List<FileResDto> getFilesByBoardId(Long boardId) {
@@ -161,7 +171,7 @@ public class FileService {
         for (Files file : files) {
             fileResDtos.add(new FileResDto(file));
         }
-
+        log.info("파일 리스트를 반환합니다.");
         return fileResDtos;
     }
 }

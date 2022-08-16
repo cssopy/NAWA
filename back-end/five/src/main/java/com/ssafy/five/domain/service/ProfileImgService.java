@@ -4,6 +4,7 @@ import com.ssafy.five.domain.entity.ProfileImg;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProfileImgService {
@@ -23,6 +25,7 @@ public class ProfileImgService {
 
     public ProfileImg findByUserId(String userId) {
         Users users = userRepository.findByUserId(userId);
+        log.info("유저 프로필 이미지 조회하였습니다.");
         return users.getProfileImg();
     }
 
@@ -36,6 +39,7 @@ public class ProfileImgService {
             File oldFile = new File(bpath + "/PROFILE", users.getProfileImg().getFileName());
             if (oldFile.exists() && !oldFile.getName().equals("defaultProfileImg.png")) {
                 if (!oldFile.delete()) {
+                    log.info("프로필 이미지 삭제 실패하였습니다.");
                     throw new Exception("이전 파일 삭제 실패");
                 }
             }
@@ -49,6 +53,7 @@ public class ProfileImgService {
                     .fileName(newFileName)
                     .build());
             userRepository.save(users);
+            log.info("새 프로필 이미지 저장하였습니다.");
         }
     }
 }
