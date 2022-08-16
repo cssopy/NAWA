@@ -12,6 +12,7 @@ import com.ssafy.five.domain.repository.BlockRepository;
 import com.ssafy.five.domain.repository.MateRepository;
 import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -44,9 +46,11 @@ public class AddMateService {
 
         if (user1 == null) {
             // 내 아이디가 잘못된 경우
+            log.info("존재하지 않는 아이디입니다 (from)");
             response = 401;
         } else if (user2 == null) {
             // 상대방이 존재하지 않는 경우
+            log.info("존재하지 않는 아이디입니다 (to)");
             response = 400;
         } else {
 
@@ -69,21 +73,27 @@ public class AddMateService {
 
             if (isBlocked.isPresent()) {
                 // 차단 당한 경우
+                log.info("해당 유저에게 차단 당한 상태입니다");
                 response = 402;
             } else if (isBlock.isPresent()) {
                 // 차단한 경우
+                log.info("해당 유저를 차단한 상태입니다.");
                 response = 403;
             } else if (isMated1.isPresent() || isMated2.isPresent()) {
                 // 이미 친구인 경우
+                log.info("이미 등록되어 있습니다.");
                 response = 406;
             } else if (isAdd.isPresent()) {
                 // 이미 친구 신청을 한 경우
+                log.info("이미 친구 요청을 보낸 상태입니다.");
                 response = 407;
             } else if (isAdded.isPresent()) {
                 // 이미 친구 신청이 와있는 경우
+                log.info("이미 친구 요청을 받은 상태입니다.");
                 response = 409;
             } else if (addMateReqDto.getAddMateFrom().equals(addMateReqDto.getAddMateTo())) {
                 // 나 자신에 대한 친구 요청인 경우
+                log.info("자신에게 친구 요청을 보낼 수 없습니다.");
                 response = 410;
             } else {
                 Map<String, Map> data = new HashMap<>();
@@ -93,6 +103,7 @@ public class AddMateService {
                 message.put("addMateId", addMateRepository.save(addMateReqDto.addMate(user1, user2)).getAddMateId().toString());
                 data.put("data", message);
                 messaging.convertAndSend("/sub/chat/user/" + user2.getUserId(), data);
+                log.info("정상 처리되었습니다.");
             }
         }
 
@@ -105,6 +116,7 @@ public class AddMateService {
         if (user.equals(null)) {
             Map<String, Boolean> response = new HashMap<>();
             response.put("result", false);
+            log.info("존재하지 않는 유저입니다.");
             return response;
         } else {
             List<AddMate> addMateList = addMateRepository.findAllByAddMateTo(user);
@@ -112,6 +124,7 @@ public class AddMateService {
             Map<String, List> addMates = new HashMap<>();
             addMates.put("allMateRequest", addMateList.stream().map(AddMateResDto::new).collect(Collectors.toList()));
             response.put("result", addMates);
+            log.info("정상적으로 조회되었습니다.");
             return response;
         }
     }
@@ -123,6 +136,7 @@ public class AddMateService {
 
         if (addMate.isEmpty()) {
             // addmate 기록이 없는 경우
+            log.info("요청이 없습니다.");
             response = 401;
         } else {
             Users user1 = addMate.get().getAddMateFrom();
@@ -141,16 +155,20 @@ public class AddMateService {
 
             if (isMated1.isPresent() || isMated2.isPresent()) {
                 // 이미 친구인 경우
+                log.info("이미 친구입니다.");
                 response = 406;
             } else if (isBlocked.isPresent()) {
                 // 차단당한 경우
+                log.info("해당 유저에게 차단 당한 상태입니다.");
                 response = 402;
             } else if (isBlock.isPresent()) {
                 // 차단한 경우
+                log.info("해당 유저를 차단한 상태입니다.");
                 response = 403;
             } else {
                 mateRepository.save(Mate.builder().mateUserId1(user1).mateUserId2(user2).build());
                 roomService.createRoom(user1.getUserId(), user2.getUserId());
+                log.info("정상 처리되었습니다.");
             }
             addMateRepository.delete(addMate.get());
         }
@@ -164,8 +182,10 @@ public class AddMateService {
         int response = 200;
 
         if (addMate.isPresent()) {
+            log.info("친구를 거절하였습니다.");
             addMateRepository.delete(addMate.get());
         } else {
+            log.info("친구가 아닙니다.");
             response = 409;
         }
         return response;

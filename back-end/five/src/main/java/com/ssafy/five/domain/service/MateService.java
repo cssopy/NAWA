@@ -7,11 +7,13 @@ import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.MateRepository;
 import com.ssafy.five.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -38,10 +40,12 @@ public class MateService {
             }
             allMates.put("mateList", mates);
             response.put("result", allMates);
+            log.info("전체 친구를 조회하였습니다.");
             return response;
         } else {
             Map<String, Boolean> response = new HashMap<>();
             response.put("result", false);
+            log.info("존재하지 않는 유저입니다.");
             return response;
         }
     }
@@ -57,8 +61,10 @@ public class MateService {
                 roomService.deleteRoom(mate.get().getMateUserId2().getUserId(), mate.get().getMateUserId1().getUserId());
             }
             mateRepository.delete(mate.get());
+            log.info("친구 삭제하였습니다.");
             return true;
         } else {
+            log.info("존재하지 않는 유저입니다.");
             return false;
         }
     }
