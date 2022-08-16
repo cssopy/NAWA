@@ -32,10 +32,10 @@ public class MateService {
             Map<String, List> allMates = new HashMap<>();
             List<MateResDto> mates = new ArrayList<>();
             for (Mate mate : allMate) {
-                if (mate.getMateUserId1().equals(userId)) {
+                if (mate.getMateUserId1().getUserId().equals(userId)) {
                     mates.add(new MateResDto(mate.getMateId(), userRepository.findByUserId(mate.getMateUserId2().getUserId())));
                 } else {
-                    mates.add(new MateResDto(mate.getMateId(), userRepository.findByUserId(userId)));
+                    mates.add(new MateResDto(mate.getMateId(), userRepository.findByUserId(mate.getMateUserId1().getUserId())));
                 }
             }
             allMates.put("mateList", mates);
