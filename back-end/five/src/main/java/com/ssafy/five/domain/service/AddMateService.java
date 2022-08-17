@@ -89,20 +89,23 @@ public class AddMateService {
                 response = 407;
             } else if (isAdded.isPresent()) {
                 // 이미 친구 신청이 와있는 경우
+                addMateRepository.delete(isAdded.get());
+                mateRepository.save(Mate.builder().mateUserId1(user1).mateUserId2(user2).build());
                 log.info("이미 친구 요청을 받은 상태입니다.");
-                response = 409;
+                response = 201;
             } else if (addMateReqDto.getAddMateFrom().equals(addMateReqDto.getAddMateTo())) {
                 // 나 자신에 대한 친구 요청인 경우
                 log.info("자신에게 친구 요청을 보낼 수 없습니다.");
                 response = 410;
             } else {
-                Map<String, Map> data = new HashMap<>();
-                Map<String, String> message = new HashMap<>();
-                message.put("chatUserId", "mateRequest");
-                message.put("detail", user1.getNickname() +  "님으로 부터 메이트 신청이 들어왔습니다.");
-                message.put("addMateId", addMateRepository.save(addMateReqDto.addMate(user1, user2)).getAddMateId().toString());
-                data.put("data", message);
-                messaging.convertAndSend("/sub/chat/user/" + user2.getUserId(), data);
+//                Map<String, Map> data = new HashMap<>();
+//                Map<String, String> message = new HashMap<>();
+//                message.put("chatUserId", "mateRequest");
+//                message.put("detail", user1.getNickname() +  "님으로 부터 메이트 신청이 들어왔습니다.");
+//                message.put("addMateId", addMateRepository.save(addMateReqDto.addMate(user1, user2)).getAddMateId().toString());
+//                data.put("data", message);
+//                messaging.convertAndSend("/sub/chat/user/" + user2.getUserId(), data);
+                addMateRepository.save(addMateReqDto.addMate(user1, user2))
                 log.info("정상 처리되었습니다.");
             }
         }
