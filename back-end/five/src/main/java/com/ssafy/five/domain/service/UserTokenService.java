@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,7 @@ public class UserTokenService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public ResponseEntity<?> login(String userId, String password) throws Exception {
+    public ResponseEntity<?> login(String userId, String password) {
         Users user = userRepository.findByUserId(userId);
         if(user == null){
             log.info("존재하지 않는 유저입니다.");
