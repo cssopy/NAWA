@@ -78,7 +78,7 @@ public class AddMateService {
             } else if (isBlock.isPresent()) {
                 // 차단한 경우
                 log.info("해당 유저를 차단한 상태입니다.");
-                response = 403;
+                response = 404;
             } else if (isMated1.isPresent() || isMated2.isPresent()) {
                 // 이미 친구인 경우
                 log.info("이미 등록되어 있습니다.");
@@ -167,7 +167,7 @@ public class AddMateService {
             } else if (isBlock.isPresent()) {
                 // 차단한 경우
                 log.info("해당 유저를 차단한 상태입니다.");
-                response = 403;
+                response = 404;
             } else {
                 mateRepository.save(Mate.builder().mateUserId1(user1).mateUserId2(user2).build());
                 roomService.createRoom(user1.getUserId(), user2.getUserId());

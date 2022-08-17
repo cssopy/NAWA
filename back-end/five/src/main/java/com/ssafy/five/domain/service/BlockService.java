@@ -47,7 +47,7 @@ public class BlockService {
             response.put("result", 400);
             log.info("존재하지 않는 유저입니다. (to)");
         } else if (blockRepository.findByBlockFromAndBlockTo(From, To).isPresent()) {
-            response.put("result", 403);
+            response.put("result", 404);
             log.info("이미 차단한 상태입니다.");
         } else if (blockReqDto.getBlockTo().equals(blockReqDto.getBlockFrom())) {
             response.put("result", 410);

@@ -119,7 +119,7 @@ public class UserController {
     @Operation(summary = "닉네임 중복 확인", description = "닉네임 중복 확인")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "(OK) 닉네임 사용 가능"),
-            @ApiResponse(responseCode = "404", description = "(BAD_REQUEST) 이미 존재하는 닉네임"),
+            @ApiResponse(responseCode = "400", description = "(BAD_REQUEST) 이미 존재하는 닉네임"),
     })
     @GetMapping("/nickname/{nickname}")
     public ResponseEntity<?> availableNickname(@PathVariable String nickname) {
