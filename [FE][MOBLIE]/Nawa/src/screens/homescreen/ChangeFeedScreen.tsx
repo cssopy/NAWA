@@ -1,67 +1,97 @@
-import React, { useState } from "react";
-import { ScrollView, Dimensions, StyleSheet, Alert, Platform, View, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ScrollView, Dimensions, StyleSheet, Alert, Platform, View, Image, Text, TouchableWithoutFeedback, Touchable } from "react-native";
 
 import { Form, FormItem } from 'react-native-form-component';
 import { Button, ScreenHeight } from "@rneui/base";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import { launchImageLibrary } from "react-native-image-picker";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
-import EncryptedStorage from 'react-native-encrypted-storage';
-import {useAppDispatch} from '../../store';
 import userSlice from "../../slices/user";
 import { useIsFocused } from "@react-navigation/native";
+import Video from "react-native-video";
 
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 
-function NewFeedScreen({ navigation, route }) {
-  console.log(route)
-
-  const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
-  const [flag, setFlag] = useState<boolean>(false)
-  // const [profileImage, setProfileImage]: any = useState({});
-
-  const [file, setFile] = useState({
-    name: '',
-    type: '',
-    uri: '',
-    width: 0,
-    height: 0,
-  })
-
+function ChangeFeedScreen({ navigation, route }) {
+  // console.log(route)
+  const boardId = route.params
   const whoamI = useSelector((state : RootState) => state.user.userId)
   const myId = useSelector((state: RootState) => state.user.accessToken)
   const url = 'http://i7d205.p.ssafy.io/api/board/'
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-  const openStorage = () => {
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>('');
+  const [newFiles, setNewFiles] = useState<object[]>([])
+  const [files, setFiles] = useState<object[]>([])
+  const [boardDate, setBoardDate] = useState<Date>(new Date);
+  const [boardHit, setBoardHit] = useState<number>(0)
+  const [boardLikes, setBoardLikes] = useState<number>(0)
+  const [boardType, setBoardType] = useState<string>('')
+  const [boardUpdate, setBoardUpdate] = useState<Date>(new Date)
+  let delFiles: number[] = []
+  let update: object[] = []
 
-    launchImageLibrary(
+  useEffect(() => {
+    axios.get(
+      `${url}${boardId}`,
+      { headers: { Authorization : `Bearer ${myId}` }}
+    ).then (res => {
+      console.log('피드 수정 불러오기 성공', res.data)
+      const data = res.data;
+      setTitle(data.boardTitle);
+      setContent(data.boardContent);
+      setFiles(data.files);
+      setBoardDate(data.boardDate);
+      setBoardHit(data.boardHit);
+      setBoardLikes(data.boardLikes);
+      setBoardType(data.boardType);
+      setBoardUpdate(data.boardUpdate);
+    }).catch (err => 
+      console.log('피드 수정 init에서 문제 발생', err)
+    )
+  }, [])
+
+  const changestatus = (id:number) => {
+    const index = delFiles.indexOf(id)
+    if (index > -1) {
+      delFiles.splice(index, 1)
+    } else {
+      delFiles.push(id)
+    }
+    console.log(delFiles)
+  }
+
+  const openStorage = async () => {
+
+    await launchImageLibrary(
       {
-        mediaType: 'photo',
+        mediaType: 'mixed',
         selectionLimit: 0,
       },
       (res) => {
       if(res.didCancel) {
         console.log('User Cancelled image picker')
-        setFlag(false)
       } else if(res.errorCode) {
         console.log(res.errorMessage)
-        setFlag(false)
       } else if(res.assets) {
-        const media = res.assets[0]
-        console.log(media)
-        setFile({
-          name: media.fileName as string,
-          type: media.type as string,
-          uri: Platform.OS === 'android' ? media.uri as string : media.uri?.replace('file://', '') as string,
-          width: media.width as number,
-          height: media.height as number,
-        });
-        setFlag(true)
+        const medias = res.assets
+        // console.log(medias)
+        medias.forEach(media => {
+          const once = {
+            name: media.fileName as string,
+            type: media.type as string,
+            uri: Platform.OS === 'android' ? media.uri as string : media.uri?.replace('file://', '') as string,
+            width: media.width as number,
+            height: media.height as number,
+          }
+          update.push(once)
+        })
+        setNewFiles(update)
+        console.log('저장소에서 가져옴', newFiles)
       }
     })
   }
@@ -74,14 +104,26 @@ function NewFeedScreen({ navigation, route }) {
       return Alert.alert('알림', '글을 입력해주세요')
     }
 
-    let inputs = {
-      "boardTitle": title,
-      "boardContent": content,
-      "userId": whoamI,
-    };
-    const json = JSON.stringify(inputs);
+    let changefiles = files.filter(file => !(file.fileName in delFiles))
+    console.log('살아남은 파일', changefiles)
 
-    await axios.post(
+    let inputs = {
+      "boardTitle": title, //
+      "boardContent": content, //
+      "userId": whoamI, //
+      "boardDate": boardDate,
+      "boardHit": boardHit,
+      "boardId": boardId,
+      "boardLikes": boardLikes,
+      "boardType": boardType,
+      "boardUpdate": boardUpdate,
+      "files": changefiles,
+    };
+    console.log(inputs)
+    const json = JSON.stringify(inputs);
+    console.log(json)
+
+    await axios.put(
       url,
       json,
       {
@@ -91,17 +133,19 @@ function NewFeedScreen({ navigation, route }) {
         }
       }
     ).then(res => {
-      console.log('보냈다 200번인가?', flag, file)
-      if (file.name) {
+      console.log('보냈다 200번인가?', newFiles)
+      if (newFiles.length > 0) {
         console.log('보낸다 미디어')
         const formData = new FormData()
-        formData.append('uploadfile', file)
+        newFiles.forEach(f => {
+          formData.append('uploadfile', f)
+        })
         axios.post(
           url + `files/${res.data}`,
           formData,
           {
             headers : {
-              'Content-Type': 'multipart/form-data; boundary=someArbitraryUniqueString',
+              'Content-Type': 'multipart/form-data',
               'Authorization' : `Bearer ${myId}`
             }
           }
@@ -111,53 +155,96 @@ function NewFeedScreen({ navigation, route }) {
     })
     .catch(err => console.log('일단 보낸거 같긴한데', err))
 
-
-    // // 프로필 이미지 전송 => 성공
-    // const formData2 = new FormData()
-
-    // console.log(profileImage)
-    // formData2.append('profileImg', profileImage)
-    // console.log(formData2)
-
-    // axios.put(
-    //   'http://i7d205.p.ssafy.io:8080/user/profile-img/ssafy',
-    //   formData,
-    //   {
-    //     headers : {
-    //       'Content-Type': 'multipart/form-data',
-    //       'Authorization' : `Bearer ${myId}`
-    //     }
-    //   }
-    // ).then(res => console.log('보냈다 200번인가?', res.data))
-    // .catch(err => console.log('?', err))
-    // 여기까지
-
-    setFlag(false)
-    console.log(flag)
-    navigation.navigate('Main')
+    navigation.goBack()
   }
 
   return (
     <ScrollView
       style={styles.safe}
     >
-      { flag &&
-        <View
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            marginBottom: SCREEN_HEIGHT * 0.01,
-          }}
-        >
-          <Image
-            source={{uri : file.uri}}
-            style={{
-              width: file.width * 0.2,
-              height: file.height * 0.2,
-            }}
-          />
-        </View>
-      }
+      <View
+        style={{
+          alignItems: 'center',
+          marginBottom: SCREEN_HEIGHT * 0.01,
+        }}
+      >
+        { files.map(file => {
+          if ( file.fileType === 'IMAGE') {
+            return (
+              <TouchableWithoutFeedback
+                key={ file.fileId }
+                style={ styles.media }
+                onPress={() => {
+                  changestatus(file.fileId)
+                  // console.log(file.fileId)
+                } }
+              >
+                {/* <Text>{ `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }</Text> */}
+                <Image
+                  source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
+                  resizeMode="cover"
+                  style={{
+                    height: SCREEN_WIDTH * 0.8,
+                    width: SCREEN_WIDTH * 0.8,
+                  }}
+                />
+              </TouchableWithoutFeedback>
+            )
+          } else {
+            return(
+              <TouchableWithoutFeedback
+                key={ file.fileId }
+                style={ styles.media }
+                onPress={() => {
+                  changestatus(file.fileId)
+                }}
+              ><Video
+                  source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
+                  style={{
+                    height: SCREEN_WIDTH * 0.8,
+                    width: SCREEN_WIDTH * 0.8,
+                  }}
+              /></TouchableWithoutFeedback>
+              )
+          }
+        })}
+        { newFiles.length > 0 && 
+          newFiles.map(file => {
+            if ( file.type === 'image/jpeg') {
+              return (
+                <View
+                  key={ file.fileName }
+                  style={ styles.media }
+                >
+                  <Image
+                  source={{ uri: file.uri}}
+                  resizeMode="cover"
+                  style={{
+                    width: file.width,
+                    height: file.height,
+                    maxHeight: SCREEN_WIDTH * 0.8,
+                    maxWidth: SCREEN_WIDTH * 0.8,
+                  }}
+                />
+                </View>
+              )
+            } else {
+              return(
+                <View
+                  key={ file.fileId }
+                  style={ styles.media }
+                ><Video
+                    source={{ uri: file.uri }}
+                    style={{
+                      height: SCREEN_WIDTH * 0.8,
+                      width: SCREEN_WIDTH * 0.8,
+                    }}
+                /></View>
+                )
+            }
+          })
+        }
+      </View>
       <View
         style={{
           flexDirection: "row",
@@ -165,18 +252,6 @@ function NewFeedScreen({ navigation, route }) {
           marginBottom: SCREEN_HEIGHT * 0.05
         }}
       >
-      
-      {/* <Button
-        title="사진"
-        onPressIn={openCamera}
-        containerStyle={styles.button}
-      />
-
-      <Button
-        title="동영상"
-        onPressIn ={openVideo}
-        containerStyle={styles.button}
-      /> */}
 
       <Button
         title="갤러리"
@@ -215,6 +290,9 @@ const styles = StyleSheet.create({
   },
   button: {
     width: SCREEN_WIDTH * 0.2,
+  },
+  media: {
+    marginBottom: SCREEN_HEIGHT * 0.005,
   }
 });
-export default NewFeedScreen
+export default ChangeFeedScreen

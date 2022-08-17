@@ -1,23 +1,31 @@
-import React, { useRef, useEffect, useState } from "react";
-import { FAB } from "@rneui/base";
-
-import MainNavbar from "./MainNavbar";
-import { Animated, Dimensions, StyleSheet, Text, TouchableWithoutFeedback, View, Image } from "react-native";
-import { useIsFocused } from '@react-navigation/native'
+import React, { useRef, useEffect, useState, useCallback } from "react";
+import { Animated, Dimensions, StyleSheet, Text, TouchableWithoutFeedback, View, Image, Button, ActivityIndicator, RefreshControl, Alert } from "react-native";
 
 import axios from 'axios';
+import { FAB } from "@rneui/base";
+import MainNavbar from "./MainNavbar";
+import { useIsFocused, useFocusEffect } from '@react-navigation/native'
+import EncryptedStorage from 'react-native-encrypted-storage';
 
+import Video from "react-native-video";
+import userSlice from "../../slices/user";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
 import UserIcon from "../../components/userIcon";
-import Video from "react-native-video";
+import { useAppDispatch } from "../../store";
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
 
 function Feeds ({ navigation }) {
 
-  const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-  const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
-
-  const [feeds, setFeeds] = useState([]);
+  const [feeds, setFeeds] = useState<object[]>([]);
+  const [page, setPage] = useState<number>(0);
+  // const [totalFeeds, setTotalFeeds] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [noMoreFeed, setNoMoreFeed] = useState<boolean>(false);
+  const [ticTok, setTicTok] = useState<boolean>(false);
+  const [refreshing, setReFreshing] = useState<boolean>(false);
 
   const isFocused = useIsFocused()
   
@@ -31,20 +39,71 @@ function Feeds ({ navigation }) {
     outputRange: [0, -HEADER_HEIGHT],
   });
 
-  useEffect(() => {
+  const getfeeds = () => {
+    const sendUrl = `${url}board/mainFeed/NEW/${page}`
+    setLoading(true)
     axios.get(
-      url + 'board/',
+      sendUrl,
       { headers: { Authorization : `Bearer ${myId}` }}
-    ).then (res => {
-      setFeeds(res.data)
-      // console.log('call all data', res.data)
-    }).catch (err => {
-      console.log('bad', err)
-    })
-  },[])
-  
-  const MainFeed = () => {
+    ).then(res => {
+      setFeeds([...feeds, ...res.data])
+      setPage(page + res.data.length)
+    }).catch(err => Alert.alert('알림', `오류 발생 ${err}`))
+    setLoading(false)
+  }
     
+  useEffect(() => {
+    // console.log('access token', myId)
+    // const sendUrl = `${url}board/`
+
+    // 현재 피드의 총 갯수 확인
+    // axios.get(
+    //   'http://i7d205.p.ssafy.io/api/board/count',
+    //   { headers: { Authorization : `Bearer ${myId}` }}
+    // ).then(res=> setTotalFeeds(res.data))
+
+    // refresh 해제
+    setReFreshing(false)
+
+    // 초기 10개의 피드 호출
+    getfeeds();
+
+  },[isFocused, ticTok])
+  
+  const checkfeed = async () => {
+    if (!loading) {
+      if (page >= 10 && !noMoreFeed) {
+        getfeeds();
+      }
+    }
+  }
+
+  const refresh = () => {
+    setReFreshing(true)
+    console.log('refresh')
+    setPage(0)
+    getfeeds()
+  }
+
+  const dispatch = useAppDispatch();
+  const logOutHAzaJaHuckAAAAAAAAAA = async () => {
+    dispatch(
+      userSlice.actions.setUser({ // redux state는 값이 변하면, useselector로 참조하고 있는 모든 컴포넌트가 다시 렌더링.
+        userId : '',
+        accessToken : '',
+        nickname : ''
+      }),
+    );
+  
+    EncryptedStorage.removeItem('userId')
+    EncryptedStorage.removeItem('accessToken')
+    EncryptedStorage.removeItem('refreshToken')
+  }
+
+
+  const MainFeed = () => {
+    let fileUrl:string;
+    let fileType:string;
 
     const onPressListHandler = (data: object) => {
       navigation.navigate('Main', {screen: 'FeedDetail', params: data})
@@ -53,20 +112,14 @@ function Feeds ({ navigation }) {
     const onefeed = ({item}) => one(item)
 
     const one = (item: object) => {
-      const datas = item?.files
-      let image: (string)[] = []
-      let imageType: (string)[] = []
-      datas.map(data => {
-          if (data.fileType === 'IMAGE' || data.fileType === 'VIDEO') {
-          // if (data.fileType === 'IMAGE') {
-          // console.log('check data', data.fileType, data.fileName)
-          const fileUrl: string = url + 'file/' + `${data.fileType}/` + `${data.fileName}`
-          const fileType: string = data.fileType
-          image.push(fileUrl)
-          imageType.push(fileType)
-          // console.log('change', fileUrl, fileType)
-        }
-      })
+      // console.log(item, item.files?.length)
+      if ( item.files.length > 0 ) {
+        const data = item.files[0]
+        // console.log(data.fileType, data.fileName)
+        fileUrl = `${url}file/${(data.fileType === 'IMAGE') ? 'IMAGE' : 'video'}/${data.fileName}`
+        fileType = data.fileType
+        console.log(fileUrl)
+      }
 
       return (
         <TouchableWithoutFeedback
@@ -76,17 +129,15 @@ function Feeds ({ navigation }) {
         }}
         >
           <View style={ styles.feedItem }>
-          { (image.length >= 1) &&
-              <View
-                style={{
-                  alignItems: 'center',
-                }}
-              >
-                <Text>{ image[0] }</Text>
-                <Text>{ imageType[0] }</Text>
-                { (imageType[0] === 'IMAGE') ?
+            { item.files.length > 0 ?
+            <View
+              style={{
+                alignItems: 'center',
+              }}
+            >
+              { (fileType === 'IMAGE') ?
                 <Image
-                  source={{ uri: image[0] }}
+                  source={{ uri: fileUrl }}
                   style={{
                     width: SCREEN_WIDTH * 0.8,
                     height: SCREEN_HEIGHT * 0.3,
@@ -95,18 +146,20 @@ function Feeds ({ navigation }) {
                 />
                 :
                 <Video
-                  source={{ uri: image[0] }}
+                  source={{ uri: fileUrl }}
+                  repeat={true}
+                  resizeMode="cover"
+                  controls={true}
+                  muted={true}
                   style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
+                    height: SCREEN_WIDTH * 0.8,
+                    width: SCREEN_WIDTH * 0.8,
                   }}
-                ></Video>
-                }
-              </View>
-            }
+                />
+              }
+            </View>
+            :
+            <View style={ styles.content }><Text style={{ textAlign:'center'}}>{ item.boardContent }</Text></View>}
 
             <View style={ styles.underBar }>
               <View style={styles.userIcon}><UserIcon /></View>
@@ -118,16 +171,34 @@ function Feeds ({ navigation }) {
       }
 
     return (
-      <Animated.FlatList
-      data={feeds.reverse()}
-      renderItem={onefeed}
-      style={{
-        backgroundColor: "white",
-        transform: [{ translateY: translateY }],
-        elevation: 8,
-      }}
-      nestedScrollEnabled
-      ></Animated.FlatList>
+      <>
+        {refreshing ? <ActivityIndicator style={{ zIndex: 100 }}/> : null}
+        <Animated.FlatList
+        data={feeds}
+        renderItem={onefeed}
+        style={{
+          backgroundColor: "white",
+          transform: [{ translateY: translateY }],
+          elevation: 8,
+        }}
+        nestedScrollEnabled
+        
+        onEndReachedThreshold = {0.1}
+        onEndReached={ checkfeed }
+        
+        refreshing
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+        }
+        
+        ListEmptyComponent={
+          <View><Text>새로운 이야기를 채워주세요</Text></View>
+        }
+        
+        // 보통 여기에 로딩(원 도는거 넣는다는데...)
+        // ListFooterComponent={}
+        ></Animated.FlatList>
+      </>
     )
   }
 
@@ -142,21 +213,22 @@ function Feeds ({ navigation }) {
         icon={{ name: 'add', color: 'white'}}
         color="red"
         />
+      <Button title="로그아웃" onPress={() =>logOutHAzaJaHuckAAAAAAAAAA() }></Button>
     </>
   )
 }
 
 const styles = StyleSheet.create({
   feed: {
-    marginBottom: 10,
+    marginBottom: SCREEN_HEIGHT * 0.01,
   },
   feedItem : {
     flexDirection: 'column',
     backgroundColor : 'lightgrey',
-    paddingVertical : 10,
+    paddingVertical : SCREEN_HEIGHT * 0.005,
     marginHorizontal : 10,
     marginTop : 10,
-    height : 'auto'
+    height : 'auto',
   },
   content : {
     flex : 11,
@@ -164,7 +236,10 @@ const styles = StyleSheet.create({
     marginHorizontal : 5,
     marginTop : 5,
     borderRadius : 10,
-    height : 200
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    paddingVertical: SCREEN_HEIGHT * 0.005,
   },
   underBar : {
     flex : 2,

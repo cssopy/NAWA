@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Alert, TextInput, Dimensions, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Alert, TextInput, Dimensions, ScrollView, Image } from 'react-native'
 import { Button } from "@rneui/base";
 import { Form, FormItem } from "react-native-form-component";
 
@@ -7,11 +7,13 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
 import UserIcon from "../../components/userIcon";
 import axios from "axios";
+import { useIsFocused } from "@react-navigation/native";
+import Video from "react-native-video";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 function FeedDetail({ route, navigation }) {
-  // console.log(route)
+  // console.log('detail route', route)
 
   const [title, setTitle] = useState<string>('')
   const [content, setContent] = useState<string>('')
@@ -21,7 +23,7 @@ function FeedDetail({ route, navigation }) {
   const [likes, setLikes] = useState<number>(0)
   const [iLike, setILike] = useState<number>(0)
 
-  const [files, setFiles] = useState<any>([])
+  const [files, setFiles] = useState<object[]>([])
   const [comments, setComments] = useState<any>([])
 
   const [ticTok, setTicTok] = useState<boolean>(false)
@@ -30,7 +32,9 @@ function FeedDetail({ route, navigation }) {
   const myId = useSelector((state: RootState) => state.user.accessToken)
   const { boardId, userId } = route.params;
   const url = 'http://i7d205.p.ssafy.io/api/'
+  const isFocused = useIsFocused()
 
+  // 댓글 생성
   const createComment = () => {
     if (!newcomment) {
       return Alert.alert('알림', '댓글을 1글자 이상 입력해야 합니다')
@@ -51,55 +55,28 @@ function FeedDetail({ route, navigation }) {
         'Authorization' : `Bearer ${myId}`
       }}
     ).then(res => {
-      console.log(res.data)
+      console.log('댓글 생성', res.data)
       // console.log(comments)
       setTicTok(!ticTok)
     }).catch(err => 
       console.log('you get error at detail', err))
-  }
-
-  const deleteFeed = () => {
-    axios.delete(
-      `${url}${boardId}`,
-      { headers: { Authorization : `Bearer ${myId}` }}
-    ).then(res => {
-      console.log(res.data)
-      navigation.navigate('Main')
-    }).catch(err => {
-      Alert.alert('오류', err.data)
-    })
-  }
-
-  useEffect(() => {
-    console.log(boardId)
-    axios.get(
-      `${url}board/${boardId}`,
-      { headers: { Authorization : `Bearer ${myId}` }}
-    ).then (res => {
-      // console.log('call at detail', res.data)
-      const datas = res.data
-      setTitle(datas.boardtitle)
-      setContent(datas.boardContent)
-      setHits(datas.boardHit)
-      setComments(datas.comments)
-      setFiles(datas.files)
-      setLikes(datas.boradLikes)
-      axios.get(
-        `${url}board/like/${userId}/${boardId}/`,
-        { headers: { Authorization : `Bearer ${myId}` }}
+    }
+    
+    // 댓글 삭제
+    const deleteComment = (id) => {
+      axios.delete(
+        `${url}cmt/${id}`,
+        { headers: {
+          'Authorization' : `Bearer ${myId}`
+        }}
       ).then(res => {
-        console.log(res.data)
-        setILike(res.data);
-        console.log('nice check')
-      }
-      ).catch(err => {
-        console.log('좋아요 체크 오류', err)
-      })
-    }).catch (err => {
-      console.log('you get error at detail', err)
-    })
-  },[ticTok])
-
+        console.log('댓글 삭제되다', res.data)
+        setTicTok(!ticTok)
+      }).catch(err => 
+        console.log('you get error at detail', err))
+    }
+  
+  // 좋아요 - 좋아요 취소
   const likeBorad = () => {
     axios.post(
       `${url}board/like`,
@@ -118,8 +95,52 @@ function FeedDetail({ route, navigation }) {
     )
   }
 
+  // 피드 삭제
+  const deleteFeed = () => {
+    axios.delete(
+      `${url}board/${boardId}`,
+      { headers: { Authorization : `Bearer ${myId}` }}
+    ).then(res => {
+      console.log(res.data)
+      navigation.navigate('Main', {screen: 'Feeds'})
+    }).catch(err => {
+      Alert.alert('오류', err.data)
+    })
+  }
+
+  // 렌더링
+  useEffect(() => {
+    // console.log(boardId)
+    axios.get(
+      `${url}board/${boardId}`,
+      { headers: { Authorization : `Bearer ${myId}` }}
+    ).then (res => {
+      console.log('call at detail', res.data)
+      const datas = res.data
+      setTitle(datas.boardTitle)
+      setContent(datas.boardContent)
+      setHits(datas.boardHit)
+      setComments(datas.comments)
+      setFiles(datas.files)
+      setLikes(datas.boardLikes)
+      console.log(files)
+      axios.get(
+        `${url}board/like/${userId}/${boardId}/`,
+        { headers: { Authorization : `Bearer ${myId}` }}
+      ).then(res => {
+        console.log('nice check', res.data)
+        setILike(res.data);
+      }
+      ).catch(err => {
+        console.log('좋아요 체크 오류', err)
+      })
+    }).catch (err => {
+      console.log('you get error at detail', err)
+    })
+  },[ticTok, isFocused])
+
   return (
-    <View>
+    <ScrollView>
       <View
         style={{
           alignItems: 'center',
@@ -127,11 +148,37 @@ function FeedDetail({ route, navigation }) {
         }}
       >
         <View><Text>boardTitle: { title }</Text></View>
-        { (files !== []) &&
-          files.forEach(element => {
-            {element}
-          })
-        }
+        <View>
+        { files.map(file => {
+          if ( file.fileType === 'IMAGE') {
+            return (
+              <View
+                key={ file.fileId }
+                style={ styles.media }
+              >
+                {/* <Text>{ `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }</Text> */}
+                <Image
+                  source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
+                  resizeMode="cover"
+                  style={styles.media}
+                />
+              </View>
+            )
+          } else {
+            return(
+              <View
+                key={ file.fileId }
+                style={ styles.media }
+              ><Video
+                  source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
+                  style={styles.media}
+                  controls={true}
+                  muted={true}
+              /></View>
+              )
+          }
+        })}
+        </View>
         <View><Text>boradContent: { content }</Text></View>
         <View><Text>boardLikes: { likes }</Text></View>
         <View><Text>Hits: { hits }</Text></View>
@@ -170,20 +217,18 @@ function FeedDetail({ route, navigation }) {
             onPress={likeBorad}
             containerStyle={styles.button}
           />
+          <Form
+            onButtonPress={createComment}
+            buttonText="보내기"
+          >
+            <FormItem
+              value={newcomment}
+              onChangeText={setNewComment}
+              placeholder="댓글을 입력해주세요"
+            />
+          </Form>
         </View>
       }
-      <View>
-        <Form
-          onButtonPress={createComment}
-          buttonText="보내기"
-        >
-          <FormItem
-            value={newcomment}
-            onChangeText={setNewComment}
-            placeholder="댓글을 입력해주세요"
-          />
-        </Form>
-      </View>
       <ScrollView
         style={comments}
         >
@@ -195,12 +240,18 @@ function FeedDetail({ route, navigation }) {
               key={ comment.cmtId }
               >
                 <View><Text>{ comment.cmtContent }</Text></View>
+                { (whoamI === comment.userId) &&
+                  <Button
+                    title="삭제하기"
+                    onPress={() => deleteComment(comment.cmtId)}
+                  />
+                }
               </View>)
           })
         }
       </ScrollView>
       
-    </View>
+    </ScrollView>
   )
 }
 
@@ -254,6 +305,11 @@ const styles = StyleSheet.create({
   },
   comments: {
     width: SCREEN_WIDTH * 0.8,
+  },
+  media: {
+    height: SCREEN_WIDTH * 0.8,
+    width: SCREEN_WIDTH * 0.8,
+    marginBottom: SCREEN_HEIGHT * 0.01
   }
 })
 
