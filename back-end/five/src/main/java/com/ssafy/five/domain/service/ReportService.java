@@ -35,10 +35,10 @@ public class ReportService {
 
         if (user == null) {
             response.put("result", 400);
-            log.info("존재하지 않는 유저입니다. (to)");
+            log.info("신고하려는 유저는 존재하지 않는 유저입니다.");
         } else if (me == null) {
             response.put("result", 401);
-            log.info("존재하지 않는 유저입니다. (from)");
+            log.info("존재하지 않는 유저입니다.");
         } else if (reportReqDto.getReportTo().equals(reportReqDto.getReportFrom())) {
             response.put("result", 410);
             log.info("본인을 신고할 수 없습니다.");

@@ -51,7 +51,7 @@ public class BoardService {
         Board boardEntity = boardRepository.save(boardReqDto.toEntity());
 
         if (boardEntity != null) {
-            log.info("게시글 등록 성공하였습니다.");
+            log.info(boardEntity.getBoardId() + "번 게시글 등록 성공하였습니다.");
             return boardEntity.getBoardId();
         } else {
             log.info("게시글 등록 실패하였습니다.");
@@ -79,7 +79,7 @@ public class BoardService {
         for (FileDto fileDto : boardReqDto.getFiles()) {
             Files filesEntity = fileRepository.findById(fileDto.getFileId()).orElseThrow(() -> new FileNotFoundException());
             if (filesEntity != null) {
-                log.info("게시글에 파일을 삭제하였습니다.");
+                log.info(boardEntity.getBoardId() + "번 게시글에 파일을 삭제하였습니다.");
                 fileRepository.deleteById(fileDto.getFileId());
             }
         }
@@ -108,7 +108,7 @@ public class BoardService {
                         .boardHit(boardEntity.getBoardHit())
                         .boardLikes(boardEntity.getBoardLikes())
                         .boardType(BoardType.VIDEO).build());
-                log.info("게시글이 VIDEO 타입으로 변경되었습니다.");
+                log.info(boardEntity.getBoardId() + "번 게시글이 VIDEO 타입으로 변경되었습니다.");
             } else if (existImage) {
                 boardEntity = boardRepository.save(Board.builder()
                         .users(boardEntity.getUsers())
@@ -120,7 +120,7 @@ public class BoardService {
                         .boardHit(boardEntity.getBoardHit())
                         .boardLikes(boardEntity.getBoardLikes())
                         .boardType(BoardType.IMAGE).build());
-                log.info("게시글이 IMAGE 타입으로 변경되었습니다.");
+                log.info(boardEntity.getBoardId() + "번 게시글이 IMAGE 타입으로 변경되었습니다.");
             }
         } else {
             boardEntity = boardRepository.save(Board.builder()
@@ -133,7 +133,7 @@ public class BoardService {
                     .boardHit(boardEntity.getBoardHit())
                     .boardLikes(boardEntity.getBoardLikes())
                     .boardType(BoardType.GENERAL).build());
-            log.info("게시글이 GENERAL 타입으로 변경되었습니다.");
+            log.info(boardEntity.getBoardId() + "번 게시글이 GENERAL 타입으로 변경되었습니다.");
         }
         if (boardEntity == null) {
             log.info("게시글 DB 저장 실패하였습니다.");
@@ -166,7 +166,7 @@ public class BoardService {
         List<Files> files = fileRepository.findAllByBoard(boardEntity);
         // DB에 있는 게시글, 댓글, 파일 정보 삭제
         boardRepository.deleteById(boardId);
-        log.info("게시글이 삭제되었습니다.");
+        log.info(boardEntity.getBoardId() + "번 게시글이 삭제되었습니다.");
 
         // 서버 로컬에 저장된 파일 삭제
         if (files != null) {
@@ -225,7 +225,7 @@ public class BoardService {
                     .boardDate(board.getBoardDate())
                     .boardUpdate(board.getBoardUpdate())
                     .build());
-            log.info("게시글 좋아요 취소하였습니다.");
+            log.info(boardEntity.getBoardId() + "번 게시글 좋아요 취소하였습니다.");
         }
         // 해당 유저가 해당 게시글을 좋아요를 안한 상태라면 ON
         else {
@@ -247,7 +247,7 @@ public class BoardService {
                     .boardDate(board.getBoardDate())
                     .boardUpdate(board.getBoardUpdate())
                     .build());
-            log.info("게시글 좋아요 눌렀습니다.");
+            log.info(boardEntity.getBoardId() + "번 게시글 좋아요 눌렀습니다.");
         }
 
         // 게시글 좋아요 수 반영 실패

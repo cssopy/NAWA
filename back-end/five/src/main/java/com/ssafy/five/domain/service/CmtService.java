@@ -45,7 +45,7 @@ public class CmtService {
     public List<CmtResDto> findALLByBoardId(Long boardId) {
         Board boardEntity = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException());
         List<Comment> list = cmtRepository.findALLByBoard(boardEntity);
-        log.info("게시글에 달린 댓글을 조회하였습니다.");
+        log.info(boardEntity.getBoardId() + "번 게시글에 달린 댓글을 조회하였습니다.");
         return list.stream().map(CmtResDto::new).collect(Collectors.toList());
     }
 

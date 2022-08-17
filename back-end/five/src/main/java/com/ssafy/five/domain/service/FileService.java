@@ -157,7 +157,7 @@ public class FileService {
             log.info("게시글 DB에 저장 실패하였습니다.");
             throw new Exception("게시글 DB 저장 실패");
         }
-        log.info("게시글 DB에 저장하였습니다.");
+        log.info(boardEntity.getBoardId() + "번 게시글 DB에 저장하였습니다.");
     }
 
     public List<FileResDto> getFilesByBoardId(Long boardId) {
