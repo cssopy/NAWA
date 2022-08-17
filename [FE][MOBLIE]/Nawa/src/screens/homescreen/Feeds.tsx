@@ -9,7 +9,7 @@ import axios from 'axios';
 
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
-import UserIcon from "../../components/userIcon";
+import UserIcon from "../../components/UserIcon";
 import Video from "react-native-video";
 
 function Feeds ({ navigation }) {
