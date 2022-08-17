@@ -10,63 +10,64 @@ import axios from 'axios';
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
 import UserIcon from "../../components/userIcon";
+import Video from "react-native-video";
 
 function Feeds ({ navigation }) {
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+  const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+  const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
 
-const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
+  const [feeds, setFeeds] = useState([]);
 
+  const isFocused = useIsFocused()
+  
+  const animationRef = useRef(new Animated.Value(0)).current;
+  
+  const url = 'http://i7d205.p.ssafy.io/api/'
+  const myId = useSelector((state: RootState) => state.user.accessToken)
+  
+  const translateY = animationRef.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -HEADER_HEIGHT],
+  });
+
+  useEffect(() => {
+    axios.get(
+      url + 'board/',
+      { headers: { Authorization : `Bearer ${myId}` }}
+    ).then (res => {
+      setFeeds(res.data)
+      // console.log('call all data', res.data)
+    }).catch (err => {
+      console.log('bad', err)
+    })
+  },[])
+  
   const MainFeed = () => {
-    const [feeds, setFeeds] = useState([]);
-
-    const isFocused = useIsFocused()
     
-    const animationRef = useRef(new Animated.Value(0)).current;
-    
-    const url = 'http://i7d205.p.ssafy.io:8080/'
-    const myId = useSelector((state: RootState) => state.user.accessToken)
-    
-    const translateY = animationRef.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, -HEADER_HEIGHT],
-    });
-    
-    useEffect(() => {
-      axios.get(
-        url + 'board/',
-        { headers: { Authorization : `Bearer ${myId}` }}
-      ).then (res => {
-        console.log('nice data')
-        // console.log(res.data[0])
-        setFeeds(res.data)
-      }).catch (err => {
-        console.log('bad', err)
-      })
-    },[isFocused])
 
     const onPressListHandler = (data: object) => {
-      navigation.navigate('Main', {screen: 'FeedDetail', data})
-      // console.log(data)
+      navigation.navigate('Main', {screen: 'FeedDetail', params: data})
     };
 
     const onefeed = ({item}) => one(item)
 
     const one = (item: object) => {
-      // console.log(Object.keys(item))
-      // console.log(item)
-      // console.log(item.boardTitle, datas)
-      const datas = item.files
-      // console.log(datas)
-      let image: string[] = []
+      const datas = item?.files
+      let image: (string)[] = []
+      let imageType: (string)[] = []
       datas.map(data => {
-        if (data.fileType === 'IMAGE') {
-          // console.log(data.fileType, data.fileName)
+          if (data.fileType === 'IMAGE' || data.fileType === 'VIDEO') {
+          // if (data.fileType === 'IMAGE') {
+          // console.log('check data', data.fileType, data.fileName)
           const fileUrl: string = url + 'file/' + `${data.fileType}/` + `${data.fileName}`
+          const fileType: string = data.fileType
           image.push(fileUrl)
-          // console.log('had image', console.log(fileUrl))
+          imageType.push(fileType)
+          // console.log('change', fileUrl, fileType)
         }
       })
+
       return (
         <TouchableWithoutFeedback
         style={styles.feed}
@@ -75,12 +76,15 @@ const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
         }}
         >
           <View style={ styles.feedItem }>
-            { (image.length >= 1) &&
+          { (image.length >= 1) &&
               <View
                 style={{
                   alignItems: 'center',
                 }}
               >
+                <Text>{ image[0] }</Text>
+                <Text>{ imageType[0] }</Text>
+                { (imageType[0] === 'IMAGE') ?
                 <Image
                   source={{ uri: image[0] }}
                   style={{
@@ -89,8 +93,21 @@ const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
                     resizeMode: 'cover',
                   }}
                 />
+                :
+                <Video
+                  source={{ uri: image[0] }}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                  }}
+                ></Video>
+                }
               </View>
             }
+
             <View style={ styles.underBar }>
               <View style={styles.userIcon}><UserIcon /></View>
               <View style={styles.textBox}><Text style={styles.text}>{item.boardTitle}</Text></View>
@@ -101,31 +118,32 @@ const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
       }
 
     return (
-        <Animated.FlatList
-        data={feeds.reverse()}
-        renderItem={onefeed}
-        style={{
-          backgroundColor: "white",
-          transform: [{ translateY: translateY }],
-          elevation: 8,
-        }}
-        nestedScrollEnabled
-        ></Animated.FlatList>
-        )
-      }
+      <Animated.FlatList
+      data={feeds.reverse()}
+      renderItem={onefeed}
+      style={{
+        backgroundColor: "white",
+        transform: [{ translateY: translateY }],
+        elevation: 8,
+      }}
+      nestedScrollEnabled
+      ></Animated.FlatList>
+    )
+  }
 
   return (
     <>
-        <MainNavbar />
-        <MainFeed />
-        <FAB
-          onPress={() => {navigation.navigate('NewFeedScreen')}}
-          placement="right"
-          icon={{ name: 'add', color: 'white'}}
-          color="red"
-          />
-      </>
-    )
+      <MainNavbar />
+      <MainFeed />
+      <FAB
+
+        onPress={() => {navigation.navigate('NewFeedScreen')}}
+        placement="right"
+        icon={{ name: 'add', color: 'white'}}
+        color="red"
+        />
+    </>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -135,12 +153,9 @@ const styles = StyleSheet.create({
   feedItem : {
     flexDirection: 'column',
     backgroundColor : 'lightgrey',
-    fontWeight : '900',
-    // paddingHorizontal : 10,
     paddingVertical : 10,
     marginHorizontal : 10,
     marginTop : 10,
-    borderRadius : 10,
     height : 'auto'
   },
   content : {

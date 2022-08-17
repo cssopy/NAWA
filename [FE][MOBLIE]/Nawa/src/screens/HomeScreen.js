@@ -9,29 +9,34 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const Stack = createNativeStackNavigator();
 
 const HomeScreen = () => {
-  // return (
-    // <Stack.Navigator
-    //   screenOptions={{headerShown: false}}
-    // >
-    //   <Stack.Screen
-    //     name="Main"
-    //     component={Main}
-    //     options={{
-    //       title: "피드"
-    //     }}
-    //   />
+  return (
+    <Stack.Navigator
+      screenOptions={{headerShown: false}}
+    >
+      <Stack.Screen
+        name="Main"
+        component={Main}
+        options={{
+          title: "피드"
+        }}
+      />
 
-    //   <Stack.Screen
-    //     name="NewFeedScreen"
-    //     component={NewFeedScreen}
-    //   />
+      <Stack.Screen
+        name="NewFeedScreen"
+        component={NewFeedScreen}
+      />
 
-    //   <Stack.Screen
-    //     name="FeedDetail"
-    //     component={FeedDetail}
-    //   />
-    // </Stack.Navigator>
-  // );
+      <Stack.Screen
+        name="FeedDetail"
+        component={FeedDetail}
+      />
+
+      <Stack.Screen
+        name="ChangeFeedScreen"
+        component={ChangeFeedScreen}
+      />
+    </Stack.Navigator>
+  );
 };
 
 export default HomeScreen;
