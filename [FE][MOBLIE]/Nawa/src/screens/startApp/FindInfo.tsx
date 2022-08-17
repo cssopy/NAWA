@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../AppInner";
-import { useAppDispatch } from "../store";
+import { RootStackParamList } from "../../../AppInner";
+import { useAppDispatch } from "../../store";
 import { 
     Alert, 
     Text,
@@ -10,7 +10,7 @@ import {
     Pressable,
     View,
     } from "react-native";
-import DismissKeyboardView from '../components/DismissKeyboardView';
+import DismissKeyboardView from '../../components/DismissKeyboardView';
 import axios, {AxiosError} from 'axios';
 
 

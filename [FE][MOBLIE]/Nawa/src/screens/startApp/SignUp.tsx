@@ -11,13 +11,13 @@ import {
 } from 'react-native';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import DismissKeyboardView from '../components/DismissKeyboardView';
+import DismissKeyboardView from '../../components/DismissKeyboardView';
 import axios, {AxiosError} from 'axios';
-import {RootStackParamList} from '../../AppInner';
+import {RootStackParamList} from '../../../AppInner';
 import DatePicker from 'react-native-date-picker';
 import AsyncStorage from '@react-native-community/async-storage';
-import {useAppDispatch} from '../store';
-import userSlice from '../slices/user';
+import {useAppDispatch} from '../../store';
+import userSlice from '../../slices/user';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>
 
@@ -194,6 +194,9 @@ function SignUp({navigation} : SignUpScreenProps) {
       if (!nickName || !nickName.trim()) {
           return Alert.alert('닉네임 나와 !', '닉네임을 입력해주세요');
       }
+      if (nickName.trim().length < 3 || nickName.trim().length > 15) {
+        return Alert.alert('닉네임 나와 !', '닉네임은 3 ~ 15 자리까지 가능합니다.');
+      }
       if (!number || !number.trim()) {
           return Alert.alert('번호 나와 !', '번호를 입력해주세요');
       }
@@ -203,7 +206,6 @@ function SignUp({navigation} : SignUpScreenProps) {
       if (!gender || !gender.trim()) {
           return Alert.alert('성별 나와 !', '성별을 입력해주세요');
       }
-      
       if (
           !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
             email,

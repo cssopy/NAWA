@@ -1,10 +1,10 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import ChangeFeedScreen from "./homescreen/ChangeFeedScreen";
-import NewFeedScreen from './homescreen/NewFeedScreen';
-import FeedDetail from "./homescreen/FeedDetail";
-import Main from './homescreen/Main'
+// import ChangeFeedScreen from "./homescreen/ChangeFeedScreen";
+// import newfeed from './homescreen/NewFeedScreen';
+// import FeedDetail from "./homescreen/FeedDetail";
+// import Main from './homescreen/Main'
 
 const Stack = createNativeStackNavigator();
 

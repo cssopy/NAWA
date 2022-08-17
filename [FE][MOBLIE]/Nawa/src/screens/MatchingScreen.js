@@ -3,12 +3,14 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import store from "../store";
 import { Provider } from "react-redux/es/exports";
 
-import Mate1 from './Mate1';
-import Mate2 from './Mate2';
-import Mate3 from './Mate3';
+import Mate1 from './matching/Mate1';
+import Mate2 from './matching/Mate2';
+import Mate3 from './matching/Mate3';
+import Mate4 from './matching/Mate4';
 
-import JoinRTC from './JoinRTC';
-import OpenRTC from './OpenRTC';
+
+import JoinRTC from './matching/JoinRTC';
+import OpenRTC from './matching/OpenRTC';
 
 
 
@@ -25,6 +27,7 @@ const MatingScreen = () => {
         <Stack.Screen name='Mate3' component={Mate3} />
         <Stack.Screen name='JoinRTC' component={JoinRTC} />
         <Stack.Screen name='OpenRTC' component={OpenRTC} />
+        <Stack.Screen name='Mate4' component={Mate4} />
       </Stack.Navigator>
     </Provider>
     );
