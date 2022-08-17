@@ -43,7 +43,7 @@ const matchingSlice = createSlice({
             state.settings = action.payload.settings;
         },
         setTarget(state, action) {
-            state.target = action.payload.settings;
+            state.target = action.payload.target;
         }
         
     },

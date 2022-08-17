@@ -1,20 +1,20 @@
 import React, { useEffect, useRef, useState  } from "react";
 import {Text, View, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, SafeAreaView, TextInput, Modal} from 'react-native'
 
-import constants from '../constants';
-import {useAppDispatch} from '../store';
+import constants from '../../constants';
+import {useAppDispatch} from '../../store';
 import * as Progress from 'react-native-progress';
 import { Button } from "@rneui/themed";
-import { RootState } from '../store/reducer';
+import { RootState } from '../../store/reducer';
 import { useSelector } from 'react-redux';
 import { Dimensions } from "react-native";
 import NaverMapView, {Circle, Marker, Path} from "react-native-nmap";
 
-import matchingSlice from "../slices/matching";
+import matchingSlice from "../../slices/matching";
 import Swiper from "react-native-swiper";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
-import WhatCategory from "../components/WhatCategory";
+import axios from "axios";
+import WhatCategory from "../../components/WhatCategory";
 
 // firebase 클라우드
 import firestore from '@react-native-firebase/firestore';
@@ -33,6 +33,7 @@ const Mate3 = ( {navigation} ) => {
   const [online, setOnline] = useState(false);
   const [onAir, setOnAir] = useState(false);
   
+  
   const nickname = useSelector((state : RootState) => state.user.nickname);
   const userId = useSelector((state : RootState) => state.user.userId);
   const ment = useSelector((state : RootState) => state.matching.ment);
@@ -46,16 +47,18 @@ const Mate3 = ( {navigation} ) => {
     location : {latitude : 0, longitude:0},
     category : [],
     ment : '선택된 유저가 없습니다.'
-  })
+});
+  const [cancleTarget, setCalcelTarget] = useState('');
+
   const [onLocation, setOnLocation] = useState({longitude : location.longitude , latitude : location.latitude});
   const [nawaDistance, setNawaDistance] = useState(0);
-  
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
 
 
   const [target, setTarget] = useState({longitude : location.longitude , latitude : location.latitude})
- 
+
+
   const LargeTextInput = (props) => {
     return (
       <TextInput
@@ -65,9 +68,6 @@ const Mate3 = ( {navigation} ) => {
     );
   }
 
-  const userMannerPoint = () => {
-
-  }
 
   const userInit = async () => { 
       const onWaiting = firestore().collection('waitingRoom').doc(nickname);
@@ -82,7 +82,7 @@ const Mate3 = ( {navigation} ) => {
         setOnline(true);
       }
       );
-    }
+  }
 
   const userOut = async (targetName) => {
     firestore()
@@ -98,9 +98,6 @@ const Mate3 = ( {navigation} ) => {
   }
 
 
-  
-  
-  
   // 대기열 등록
   const getData = async () => {
     const onWaiting = await firestore().collection('waitingRoom').get();
@@ -112,6 +109,7 @@ const Mate3 = ( {navigation} ) => {
     setRealTime(temp)
   }
 
+  // 실시간 매칭 유저 조회
   useEffect( () => {
       function onResult(QuerySnapshot) {
         getData()
@@ -127,6 +125,7 @@ const Mate3 = ( {navigation} ) => {
 
   // 상대방 콜하기
   const callTarget = async (target) => {
+    setCalcelTarget(target)
     setOnline(true);
     setModalVisible(true);
     userOut(nickname);
@@ -157,6 +156,7 @@ const Mate3 = ( {navigation} ) => {
               setOnline(false);
               userInit()
               setModalVisible(false);
+              setModalVisible2(false);
             })
         }
         rejected(target)
@@ -172,10 +172,10 @@ const Mate3 = ( {navigation} ) => {
           matchingSlice.actions.setS({
             settings : target
           }));
+
           setOnline(false);
           setModalVisible(false);
         navigation.navigate('OpenRTC');
-
       }
     }
     function onError(error) {
@@ -209,7 +209,6 @@ const Mate3 = ( {navigation} ) => {
           setOnAir(true)
           setModalVisible2(true)
         }
-
       }
       function onError(error) {
         console.error(error);
@@ -256,13 +255,12 @@ const Mate3 = ( {navigation} ) => {
 
   //요청 거절
   const rejectCall = async () => {
+    setModalVisible2(false)
     const onWaiting = firestore().collection('dataChannel').doc(nickname);
     if (onWaiting) {
       await onWaiting.update({
         waiting : false
       }).then( () => {
-        setModalVisible2(false)
-        userInit()
       });
 
       dispatch(
@@ -279,7 +277,6 @@ const Mate3 = ( {navigation} ) => {
       setOnAir(false)
       setModalVisible2(false)
   }
-
 
 
 
@@ -324,8 +321,30 @@ const Mate3 = ( {navigation} ) => {
     setOnLocation(targetLocation)
   }
 
+  // 매칭 대기열 정리하기
+  useEffect(() => {
+    return () => {
+      //대기열 정리
+      userOut(nickname)
+      // 매칭요청 정리
+      firestore()
+        .collection('dataChannel')
+        .doc(nickname)
+        .delete()
+        .then()
+      // RTC 요청 정리
+      const db = firestore();
+      const roomRef = db.collection('MATCHING_GUMI').doc(nickname);
+      roomRef.delete().then();
+      const roomRef2 = db.collection('MATCHING_GUMI').doc(cancleTarget);
+      roomRef2.delete().then();
+      setModalVisible(false)
+      setModalVisible2(false)
+    }
+  },[])
 
-    console.log(offerState)
+
+
 
   return (
     <View style={{height:SCREEN_HEIGHT - 50}}>
@@ -335,10 +354,9 @@ const Mate3 = ( {navigation} ) => {
         transparent={true}
         visible={modalVisible}
         >
-        <View style={{position:"absolute", flexDirection:"column", width:SCREEN_WIDTH/4*3, height:200, top:SCREEN_HEIGHT/2 - 100, backgroundColor:'white', elevation:10, borderRadius:10, alignSelf:'center'}}>
-          <Text style={{color:'black', textAlign:"center"}}>상대방의 승낙을 기다리는 중이에요.</Text>
+        <View style={{position:"absolute", flexDirection:"column",alignItems:'center', width:SCREEN_WIDTH/4*3, height:200, top:SCREEN_HEIGHT/2 - 100, backgroundColor:'white', elevation:10, borderRadius:10, alignSelf:'center'}}>
+          <Text style={{ color:'black', textAlign:"center", margin:10, fontSize:25}}>상대방의 승낙을 기다리는 중이에요.</Text>
           <ActivityIndicator size={"large"} color="rgb(0, 197, 145)" ></ActivityIndicator>
-          <Text style={{color:'black', textAlign:"center"}}>거절시 자동으로 대기열에 다시 입장됩니다.</Text>
         </View>
       </Modal>
 
@@ -352,7 +370,7 @@ const Mate3 = ( {navigation} ) => {
         {offerState &&
         <View style={{position:"absolute", flexDirection:"column",alignItems:'center', width:SCREEN_WIDTH/4*3, height:250, top:SCREEN_HEIGHT/2 - 100, backgroundColor:'white', elevation:10, borderRadius:10, alignSelf:'center'}}>
           <Text style={{flex:1, color:'black', fontSize:20, textAlign:"center"}}>{offerState.nickname}님의</Text>
-          <Text style={{flex:1, color:'black', fontSize:20, textAlign:"center"}}>나와! 요청이 도착했습니다.</Text>
+          <Text style={{flex:1, color:'black', fontSize:20, textAlign:"center", marginTop:-10}}>나와! 요청이 도착했습니다.</Text>
 
           <View style={{flex:1, flexDirection:'row', alignItems:'center', marginLeft:4}}>
             <View style={{flexDirection:"row"}}>
@@ -375,8 +393,8 @@ const Mate3 = ( {navigation} ) => {
           </View>
 
           <View style={{flex:1, flexDirection:'row', marginTop:10}}>
-            <Button onPress={() => accentCall()} title={'승낙하기'}></Button>
-            <Button onPress={() => rejectCall()} title={'거절하기'}></Button>
+            <Button containerStyle={{marginHorizontal:5}} onPress={() => accentCall()} title={'승낙하기'}></Button>
+            <Button containerStyle={{marginHorizontal:5}} onPress={() => rejectCall()} title={'거절하기'}></Button>
           </View>
         </View>
         }

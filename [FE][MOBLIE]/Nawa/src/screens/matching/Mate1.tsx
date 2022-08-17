@@ -1,16 +1,16 @@
 import React, { useCallback, useRef, useState,  } from "react";
-import {Text, View, StyleSheet, StatusBar, Keyboard, Alert, PermissionsAndroid, ActivityIndicator, Modal, Pressable, ScrollView} from 'react-native'
+import {Text, View, StyleSheet, StatusBar, Keyboard, Alert, PermissionsAndroid, ActivityIndicator, Modal, Pressable, ScrollView, FlatList} from 'react-native'
 
-import constants from '../constants';
-import {useAppDispatch} from '../store';
+import constants from '../../constants';
+import {useAppDispatch} from '../../store';
 import * as Progress from 'react-native-progress';
 import { Button, Icon } from "@rneui/themed";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import matchingSlice from "../slices/matching";
+import matchingSlice from "../../slices/matching";
 import { Slider } from "@rneui/themed";
 
 import { useSelector } from 'react-redux';
-import { RootState } from '../store/reducer';
+import { RootState } from '../../store/reducer';
 import { FAB } from '@rneui/themed';
 import NaverMapView,{ NaverMapViewProps, Circle, Marker, Path, Polyline, Polygon,  } from 'react-native-nmap'
 import location from 'react-native-nmap'
@@ -21,6 +21,8 @@ import Geolocation from 'react-native-geolocation-service';
 import {Dimensions} from 'react-native';
 import axios, { AxiosError } from "axios";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+
+
 
 export interface Coord {
   latitude: number;
@@ -71,7 +73,6 @@ const Mate1 = ( {navigation} ) => {
     }
   }
 
-
   const getLocation = async () => {
     setMapLoading(true)
     await PermissionsAndroid.request(
@@ -110,7 +111,7 @@ const Mate1 = ( {navigation} ) => {
       setZoom(11);
     }
     },[distance])
-    
+  
 
 
   // 1. 즐겨찾기 조회, 저장
@@ -121,22 +122,23 @@ const Mate1 = ( {navigation} ) => {
       url : `http://i7d205.p.ssafy.io/api/loc-list/${userId}`,
       headers : {"Authorization" : `Bearer ${accessToken}`}
     });
-    setLoc(response.data)
-    console.log(response.data)
+    setLoc(loc => response.data)
     } catch (error) {
-      console.log(error)
+      console.log('전체 조회',error)
     }
   }
-  useEffect(() => {
-    getLoc()
-  },[dispatch])
-  
 
-// ({latitude: Number(item.y), longitude:Number(item.x)})}  
-                      
-//                     {item.place_name}</Text>
-//               {item.road_address_name}</Text>
-  
+  // 즐겨찾기 된 항목인지 검사
+  const checkLoc = (item) => {
+    let check
+    loc.forEach((loc, idx) => {
+      if (item.road_address_name === loc.locAddress) {
+        check = true
+        return
+      }
+    })
+    return (check ? true : false)
+  }
   // 즐겨찾기 추가
   const addLoc = async (item) => {
     try {
@@ -148,7 +150,8 @@ const Mate1 = ( {navigation} ) => {
           url : `http://i7d205.p.ssafy.io/api/loc-list/`,
           headers : {"Authorization" : `Bearer ${accessToken}`},
           data : {
-            "locAddress" : item.address_name,
+            "locName" : item.place_name,
+            "locAddress" : item.road_address_name,
             "locLat" : item.y,
             "locLng" : item.x,
             "userId" : userId
@@ -156,42 +159,53 @@ const Mate1 = ( {navigation} ) => {
         })
       }
     } catch (error) {
-      console.log(error)
+      console.log('추가',error)
     }
     getLoc()
   }
-
   // 즐겨찾기 삭제
   const delLoc = async (item) => {
-    loc.forEach(() => {
-      
+    loc.forEach((loc, idx) => {
+      if (item.road_address_name === loc.locAddress) {
+        try {
+          const response = axios({
+            method : 'delete',
+            url : `http://i7d205.p.ssafy.io/api/loc-list/${loc.locId}`,
+            headers : {"Authorization" : `Bearer ${accessToken}`},
+          })
+        } catch (error) {
+          console.log('삭제',error)
+        }
+        getLoc()
+        return
+      }
     })
-    
-    
-    try {
-      const response = await axios({
-          method : 'delete',
-          url : `http://i7d205.p.ssafy.io/api/loc-list/`,
-          headers : {"Authorization" : `Bearer ${accessToken}`},
-          data : {
-            "locAddress" : item.address_name,
-            "locLat" : item.y,
-            "locLng" : item.x,
-            "userId" : userId
-          }
-      })
-    } catch (error) {
-      console.log(error)
-    }
-    getLoc()
   }
-
-
-  // 창 open or close
-  useEffect(() => {
+  //목록에서의 삭제
+  const delLoc2 = async (item) => {
+    try {
+      const response = axios({
+        method : 'delete',
+        url : `http://i7d205.p.ssafy.io/api/loc-list/${item.locId}`,
+        headers : {"Authorization" : `Bearer ${accessToken}`},
+      })
+      } catch (error) {
+        console.log('목록에서 삭제',error)
+      }
+      getLoc()
+      return
+    }
+      
+      // 창 open or close
+      useEffect(() => {
     searchValue ? openSearchBox() : closeSearchBox()
     if (searchValue.length > 1) {searching()}
   }, [searchValue])
+
+  // 최초 즐겨찾기 조회
+  useEffect(() => {
+    getLoc()
+  },[])
 
   const animationRef = useRef(new Animated.Value(0)).current;
   const translateY = animationRef.interpolate({
@@ -212,6 +226,7 @@ const Mate1 = ( {navigation} ) => {
                 useNativeDriver: true,
               }).start();
   } 
+
 
     return (
       <View style={{ height: SCREEN_HEIGHT}}>
@@ -254,11 +269,11 @@ const Mate1 = ( {navigation} ) => {
                           <Text style={{color:'black',fontWeight:"700" , fontSize:17}}>{item.place_name}</Text>
                           <Text style={{marginTop:1,color:'black',fontWeight:"300" , fontSize:13}}>{item.road_address_name}</Text>
                         </View>
-                        {/* { if (item.place_name in loc ?
-                          <Ionicons style={{flex:1, alignSelf:'center'}} name='star-outline' size={30} color='black' />
+                        { checkLoc(item) ?
+                        <Ionicons onPress={() => {delLoc(item); delLoc(item);}} style={{flex:1, alignSelf:'center'}} name='star' size={30} color='yellow' />
                         :  
-                      } */}
-                      <Ionicons onPress={() => addLoc(item)} style={{flex:1, alignSelf:'center'}} name='star' size={30} color='yellow' />
+                        <Ionicons onPress={() => addLoc(item)} style={{flex:1, alignSelf:'center'}} name='star-outline' size={30} color='black' />
+                        }
                       </Pressable>
                     ))
                   }
@@ -288,20 +303,40 @@ const Mate1 = ( {navigation} ) => {
               />
             </View>
 
-            <Button onPress={() => {}} color={'warning'} containerStyle={{flex:1, borderBottomLeftRadius:15,borderBottomRightRadius:15, marginLeft:8, elevation:8}}>
+            <Button onPress={() => {setVisible(!visible)}} color={'warning'} containerStyle={{flex:1, borderBottomLeftRadius:15,borderBottomRightRadius:15, marginLeft:8, elevation:8}}>
               <Ionicons name='star' size={30} color='white' />
             </Button>
 
           </View>
 
-          {false && <View style={{position:"absolute", width:SCREEN_WIDTH, height:SCREEN_HEIGHT,backgroundColor:'black', opacity:0.3, zIndex:6}}></View>}
+          {visible && <View style={{position:"absolute", width:SCREEN_WIDTH, height:SCREEN_HEIGHT,backgroundColor:'black', opacity:0.3, zIndex:6}}></View>}
           <Modal
             animationType="slide"
             transparent={true}
-            visible={false}
+            visible={visible}
             >
-            <ScrollView style={{position:"absolute", flexDirection:"column", width:SCREEN_WIDTH/4*3, height:400, top:SCREEN_HEIGHT/2- 200, backgroundColor:'white', elevation:10, borderRadius:10, alignSelf:'center'}}>
-            </ScrollView>
+            <View style={{flexDirection:"column", position:"absolute", width:SCREEN_WIDTH/4*3, height:400, top:SCREEN_HEIGHT/2- 200, backgroundColor:'white', borderRadius:10, alignSelf:'center'}}>
+              <View style={{flex:1, flexDirection:'row', alignContent:'center', borderRadius:10, backgroundColor:'white', elevation:8}}>
+                <View style={{flex:1, flexDirection:'row', justifyContent:'center', alignSelf:'center'}}>
+                  <Text style={{flex:2,color:'black', fontSize:20,fontWeight:'700', textAlign:'center'}}>즐겨찾기 목록</Text>
+                  <Text style={{flex:1,color:'black', fontSize:13,fontWeight:'700', alignSelf:'flex-end'}}> {loc.length} / 10 개</Text>
+                </View>
+                <Button color={"error"} buttonStyle={{flex:1, borderRadius:5,  justifyContent:'center'}} titleStyle={{textAlign:'center',fontSize:15, fontWeight:"700", padding:1}} onPress={() => {setVisible(false)}}  title={'닫기'}></Button>
+              </View>
+              <View style={{flex:10}}>
+                <ScrollView>
+                  {loc.map((item, idx)  => (                
+                    <Pressable key={idx} style={{alignSelf:'flex-start', padding:10}} onPress={() => {setPickLocation({latitude: Number(item.locLat), longitude:Number(item.locLng)}); setVisible(false)}}>
+                      <Text style={{color:'black',fontWeight:"700" , fontSize:17}}>{item.locName}</Text>
+                      <View style={{flexDirection:'row'}}>
+                        <Text style={{marginTop:1, color:'black',fontWeight:"300" , fontSize:13, marginRight:10}}>{item.locAddress}</Text>
+                        <Pressable onPress={() => {delLoc2(item)}}><Text style={{color:'red', fontWeight:'600'}}>삭제</Text></Pressable>
+                      </View>
+                    </Pressable>
+                  ))}
+                </ScrollView>
+              </View>
+            </View>
           </Modal>
 
 

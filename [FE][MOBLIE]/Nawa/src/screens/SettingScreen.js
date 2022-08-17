@@ -1,5 +1,4 @@
 import React from "react";
-import {Alert, Text, View, StyleSheet} from 'react-native'
 import { useSelector } from "react-redux";
 import { RootState } from "../store/reducer";
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -7,14 +6,34 @@ import { useCallback, useEffect } from "react";
 
 
 import Video from 'react-native-video';
+import {Alert, Text, View, StyleSheet, Button} from 'react-native'
+import { useAppDispatch } from "../store";
+import userSlice from "../slices/user";
+
 
 
 const SettingScreen = () => {
+  const dispatch = useAppDispatch();
+  const logOutHAzaJaHuckAAAAAAAAAA = async () => {
+    dispatch(
+      userSlice.actions.setUser({
+        userId : '',
+        accessToken : '',
+        nickname : ''
+      }),
+    );
+  
+    EncryptedStorage.removeItem('userId')
+    EncryptedStorage.removeItem('accessToken')
+    EncryptedStorage.removeItem('refreshToken')
+  }
+  
+  
+
+
   return (
     <>
-      <Video source={{uri: "http://i7d205.p.ssafy.io/api/file/VIDEO/62d27435-e532-485f-a287-5cc42e119641_test.mp4"}}   // Can be a URL or a local file.
-                                   // Store reference
-        style={styles.backgroundVideo} />
+      <Button title="로그아웃" onPress={() =>logOutHAzaJaHuckAAAAAAAAAA() }></Button>
     </>
   );
 }
@@ -32,3 +51,8 @@ var styles = StyleSheet.create({
 });
 
 export default SettingScreen;
+
+
+
+
+

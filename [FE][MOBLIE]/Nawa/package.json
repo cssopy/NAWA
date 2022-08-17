@@ -13,6 +13,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "@react-native-community/async-storage": "^1.12.1",
+    "@react-native-community/cli": "^8.0.6",
     "@react-native-firebase/app": "^15.3.0",
     "@react-native-firebase/database": "^15.3.0",
     "@react-native-firebase/firestore": "^15.3.0",

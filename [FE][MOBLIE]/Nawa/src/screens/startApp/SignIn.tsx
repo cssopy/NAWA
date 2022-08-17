@@ -11,11 +11,11 @@ import {
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import DismissKeyboardView from '../components/DismissKeyboardView';
+import DismissKeyboardView from '../../components/DismissKeyboardView';
 import axios, {AxiosError} from 'axios';
-import {RootStackParamList} from '../../AppInner';
-import {useAppDispatch} from '../store';
-import userSlice from '../slices/user';
+import {RootStackParamList} from '../../../AppInner';
+import {useAppDispatch} from '../../store';
+import userSlice from '../../slices/user';
 import {Form, FormItem} from 'react-native-form-component';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -107,7 +107,7 @@ function SignIn({navigation}: SignInScreenProps) {
      
      <View style={styles.logoWrap}>
         <Image
-          source={require('../assets/nawa_black.png')}
+          source={require('../../assets/nawa_black.png')}
           style={styles.logoImage}
         />
       </View> 

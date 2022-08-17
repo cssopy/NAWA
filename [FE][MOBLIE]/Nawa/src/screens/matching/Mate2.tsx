@@ -3,13 +3,13 @@ import {Text, View, StyleSheet, TextInput, KeyboardAvoidingView , Keyboard} from
 import { Button, CheckBox } from "@rneui/themed";
 
 
-import constants from '../constants';
-import {useAppDispatch} from '../store';
+import constants from '../../constants';
+import {useAppDispatch} from '../../store';
 import * as Progress from 'react-native-progress';
 
 import { FAB } from '@rneui/themed';
 
-import matchingSlice from "../slices/matching";
+import matchingSlice from "../../slices/matching";
 
 
 const checkList = ['헬스', '배드민턴', '러닝', '애견산책', '산책', '등산', '자전거', '수영', '볼링', '당구', '농구', '풋살']
