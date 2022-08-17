@@ -34,7 +34,7 @@ public class AddMateService {
     private final MateRepository mateRepository;
     private final BlockRepository blockRepository;
     private final RoomService roomService;
-    private final SimpMessageSendingOperations messaging;
+//    private final SimpMessageSendingOperations messaging;
 
 
     @Transactional
@@ -105,7 +105,7 @@ public class AddMateService {
 //                message.put("addMateId", addMateRepository.save(addMateReqDto.addMate(user1, user2)).getAddMateId().toString());
 //                data.put("data", message);
 //                messaging.convertAndSend("/sub/chat/user/" + user2.getUserId(), data);
-                addMateRepository.save(addMateReqDto.addMate(user1, user2))
+                addMateRepository.save(addMateReqDto.addMate(user1, user2));
                 log.info("정상 처리되었습니다.");
             }
         }
