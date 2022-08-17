@@ -43,7 +43,7 @@ public class ReportService {
             response.put("result", 410);
             log.info("본인을 신고할 수 없습니다.");
         } else if (reportRepository.findByReportFromAndReportTo(reportReqDto.getReportFrom(), reportReqDto.getReportTo()).isPresent()) {
-            response.put("result", 403);
+            response.put("result", 404);
             log.info("이미 신고한 유저입니다.");
         } else {
             reportRepository.save(reportReqDto.reported());

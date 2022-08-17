@@ -35,7 +35,7 @@ public class CalendarService {
         Calendar calendar = calenderRepository.findByCalDateAndUsers(calReqDto.getCalDate(), user);
         if (user == null) {
             Map<String, Integer> response = new HashMap<>();
-            response.put("result", 401);
+            response.put("result", 404);
             log.info("존재하지 않는 유저입니다.");
             return response;
         } else if (calendar == null) {
@@ -48,7 +48,7 @@ public class CalendarService {
             return response;
         } else {
             Map<String, Integer> response = new HashMap<>();
-            response.put("result", 403);
+            response.put("result", 400);
             log.info("이미 todo 등록이 되어있습니다.");
             return response;
         }
@@ -77,7 +77,7 @@ public class CalendarService {
         Calendar calendar = calenderRepository.findByCalDateAndUsers(calReqDto.getCalDate(), user.get());
         if (user.isEmpty()) {
             Map<String, Integer> response = new HashMap<>();
-            response.put("result", 401);
+            response.put("result", 404);
             log.info("존재하지 않는 유저입니다.");
             return response;
         } else if (calendar != null && calendar.getCalId().equals(calReqDto.getCalId())) {
@@ -90,8 +90,8 @@ public class CalendarService {
             return response;
         } else {
             Map<String, Integer> response = new HashMap<>();
-            response.put("result", 403);
-            log.info("이미 todo가 등록되었거나, 본인의 todo가 아닙니다.");
+            response.put("result", 400);
+            log.info("해당 일자에 todo가 없습니다.");
             return response;
         }
     }
