@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Alert, TextInput, Dimensions, ScrollView, Image } from 'react-native'
+
+import axios from "axios";
 import { Button } from "@rneui/base";
+import Video from "react-native-video";
+import Swiper from 'react-native-swiper';
+import { useSelector } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
 import { Form, FormItem } from "react-native-form-component";
 
-import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
 import UserIcon from "../../components/userIcon";
-import axios from "axios";
-import { useIsFocused } from "@react-navigation/native";
-import Video from "react-native-video";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -47,6 +49,7 @@ function FeedDetail({ route, navigation }) {
 
     console.log('createcomment', newcomment)
 
+    ///////////////// Create Comment
     axios.post(
       `${url}cmt/`,
       com,
@@ -64,6 +67,7 @@ function FeedDetail({ route, navigation }) {
     
     // 댓글 삭제
     const deleteComment = (id) => {
+      /////////////////// Delete Comment
       axios.delete(
         `${url}cmt/${id}`,
         { headers: {
@@ -78,6 +82,7 @@ function FeedDetail({ route, navigation }) {
   
   // 좋아요 - 좋아요 취소
   const likeBorad = () => {
+    /////////////////////// Check like
     axios.post(
       `${url}board/like`,
       JSON.stringify({
@@ -97,6 +102,7 @@ function FeedDetail({ route, navigation }) {
 
   // 피드 삭제
   const deleteFeed = () => {
+    ////////////////// Delete Feed
     axios.delete(
       `${url}board/${boardId}`,
       { headers: { Authorization : `Bearer ${myId}` }}
@@ -148,15 +154,16 @@ function FeedDetail({ route, navigation }) {
         }}
       >
         <View><Text>boardTitle: { title }</Text></View>
-        <View>
+        <Swiper
+          style={styles.swiper}
+        >
         { files.map(file => {
           if ( file.fileType === 'IMAGE') {
             return (
               <View
-                key={ file.fileId }
-                style={ styles.media }
+                style={styles.mediatool}
+                key={file.fileId}
               >
-                {/* <Text>{ `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }</Text> */}
                 <Image
                   source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
                   resizeMode="cover"
@@ -167,18 +174,20 @@ function FeedDetail({ route, navigation }) {
           } else {
             return(
               <View
-                key={ file.fileId }
-                style={ styles.media }
-              ><Video
+                style={styles.mediatool}
+                key={file.fileId}
+              >
+                <Video
                   source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
                   style={styles.media}
                   controls={true}
                   muted={true}
-              /></View>
+                />
+              </View>
               )
           }
         })}
-        </View>
+        </Swiper>
         <View><Text>boradContent: { content }</Text></View>
         <View><Text>boardLikes: { likes }</Text></View>
         <View><Text>Hits: { hits }</Text></View>
@@ -310,7 +319,13 @@ const styles = StyleSheet.create({
     height: SCREEN_WIDTH * 0.8,
     width: SCREEN_WIDTH * 0.8,
     marginBottom: SCREEN_HEIGHT * 0.01
-  }
+  },
+  swiper: {
+    height: SCREEN_HEIGHT * 0.5,
+  },
+  mediatool: {
+    alignItems: 'center'
+  },
 })
 
 export default FeedDetail

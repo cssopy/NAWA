@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import { ScrollView, Dimensions, StyleSheet, Alert, Platform, View, Image, Text } from "react-native";
 
-import { Form, FormItem } from 'react-native-form-component';
-import { Button, ScreenHeight } from "@rneui/base";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import axios from "axios";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/reducer";
-import {useAppDispatch} from '../../store';
-import userSlice from "../../slices/user";
-import { useIsFocused } from "@react-navigation/native";
 import Video from "react-native-video";
+import Swiper from 'react-native-swiper';
+import { useSelector } from "react-redux";
+import { Button, ScreenHeight } from "@rneui/base";
+import { Form, FormItem } from 'react-native-form-component';
+import { launchImageLibrary } from "react-native-image-picker";
 
+import { RootState } from "../../store/reducer";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -187,47 +185,46 @@ function NewFeedScreen({ navigation }) {
     <ScrollView
       style={styles.safe}
     >
-      <View
-        style={{
-          alignItems: 'center',
-          marginBottom: SCREEN_HEIGHT * 0.01,
-        }}
-      >
-        { file.map(file => {
-          if ( file.type === 'image/jpeg') {
-            return (
-              <View
-                key={ file.name }
-                style={ styles.media }
-              >
-                <Image
-                  source={{ uri: file.uri}}
-                  resizeMode="cover"
-                  style={{
-                    width: file.width,
-                    height: file.height,
-                    maxHeight: SCREEN_WIDTH * 0.8,
-                    maxWidth: SCREEN_WIDTH * 0.8,
-                  }}
-                />
-              </View>
-            )
-          } else {
-            return(
-              <View
-                key={ file.name }
-                style={ styles.media }
-              ><Video
-                  source={{ uri: file.uri }}
-                  style={{
-                    height: SCREEN_WIDTH * 0.8,
-                    width: SCREEN_WIDTH * 0.8,
-                  }}
-              /></View>
+      { (file.length > 0) && 
+        <Swiper
+          style={styles.swiper}
+        >
+          { file.map(file => {
+            if ( file.type === 'image/jpeg') {
+              return (
+                <View
+                  key={ file.name }
+                  style={ styles.media }
+                >
+                  <Image
+                    source={{ uri: file.uri}}
+                    resizeMode="cover"
+                    style={{
+                      width: file.width,
+                      height: file.height,
+                      maxHeight: SCREEN_WIDTH * 0.8,
+                      maxWidth: SCREEN_WIDTH * 0.8,
+                    }}
+                  />
+                </View>
               )
-          }
-        })}
-      </View>
+            } else {
+              return(
+                <View
+                  key={ file.name }
+                  style={ styles.media }
+                ><Video
+                    source={{ uri: file.uri }}
+                    style={{
+                      height: SCREEN_WIDTH * 0.8,
+                      width: SCREEN_WIDTH * 0.8,
+                    }}
+                /></View>
+                )
+            }
+          })}
+        </Swiper>
+      }
       <View
         style={{
           flexDirection: "row",
@@ -287,8 +284,10 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH * 0.2,
   },
   media: {
-    marginBottom: SCREEN_HEIGHT * 0.005,
+    alignItems: 'center'
   },
-  
+  swiper: {
+    height: SCREEN_HEIGHT * 0.5,
+  },
 });
 export default NewFeedScreen

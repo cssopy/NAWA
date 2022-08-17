@@ -25,6 +25,7 @@ function Feeds ({ navigation }) {
   
   const animationRef = useRef(new Animated.Value(0)).current;
   
+  // baseUrl
   const url = 'http://i7d205.p.ssafy.io/api/'
   const myId = useSelector((state: RootState) => state.user.accessToken)
   
@@ -32,22 +33,6 @@ function Feeds ({ navigation }) {
     inputRange: [0, 1],
     outputRange: [0, -HEADER_HEIGHT],
   });
-
-  const dispatch = useAppDispatch();
-  const logOutHAzaJaHuckAAAAAAAAAA = async () => {
-    dispatch(
-      userSlice.actions.setUser({ // redux state는 값이 변하면, useselector로 참조하고 있는 모든 컴포넌트가 다시 렌더링.
-        userId : '',
-        accessToken : '',
-        nickname : ''
-      }),
-    );
-  
-    EncryptedStorage.removeItem('userId')
-    EncryptedStorage.removeItem('accessToken')
-    EncryptedStorage.removeItem('refreshToken')
-  }
-
 
   const MainFeed = () => {
     const [feeds, setFeeds] = useState<object[]>([]);
@@ -63,6 +48,7 @@ function Feeds ({ navigation }) {
     console.log('data count', feeds.length)
 
     const getfeeds = () => {
+      /////////////////////////// Call pagination board
       const sendUrl = `${url}board/mainFeed/NEW/${page}`
       console.log('sending', sendUrl)
       axios.get(
@@ -132,7 +118,7 @@ function Feeds ({ navigation }) {
         fileUrl = `${url}file/${(data.fileType === 'IMAGE') ? 'IMAGE' : 'video'}/${data.fileName}`
         fileType = data.fileType
         // console.log('oneMedia', fileUrl)
-        console.log('oneMedia create')
+        console.log('oneMedia create', fileUrl)
       }
 
       return (
@@ -152,23 +138,16 @@ function Feeds ({ navigation }) {
               { (fileType === 'IMAGE') ?
                 <Image
                   source={{ uri: fileUrl }}
-                  style={{
-                    width: SCREEN_WIDTH * 0.8,
-                    height: SCREEN_HEIGHT * 0.3,
-                    resizeMode: 'cover',
-                  }}
+                  style={styles.img}
                 />
                 :
                 <Video
                   source={{ uri: fileUrl }}
-                  repeat={true}
                   resizeMode="cover"
+                  paused={false}
                   controls={true}
                   muted={true}
-                  style={{
-                    height: SCREEN_WIDTH * 0.8,
-                    width: SCREEN_WIDTH * 0.8,
-                  }}
+                  style={styles.vdo}
                 />
               }
             </View>
@@ -232,7 +211,6 @@ function Feeds ({ navigation }) {
         icon={{ name: 'add', color: 'white'}}
         color="red"
         />
-      <Button title="로그아웃" onPress={() =>logOutHAzaJaHuckAAAAAAAAAA() }></Button>
     </>
   )
 }
@@ -247,6 +225,7 @@ const styles = StyleSheet.create({
     paddingVertical : SCREEN_HEIGHT * 0.005,
     marginHorizontal : 10,
     marginTop : 10,
+    borderRadius : 10,
     height : 'auto',
   },
   content : {
@@ -282,6 +261,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 15
   },
+  img : {
+    width: SCREEN_WIDTH * 0.8,
+    height: SCREEN_HEIGHT * 0.3,
+    resizeMode: 'cover',
+    borderRadius: 10,
+    marginVertical: SCREEN_HEIGHT * 0.01,
+  },
+  vdo : {
+    height: SCREEN_WIDTH * 0.8,
+    width: SCREEN_WIDTH * 0.8,
+    borderRadius: 10,
+    marginVertical: SCREEN_HEIGHT * 0.01,
+  }
 })
 
 export default Feeds

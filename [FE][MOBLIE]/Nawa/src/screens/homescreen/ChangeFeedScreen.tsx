@@ -135,13 +135,13 @@ function ChangeFeedScreen({ navigation, route }) {
     ).then(res => {
       console.log('보냈다 200번인가?', newFiles)
       if (newFiles.length > 0) {
-        console.log('보낸다 미디어')
+        console.log('보낸다 미디어', res.data)
         const formData = new FormData()
         newFiles.forEach(f => {
           formData.append('uploadfile', f)
         })
         axios.post(
-          url + `files/${res.data}`,
+          url + `files/${boardId}`,
           formData,
           {
             headers : {
@@ -200,6 +200,7 @@ function ChangeFeedScreen({ navigation, route }) {
                 }}
               ><Video
                   source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
+                  controls={true}
                   style={{
                     height: SCREEN_WIDTH * 0.8,
                     width: SCREEN_WIDTH * 0.8,
@@ -213,7 +214,7 @@ function ChangeFeedScreen({ navigation, route }) {
             if ( file.type === 'image/jpeg') {
               return (
                 <View
-                  key={ file.fileName }
+                  key={ file.fileId }
                   style={ styles.media }
                 >
                   <Image
