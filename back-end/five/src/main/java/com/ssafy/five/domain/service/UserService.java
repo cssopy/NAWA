@@ -133,23 +133,27 @@ public class UserService {
     public ResponseEntity<?> updateUser(UpdateUserReqDto updateUserReqDto) {
         Users user1 = userRepository.findByUserId(updateUserReqDto.getUserId());
         if (user1 != null) {
-            user1.updatePassword(passwordEncoder.encode(updateUserReqDto.getPassword()));
-            user1.updateEmailId(updateUserReqDto.getEmailId());
-            user1.updateEmailDomain(updateUserReqDto.getEmailDomain());
-            user1.updateNickname(updateUserReqDto.getNickname());
-            user1.updateMent(updateUserReqDto.getMent());
+            if(user1.getUserId().equals(getCurrentUserId())){
+                user1.updatePassword(passwordEncoder.encode(updateUserReqDto.getPassword()));
+                user1.updateEmailId(updateUserReqDto.getEmailId());
+                user1.updateEmailDomain(updateUserReqDto.getEmailDomain());
+                user1.updateNickname(updateUserReqDto.getNickname());
+                user1.updateMent(updateUserReqDto.getMent());
 
-            if (!user1.getNumber().equals(updateUserReqDto.getNumber())) {
-                Messages msg = smsRepository.findById(updateUserReqDto.getNumber()).orElseThrow(() -> new RuntimeException("인증되지 않은 휴대폰"));
-                if (!msg.isAuth()) {
-                    log.info("인증되지 않은 번호입니다.");
-                    return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+                if (!user1.getNumber().equals(updateUserReqDto.getNumber())) {
+                    Messages msg = smsRepository.findById(updateUserReqDto.getNumber()).orElseThrow(() -> new RuntimeException("인증되지 않은 휴대폰"));
+                    if (!msg.isAuth()) {
+                        log.info("인증되지 않은 번호입니다.");
+                        return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+                    }
+                    user1.updateNumber(updateUserReqDto.getNumber());
+                    smsRepository.delete(msg);
                 }
-                user1.updateNumber(updateUserReqDto.getNumber());
-                smsRepository.delete(msg);
+                log.info("회원 정보가 수정되었습니다.");
+                return new ResponseEntity<>(true, HttpStatus.OK);
             }
-            log.info("회원 정보가 수정되었습니다.");
-            return new ResponseEntity<>(true, HttpStatus.OK);
+            log.info("본인을 제외한 다른 유저의 정보를 수정할 수 없습니다.");
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
         log.info("존재하지 않는 유저입니다.");
         return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
