@@ -39,7 +39,7 @@ public class UserController {
     @Operation(summary = "회원가입", description = "회원가입된 아이디 또는 닉네임으로 회원가입 시도할시 false, 이메일 중복시 false, 휴대폰 인증이 안되있을 경우 false, 휴대폰 인증 완료시 휴대폰번호와 인증번호를 저장한 DB 삭제 후 true 반환")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "(OK) 회원가입 성공"),
-            @ApiResponse(responseCode = "400", description = "(BAD_REQUEST) (BAD_REQUEST) 아이디 or 닉네임 or 이메일 or 전화번호 중복"),
+            @ApiResponse(responseCode = "400", description = "(BAD_REQUEST) 아이디 or 닉네임 or 이메일 or 전화번호 중복"),
             @ApiResponse(responseCode = "401", description = "(UNAUTHORIZED) sms 미인증 상태"),
     })
     @PostMapping("/signup")
@@ -72,6 +72,7 @@ public class UserController {
     @Operation(summary = "회원 정보 수정", description = "유저가 없을 경우 false, 있을 경우 수정하고자 하는 회원 정보 수정 후 db에 저장 및 true 반환")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "(OK) 수정 완료"),
+            @ApiResponse(responseCode = "400", description = "(BAD_REQUEST) 다른 유저의 정보 수정 불가"),
             @ApiResponse(responseCode = "401", description = "(UNAUTHORIZED) sms 미인증 상태"),
             @ApiResponse(responseCode = "403", description = "(FORBIDDEN) accessToken 만료"),
             @ApiResponse(responseCode = "404", description = "(NOT_FOUND) 유저 찾을 수 없음")
