@@ -45,7 +45,7 @@ function FeedDetail({ route, navigation }) {
     const com = JSON.stringify({
       boardId: boardId,
       cmtContent: newcomment,
-      userId: userId
+      userId: whoamI
     })
 
     console.log('createcomment', newcomment)
@@ -62,6 +62,7 @@ function FeedDetail({ route, navigation }) {
       console.log('댓글 생성', res.data)
       // console.log(comments)
       setTicTok(!ticTok)
+      setNewComment('')
     }).catch(err => 
       console.log('you get error at detail', err))
     }
@@ -97,9 +98,9 @@ function FeedDetail({ route, navigation }) {
     ).then(() => {
       setILike(Math.abs(iLike - 1))
       if (iLike) {
-        setLikes(likes + 1)
-      } else {
         setLikes(likes - 1)
+      } else {
+        setLikes(likes + 1)
       }
     }
     )
@@ -243,7 +244,7 @@ function FeedDetail({ route, navigation }) {
 
         {/* <View><Text>Id: { boardId }</Text></View> */}
       </View>
-      {( whoamI === userId ) ?
+      {( whoamI === userId ) &&
         <View
           style={{
             flexDirection: "row",
@@ -263,12 +264,13 @@ function FeedDetail({ route, navigation }) {
             containerStyle={styles.button}
           />
         </View>
-        :
+      }
+        
         <View
-          style={{
-            marginVertical: SCREEN_HEIGHT * 0.025,
-            marginHorizontal: SCREEN_WIDTH * 0.1,
-          }}
+        style={{
+          marginVertical: SCREEN_HEIGHT * 0.025,
+          marginHorizontal: SCREEN_WIDTH * 0.1,
+        }}
         >
           <Form
             onButtonPress={createComment}
@@ -292,7 +294,6 @@ function FeedDetail({ route, navigation }) {
             />
           </Form>
         </View>
-      }
       <ScrollView
         style={styles.comments}
         >
@@ -301,14 +302,24 @@ function FeedDetail({ route, navigation }) {
           >Comments</Text></View>
         { comments && 
           comments.map(comment => {
-            // console.log(comment)
+            console.log(comment, Boolean(whoamI === comment.userId))
             return (<View
               key={ comment.cmtId }
+              style={styles.commentTotal}
               >
-                <View><Text>{ comment.cmtContent }</Text></View>
+                <View
+                  style={styles.textBox}
+                ><Text
+                  style={styles.textFont}
+                >{ comment.cmtContent }</Text></View>
                 { (whoamI === comment.userId) &&
                   <Button
+                    size="sm"
                     title="삭제하기"
+                    style={styles.commentButton}
+                    titleStyle={{
+                      fontSize: 10,
+                    }}
                     onPress={() => deleteComment(comment.cmtId)}
                   />
                 }
@@ -322,6 +333,33 @@ function FeedDetail({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    paddingHorizontal: SCREEN_WIDTH * 0.01
+  },
+  content : {
+    backgroundColor : 'white',
+    marginHorizontal : SCREEN_WIDTH * 0.05,
+    marginVertical: SCREEN_HEIGHT * 0.01,
+    borderRadius : 10,
+    width: SCREEN_WIDTH * 0.8,
+    paddingHorizontal: SCREEN_WIDTH * 0.05,
+    paddingVertical: SCREEN_HEIGHT * 0.02,
+  },
+  comments: {
+    paddingHorizontal: SCREEN_WIDTH * 0.1,
+  },
+  commentButton: {
+    flex: 1,
+    paddingLeft: SCREEN_WIDTH * 0.005,
+    height: 20,
+  },
+  commentTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  commentTotal: {
+    flexDirection: 'row',
+  },
   feed: {
     marginBottom: 10,
   },
@@ -336,14 +374,36 @@ const styles = StyleSheet.create({
     borderRadius : 10,
     height : 'auto'
   },
-  content : {
-    backgroundColor : 'white',
-    marginHorizontal : SCREEN_WIDTH * 0.05,
-    marginVertical: SCREEN_HEIGHT * 0.01,
-    borderRadius : 10,
+  media: {
+    height: SCREEN_WIDTH * 0.8,
     width: SCREEN_WIDTH * 0.8,
-    paddingHorizontal: SCREEN_WIDTH * 0.05,
-    paddingVertical: SCREEN_HEIGHT * 0.02,
+    marginBottom: SCREEN_HEIGHT * 0.01
+  },
+  mediatool: {
+    alignItems: 'center'
+  },
+  swiper: {
+    height: SCREEN_HEIGHT * 0.5,
+  },
+  text : {
+    fontSize: 15
+  },
+  textBox : {
+    flex : 9,
+    backgroundColor : 'white',
+    marginRight : 5,
+    marginVertical : 5,
+    borderRadius : 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 20
+  },
+  textFont: {
+    fontSize: 15,
+  },
+  title: {
+    fontSize: 40,
+    fontWeight: 'bold',
   },
   underBar : {
     flex : 2,
@@ -353,43 +413,6 @@ const styles = StyleSheet.create({
     marginHorizontal : 5,
     marginVertical : 5,
   },
-  textBox : {
-    flex : 1,
-    backgroundColor : 'white',
-    marginRight : 5,
-    marginVertical : 5,
-    borderRadius : 10,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  text : {
-    fontSize: 15
-  },
-  button: {
-    paddingHorizontal: SCREEN_WIDTH * 0.01
-  },
-  comments: {
-    paddingHorizontal: SCREEN_WIDTH * 0.1,
-  },
-  commentTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  media: {
-    height: SCREEN_WIDTH * 0.8,
-    width: SCREEN_WIDTH * 0.8,
-    marginBottom: SCREEN_HEIGHT * 0.01
-  },
-  swiper: {
-    height: SCREEN_HEIGHT * 0.5,
-  },
-  mediatool: {
-    alignItems: 'center'
-  },
-  title: {
-    fontSize: 40,
-    fontWeight: 'bold',
-  }
 })
 
 export default FeedDetail
