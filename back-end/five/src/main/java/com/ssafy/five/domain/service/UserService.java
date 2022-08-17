@@ -35,7 +35,6 @@ public class UserService {
     private final MailService mailService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
     private final SmsRepository smsRepository;
 
     @Transactional
@@ -50,7 +49,7 @@ public class UserService {
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
-        if (userRepository.findByEmailIdAndEmailDomain(signUpReqDto.getEmailId(), signUpReqDto.getEmailDomain()) != null) {
+        if (userRepository.existsByEmailIdAndEmailDomain(signUpReqDto.getEmailId(), signUpReqDto.getEmailDomain())) {
             log.info("중복된 이메일입니다.");
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
@@ -134,21 +133,44 @@ public class UserService {
         Users user1 = userRepository.findByUserId(updateUserReqDto.getUserId());
         if (user1 != null) {
             if(user1.getUserId().equals(getCurrentUserId())){
+                if(!user1.getNickname().equals(updateUserReqDto.getNickname())){
+                    if (userRepository.existsByNickname(updateUserReqDto.getNickname())){
+                        log.info("중복된 닉네임입니다.");
+                        return new ResponseEntity<>(false, HttpStatus.CONFLICT);
+                    }
+                }
+
+                if(!(user1.getEmailId().equals(updateUserReqDto.getEmailId()) && user1.getEmailDomain().equals(updateUserReqDto.getEmailDomain()))){
+                    if (userRepository.existsByEmailIdAndEmailDomain(updateUserReqDto.getEmailId(), updateUserReqDto.getEmailDomain())){
+                        log.info("중복된 이메일입니다.");
+                        return new ResponseEntity<>(false, HttpStatus.CONFLICT);
+                    }
+                }
+
+                if (!user1.getNumber().equals(updateUserReqDto.getNumber())) {
+                    if(userRepository.existsByNumber(updateUserReqDto.getNumber())) {
+                        log.info("이미 사용중인 전화번호입니다.");
+                        return new ResponseEntity<>(false, HttpStatus.CONFLICT);
+                    }
+                    Messages msg = smsRepository.findByReceiver(updateUserReqDto.getNumber());
+                    if(msg == null) {
+                        log.info("인증받지 않은 전화번호입니다.");
+                        return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+                    }
+                    if (!msg.isAuth()) {
+                        log.info("인증번호를 다시 입력해주세요.");
+                        return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+                    }
+                    user1.updateNumber(updateUserReqDto.getNumber());
+                    smsRepository.delete(msg);
+                }
+
                 user1.updatePassword(passwordEncoder.encode(updateUserReqDto.getPassword()));
                 user1.updateEmailId(updateUserReqDto.getEmailId());
                 user1.updateEmailDomain(updateUserReqDto.getEmailDomain());
                 user1.updateNickname(updateUserReqDto.getNickname());
                 user1.updateMent(updateUserReqDto.getMent());
 
-                if (!user1.getNumber().equals(updateUserReqDto.getNumber())) {
-                    Messages msg = smsRepository.findById(updateUserReqDto.getNumber()).orElseThrow(() -> new RuntimeException("인증되지 않은 휴대폰"));
-                    if (!msg.isAuth()) {
-                        log.info("인증되지 않은 번호입니다.");
-                        return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
-                    }
-                    user1.updateNumber(updateUserReqDto.getNumber());
-                    smsRepository.delete(msg);
-                }
                 log.info("회원 정보가 수정되었습니다.");
                 return new ResponseEntity<>(true, HttpStatus.OK);
             }
