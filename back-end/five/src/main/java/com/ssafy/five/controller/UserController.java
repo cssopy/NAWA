@@ -43,7 +43,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "(UNAUTHORIZED) sms 미인증 상태"),
     })
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpReqDto signUpReqDto) throws Exception {
+    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpReqDto signUpReqDto) {
         return userService.signUp(signUpReqDto);
 
     }
