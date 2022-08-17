@@ -11,13 +11,13 @@ import {
 } from 'react-native';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import DismissKeyboardView from '../components/DismissKeyboardView';
+import DismissKeyboardView from '../../components/DismissKeyboardView';
 import axios, {AxiosError} from 'axios';
-import {RootStackParamList} from '../../AppInner';
+import {RootStackParamList} from '../../../AppInner';
 import DatePicker from 'react-native-date-picker';
 import AsyncStorage from '@react-native-community/async-storage';
-import {useAppDispatch} from '../store';
-import userSlice from '../slices/user';
+import {useAppDispatch} from '../../store';
+import userSlice from '../../slices/user';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>
 
@@ -68,7 +68,7 @@ function SignUp({navigation} : SignUpScreenProps) {
     // setOpenId(e)
     try {
       console.log(openId, "&", userId)
-      const response = await axios.get(`http://i7d205.p.ssafy.io:8080/userId/${openId}`, {
+      const response = await axios.get(`http://i7d205.p.ssafy.io:8080/api/userId/${openId}`, {
       }).then(response => {
         setUserId(openId)
         setIdCheck(true)
@@ -94,7 +94,7 @@ function SignUp({navigation} : SignUpScreenProps) {
   const [nicknameCheck, setNicknameCheck] = useState(false)
   const checkNickname = async () => {
     try {
-      const response = await axios.get(`http://i7d205.p.ssafy.io:8080/nickname/${openNickname}`, {
+      const response = await axios.get(`http://i7d205.p.ssafy.io:8080/api/nickname/${openNickname}`, {
       }).then(response => {
         setNickName(openNickname)
         setNicknameCheck(true)
@@ -117,7 +117,7 @@ function SignUp({navigation} : SignUpScreenProps) {
   const [sendNumber, setSendNumber] = useState(false)
   const sendAuthNumber = async () => {
     try {
-      const response = await axios.post(`http://i7d205.p.ssafy.io:8080/sms`, {
+      const response = await axios.post(`http://i7d205.p.ssafy.io:8080/api/sms`, {
         "recipientPhoneNumber": number});
       console.log(number)
       setSendNumber(true)
@@ -134,7 +134,7 @@ function SignUp({navigation} : SignUpScreenProps) {
   const checkAuthNumber = async () => {
     
     try {
-      const response = await axios.post(`http://i7d205.p.ssafy.io:8080/sms/check`, {
+      const response = await axios.post(`http://i7d205.p.ssafy.io:8080/api/sms/check`, {
         "certNumber": authNumber, 
         "recipientPhoneNumber": number});
       console.log("Authentication Pass", "번호인증완료")
@@ -194,6 +194,9 @@ function SignUp({navigation} : SignUpScreenProps) {
       if (!nickName || !nickName.trim()) {
           return Alert.alert('닉네임 나와 !', '닉네임을 입력해주세요');
       }
+      if (nickName.trim().length < 3 || nickName.trim().length > 15) {
+        return Alert.alert('닉네임 나와 !', '닉네임은 3 ~ 15 자리까지 가능합니다.');
+      }
       if (!number || !number.trim()) {
           return Alert.alert('번호 나와 !', '번호를 입력해주세요');
       }
@@ -203,7 +206,6 @@ function SignUp({navigation} : SignUpScreenProps) {
       if (!gender || !gender.trim()) {
           return Alert.alert('성별 나와 !', '성별을 입력해주세요');
       }
-      
       if (
           !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
             email,
@@ -223,7 +225,7 @@ function SignUp({navigation} : SignUpScreenProps) {
   try {
     setLoading(true);
     console.log(`${date.getFullYear()}${ date.getMonth()+1 >9 ? (date.getMonth()+1) : "0"+(date.getMonth()+1) }${ date.getDate()>9 ? date.getDate() : "0"+date.getDate()}`)
-    const response = await axios.post('http://i7d205.p.ssafy.io:8080/signup', {
+    const response = await axios.post('http://i7d205.p.ssafy.io:8080/api/signup', {
         userId : userId,
         password : password,
         birth : `${date.getFullYear()}${ date.getMonth()+1 >9 ? (date.getMonth()+1) : "0"+(date.getMonth()+1) }${ date.getDate()>9 ? date.getDate() : "0"+date.getDate()}`,
@@ -243,7 +245,6 @@ function SignUp({navigation} : SignUpScreenProps) {
         nickname : nickName,
       }),
     )
-    
     navigation.navigate('SignIn')
   } catch (error) {
     const errorResponse = (error as AxiosError).response;
