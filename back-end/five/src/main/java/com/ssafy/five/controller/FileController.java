@@ -27,7 +27,7 @@ public class FileController {
     private String bpath;
 
     @GetMapping("/{fileType}/{fileName}")
-    public ResponseEntity<?> vidoeResourceFileName(@PathVariable FileType fileType, @PathVariable String fileName) throws IOException {
+    public ResponseEntity<?> videoResourceFileName(@PathVariable FileType fileType, @PathVariable String fileName) throws IOException {
         Path path = Paths.get(bpath + "/" + fileType + "/" + fileName);
         String contentType = Files.probeContentType(path);
         HttpHeaders headers = new HttpHeaders();
@@ -39,7 +39,7 @@ public class FileController {
     }
 
     @GetMapping("/video/{fileName}")
-    public ResponseEntity<?> vidoeResourceFileName(@PathVariable String fileName) throws IOException {
+    public ResponseEntity<?> videoResourceFileName(@PathVariable String fileName) throws IOException {
         String fileFullPath = bpath + "/" + FileType.VIDEO + "/" + fileName;
         Resource resource = new FileSystemResource(fileFullPath);
         HttpHeaders headers = new HttpHeaders();
