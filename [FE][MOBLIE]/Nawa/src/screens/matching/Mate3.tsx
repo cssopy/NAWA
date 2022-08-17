@@ -354,9 +354,10 @@ const Mate3 = ( {navigation} ) => {
         transparent={true}
         visible={modalVisible}
         >
-        <View style={{position:"absolute", flexDirection:"column",alignItems:'center', width:SCREEN_WIDTH/4*3, height:200, top:SCREEN_HEIGHT/2 - 100, backgroundColor:'white', elevation:10, borderRadius:10, alignSelf:'center'}}>
-          <Text style={{ color:'black', textAlign:"center", margin:10, fontSize:25}}>상대방의 승낙을 기다리는 중이에요.</Text>
+        <View style={{position:"absolute",justifyContent:'center', flexDirection:"column",alignItems:'center', width:SCREEN_WIDTH/4*3, height:150, top:SCREEN_HEIGHT/2 - 100, backgroundColor:'white', elevation:10, borderRadius:10, alignSelf:'center'}}>
           <ActivityIndicator size={"large"} color="rgb(0, 197, 145)" ></ActivityIndicator>
+          <Text style={{ color:'black', textAlign:"center", margin:5, fontSize:25}}>상대방의 수락을</Text>
+          <Text style={{ color:'black', textAlign:"center", margin:5, fontSize:25}}>기다리는 중이에요.</Text>
         </View>
       </Modal>
 
@@ -404,10 +405,10 @@ const Mate3 = ( {navigation} ) => {
         <View style={styles.topBox}>
           <View style={styles.infoBox}>
             <Ionicons style={{marginLeft:2}} onPress={() => navigation.navigate('Mate2')} size={22} name='arrow-back-outline' color='white' />
-            <Text style={{color:'white'}}>나와 광장</Text>
+            <Text style={{color:'white'}}> 나와 광장</Text>
             <Ionicons size={20} name='arrow-forward-outline' color='rgb(0, 197, 145)' />
           </View>
-          <Progress.Bar style={{marginHorizontal:4, borderColor: 'rgb(0, 197, 145)'}} progress ={0.75} width={constants.width - 10} height={6} unfilledColor={'white'} />
+          <Progress.Bar style={{marginHorizontal:4, borderColor: 'rgb(0, 197, 145)'}} progress ={1} width={constants.width - 10} height={6} unfilledColor={'white'} />
         </View>  
 
 
@@ -422,7 +423,7 @@ const Mate3 = ( {navigation} ) => {
             zoomControl={false}
             mapType={4}
           >
-            <Marker width={1} height={1} coordinate={location} pinColor={'blue'} caption={{ text:`나의 위치`, textSize:15, color:'red'}}/>
+            <Marker width={30} height={40} coordinate={location} pinColor={'blue'} caption={{ text:`나의 위치`, textSize:15, color:'red'}}/>
             { online ? 
             <>
               <Path coordinates={[location, onLocation]} color={'rgb(0, 197, 145)'} width={2}/>

@@ -26,9 +26,13 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 import { Button } from '@rneui/base/dist/Button';
 
-
+import { useAppDispatch } from '../../store';
+import userSlice from '../../slices/user';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 const JoinRTC = ({navigation}) => {
+  const dispatch = useAppDispatch()
+
   const [remoteStream, setRemoteStream] = useState(null);
   const [webcamStarted, setWebcamStarted] = useState(false);
   const [localStream, setLocalStream] = useState(null);
@@ -193,11 +197,66 @@ const JoinRTC = ({navigation}) => {
         },
         headers : {"Authorization" : `Bearer ${accessToken}`}
       });
-      Alert.alert('알림', '신청완료! 영상통화 종료시 결과를 확인할 수 있어요!')
+      if (response.status === 200) {
+        Alert.alert('알림', '신청완료! 영상통화 종료시 결과를 확인할 수 있어요!')
+      }
+      if (response.status === 201) {
+        Alert.alert('알림', '서로 신청했어요! 이제 둘은 메이트랍니다!')
+      }
+  
     } catch (error) {
-        Alert.alert('알림', '이미 신청되었어요! 결과는 영상통화 종료시 확인할 수 있어요!')
+      console.log(error.response.status)
+  
+      if (error.response.status === 403) {
+        try {
+          const userId = await EncryptedStorage.getItem('userId');
+          const refreshToken = await EncryptedStorage.getItem('refreshToken');
+          const response = await axios({
+            method : 'post',
+            url : 'http://i7d205.p.ssafy.io/api/checktoken',
+            data : {
+              userId: userId,
+              refreshToken: refreshToken
+            }
+          });
+          // accessToken 신규 발급 > 화면 유지
+          await EncryptedStorage.setItem('accessToken', response.data)
+          dispatch(
+            userSlice.actions.setUser({
+              accessToken : response.data
+            })
+            )
+        } 
+        catch { //refresh 만료 > 로그인화면
+          if (error.response.status === 403) {
+            dispatch(
+              userSlice.actions.setUser({
+                userId : '',
+                accessToken : '',
+                nickname : ''
+              }),
+            );
+            EncryptedStorage.removeItem('userId')
+            EncryptedStorage.removeItem('accessToken')
+            EncryptedStorage.removeItem('refreshToken')
+          }
+        }
+      }
+      else if (error.response.status === 406) {
+        Alert.alert('알림', '이미 메이트 랍니다!')
+      }
+      else {
+        Alert.alert('알림', '이미 신청했습니다! 상대방이 수락시 메이트가 됩니다.')
       }
     }
+    }
+  
+    const reporting = () => {
+      Alert.alert('알림', '신고가 접수 되었습니다. 영상통화를 종료 합니다.')
+      endCall()
+    }
+  
+
 
 
     return (
@@ -210,7 +269,7 @@ const JoinRTC = ({navigation}) => {
               webcamStarted && !onAir && <Button title="준비 완료되면 시작하세요!" onPress={() => joinCall()} disabled={!!onAir} />
               }
               { webcamStarted && onAir && <Button onPress={() => sendFriend()} title={'마음에 들면 메이트 신청!'}></Button> }
-              <Button color={'grey'} buttonStyle={{borderRadius:50, marginLeft:50, elevation:8}} titleStyle={{textAlign:'center'}} title='신고'></Button>
+              <Button onPress={() => reporting()} color={'grey'} buttonStyle={{borderRadius:50, marginLeft:50, elevation:8}} titleStyle={{textAlign:'center'}} title='신고'></Button>
               <Button onPress={() => endCall()} color={'error'} buttonStyle={{borderRadius:50, marginHorizontal:4, elevation:8}} titleStyle={{textAlign:'center'}} title='종료'></Button>
     
             </View>

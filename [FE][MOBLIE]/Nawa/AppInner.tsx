@@ -47,9 +47,6 @@ export type RootStackParamList = {
 
 
 
-
-
-
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -57,11 +54,7 @@ const Stack = createNativeStackNavigator();
 function AppInner() {
   const dispatch = useAppDispatch()
   const accessToken = useSelector((state : RootState) => state.user.accessToken)
-  const userId = useSelector((state : RootState) => state.user.userId)
   const nickname = useSelector((state : RootState) => state.user.nickname)
-  const [counting, setcounting] = useState(false);
-  // counting = 0
-  console.log(counting)
 
   // realtime database 등록
   const reference = firebase
@@ -72,12 +65,36 @@ function AppInner() {
   reference
     .ref(`/users`)
     .on('child_added', snapshot => {
-      const newData = snapshot.val()
-      if (newData.time >= Date() && newData.to === nickname) {
-        Alert.alert('알림', '새로운 메세지가 도착했습니다.')
-        return null
+      const newData = snapshot.val();
+      if (newData.time >= Date()) {
+        if (newData.to === nickname && newData.from !== nickname) {
+          Alert.alert('알림', '새로운 메세지가 도착했습니다.');
+          dispatch(userSlice.actions.addChatting(newData));
+          return ;
+        } 
+        if (newData.to !== nickname && newData.from === nickname) {
+          dispatch(userSlice.actions.addChatting(newData));
+          return ;
+        }
       }
     })
+      
+    
+ 
+  useEffect(() => {
+      reference
+        .ref(`/users`)
+        .once('value')
+        .then((snapshot) => {
+            const data = snapshot.toJSON()
+            dispatch(
+              userSlice.actions.setChatting({
+                chatting : [data]
+              })
+            )
+        })
+  }, [])
+
 
 
   // 자동 로그인
@@ -88,11 +105,6 @@ function AppInner() {
         const refreshToken = await EncryptedStorage.getItem('refreshToken');
         let accessToken = await EncryptedStorage.getItem('accessToken');
         const nickname = await AsyncStorage.getItem('nickname');
-
-        // console.log(userId)
-        // console.log(accessToken)
-        // console.log(refreshToken)
-        
         if (!accessToken) {
           SplashScreen.hide();
           return;
@@ -108,7 +120,6 @@ function AppInner() {
           headers : {"Authorization" : `Bearer ${accessToken}`}
         });
         
-
         dispatch(
           userSlice.actions.setUser({
             userId : response.data.userId,
@@ -128,7 +139,6 @@ function AppInner() {
       } catch (error) {
          // 정지유저 400
           if (error.response.status === 400) {
-            console.log('400 에러 코드 획득!! 정지유저')
             dispatch(
               userSlice.actions.setUser({
                 userId : '',
@@ -136,15 +146,13 @@ function AppInner() {
                 nickname : ''
               }),
             );
-          
             EncryptedStorage.removeItem('userId')
             EncryptedStorage.removeItem('accessToken')
             EncryptedStorage.removeItem('refreshToken')
-            Alert.alert('알림', '사용이 정지된 회원입니다. 홈페이지 고객센터를 통해 문의 해주세요')
+            Alert.alert('알림', '사용이 정지된 회원입니다. 고객센터를 통해 문의 해주세요')
           }
           // access토큰 만료시 403
           if (error.response.status === 403) {
-            console.log('403 에러 코드 획득!! access 만료!!')
             try {
               const userId = await EncryptedStorage.getItem('userId');
               const refreshToken = await EncryptedStorage.getItem('refreshToken');
@@ -156,15 +164,15 @@ function AppInner() {
                   refreshToken: refreshToken
                 }
               });
-
               // accessToken 신규 발급
-              await EncryptedStorage.setItem('accessToken', response.data.accessToken)
-              console.log('access 신규발급!')
-
-            
+              await EncryptedStorage.setItem('accessToken', response.data)
+              dispatch(
+                userSlice.actions.setUser({
+                  accessToken : response.data
+                })
+              )
             } catch {
               if (error.response.status === 403) {
-                console.log('403 에러 코드 획득!! 리프레시 만료')
                 dispatch(
                   userSlice.actions.setUser({
                     userId : '',
@@ -180,7 +188,7 @@ function AppInner() {
               SplashScreen.hide();
             }
           }
-        
+
       } finally {
             SplashScreen.hide();
       }
@@ -189,24 +197,7 @@ function AppInner() {
   }, [dispatch]);
 
 
-  // // 데이터 불러오기
-  // useEffect(() => {
-  //   const loadData = async () => {
-  //     const response = await AsyncStorage.getItem('chattings')
-  //     dispatch(userSlice.actions.addChatting(response))
-  //     loadData()
-  //   }
-  // },[])
-
-  // // 데이터 저장
-  // useEffect(() => {
-  //   const loadData2 = async () => {
-  //     const response = await AsyncStorage.getItem('chattings')
-  //     AsyncStorage.setItem('chattings', [...response, chattings])
-  //   loadData2()
-  //   }
-  // },[chattings])
-
+ 
   return (
     <>
       <NavigationContainer>
@@ -229,8 +220,8 @@ function AppInner() {
               }
               return <Ionicons name={iconName} size={size} color={color} />;
             },
-            tabBarActiveTintColor : 'rgb(0, 197, 145)', // 활성화된 탭 색
-            tabBarInactiveTintColor : 'grey',  // 활성화 안된 탭 색
+            tabBarActiveTintColor : 'rgb(0, 197, 145)',
+            tabBarInactiveTintColor : 'grey',
             headerShown : false,
             tabBarHideOnKeyboard : true,
             tabBarStyle : {height:50}

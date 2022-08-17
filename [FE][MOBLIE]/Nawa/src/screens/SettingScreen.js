@@ -10,9 +10,10 @@ import {Alert, Text, View, StyleSheet, Button} from 'react-native'
 import { useAppDispatch } from "../store";
 import userSlice from "../slices/user";
 
-
+import axios from "axios";
 
 const SettingScreen = () => {
+  const userId = useSelector((state : RootState) => state.user.userId)
   const dispatch = useAppDispatch();
   const logOutHAzaJaHuckAAAAAAAAAA = async () => {
     dispatch(
@@ -33,7 +34,7 @@ const SettingScreen = () => {
 
   return (
     <>
-      <Button title="로그아웃" onPress={() =>logOutHAzaJaHuckAAAAAAAAAA() }></Button>
+      <Button title="로그아웃" onPress={() =>logOutHAzaJaHuckAAAAAAAAAA()}></Button>
     </>
   );
 }
