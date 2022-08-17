@@ -8,6 +8,7 @@ import Swiper from 'react-native-swiper';
 import { useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
 import { Form, FormItem } from "react-native-form-component";
+import Icon from "react-native-vector-icons/AntDesign"
 
 import { RootState } from "../../store/reducer";
 import UserIcon from "../../components/userIcon";
@@ -94,8 +95,12 @@ function FeedDetail({ route, navigation }) {
         'Authorization' : `Bearer ${myId}`
       }}
     ).then(() => {
-      console.log('like?unlike?');
-      setTicTok(!ticTok);
+      setILike(Math.abs(iLike - 1))
+      if (iLike) {
+        setLikes(likes + 1)
+      } else {
+        setLikes(likes - 1)
+      }
     }
     )
   }
@@ -145,6 +150,7 @@ function FeedDetail({ route, navigation }) {
     })
   },[ticTok, isFocused])
 
+
   return (
     <ScrollView>
       <View
@@ -153,7 +159,9 @@ function FeedDetail({ route, navigation }) {
           marginVertical: SCREEN_HEIGHT * 0.025,
         }}
       >
-        <View><Text>boardTitle: { title }</Text></View>
+        <View><Text
+          style={styles.title}
+        >{ title }</Text></View>
         <Swiper
           style={styles.swiper}
         >
@@ -188,10 +196,52 @@ function FeedDetail({ route, navigation }) {
           }
         })}
         </Swiper>
-        <View><Text>boradContent: { content }</Text></View>
-        <View><Text>boardLikes: { likes }</Text></View>
-        <View><Text>Hits: { hits }</Text></View>
-        <View><Text>Id: { boardId }</Text></View>
+        
+        <View
+          style={{
+            flexDirection: 'row',
+            paddingRight: SCREEN_WIDTH * 0.05,
+            paddingLeft: 'auto',
+          }}
+        >
+          <View>
+            <Text>{ hits }</Text>
+          </View>
+          {(whoamI !== userId) && ( iLike ?
+            <View>
+              <Icon
+                name="dislike1"
+                onPress={likeBorad}
+                size={15}
+                style={{
+                  color: 'red',
+                  paddingRight: SCREEN_WIDTH * 0.01,
+                }}
+              />
+            </View>
+            :
+            <View>
+              <Icon
+                name="like1"
+                onPress={likeBorad}
+                size={15}
+                style={{
+                  color: 'blue',
+                  paddingRight: SCREEN_WIDTH * 0.01,
+                }}
+              />
+            </View>
+          )}
+          <Text>{ likes }</Text>
+        </View>
+
+        <View
+          style={styles.content}
+          ><Text
+          style={styles.text}
+          >{ content }</Text></View>
+
+        {/* <View><Text>Id: { boardId }</Text></View> */}
       </View>
       {( whoamI === userId ) ?
         <View
@@ -216,19 +266,24 @@ function FeedDetail({ route, navigation }) {
         :
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: 'flex-end',
             marginVertical: SCREEN_HEIGHT * 0.025,
+            marginHorizontal: SCREEN_WIDTH * 0.1,
           }}
         >
-          <Button
-            title={ !iLike ? "좋아요" : "좋아요 취소"}
-            onPress={likeBorad}
-            containerStyle={styles.button}
-          />
           <Form
             onButtonPress={createComment}
             buttonText="보내기"
+            buttonStyle={{
+              flex: 1,
+              marginVertical: 0,
+              paddingVertical: 0,
+              width: SCREEN_WIDTH * 0.1,
+              height: SCREEN_HEIGHT * 0.05,
+              alignSelf: 'flex-end',
+            }}
+            buttonTextStyle={{
+              fontSize: 10,
+            }}
           >
             <FormItem
               value={newcomment}
@@ -239,9 +294,11 @@ function FeedDetail({ route, navigation }) {
         </View>
       }
       <ScrollView
-        style={comments}
+        style={styles.comments}
         >
-        <Text>Comments</Text>
+          <View><Text
+            style={styles.commentTitle}
+          >Comments</Text></View>
         { comments && 
           comments.map(comment => {
             // console.log(comment)
@@ -280,12 +337,13 @@ const styles = StyleSheet.create({
     height : 'auto'
   },
   content : {
-    flex : 11,
     backgroundColor : 'white',
-    marginHorizontal : 5,
-    marginTop : 5,
+    marginHorizontal : SCREEN_WIDTH * 0.05,
+    marginVertical: SCREEN_HEIGHT * 0.01,
     borderRadius : 10,
-    height : 200
+    width: SCREEN_WIDTH * 0.8,
+    paddingHorizontal: SCREEN_WIDTH * 0.05,
+    paddingVertical: SCREEN_HEIGHT * 0.02,
   },
   underBar : {
     flex : 2,
@@ -301,19 +359,21 @@ const styles = StyleSheet.create({
     marginRight : 5,
     marginVertical : 5,
     borderRadius : 10,
-    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
   },
   text : {
-    textAlign: 'center',
     fontSize: 15
   },
   button: {
     paddingHorizontal: SCREEN_WIDTH * 0.01
   },
   comments: {
-    width: SCREEN_WIDTH * 0.8,
+    paddingHorizontal: SCREEN_WIDTH * 0.1,
+  },
+  commentTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   media: {
     height: SCREEN_WIDTH * 0.8,
@@ -326,6 +386,10 @@ const styles = StyleSheet.create({
   mediatool: {
     alignItems: 'center'
   },
+  title: {
+    fontSize: 40,
+    fontWeight: 'bold',
+  }
 })
 
 export default FeedDetail

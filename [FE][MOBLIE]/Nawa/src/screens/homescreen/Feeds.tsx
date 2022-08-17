@@ -47,7 +47,7 @@ function Feeds ({ navigation }) {
 
     console.log('data count', feeds.length)
 
-    const getfeeds = () => {
+    const getfeeds = async() => {
       /////////////////////////// Call pagination board
       const sendUrl = `${url}board/mainFeed/NEW/${page}`
       console.log('sending', sendUrl)

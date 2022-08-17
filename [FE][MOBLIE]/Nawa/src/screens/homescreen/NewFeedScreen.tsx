@@ -7,7 +7,7 @@ import Swiper from 'react-native-swiper';
 import { useSelector } from "react-redux";
 import { Button, ScreenHeight } from "@rneui/base";
 import { Form, FormItem } from 'react-native-form-component';
-import { launchImageLibrary } from "react-native-image-picker";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
 import { RootState } from "../../store/reducer";
 
@@ -237,9 +237,9 @@ function NewFeedScreen({ navigation }) {
         title="사진"
         onPressIn={openCamera}
         containerStyle={styles.button}
-      />
+      /> */}
 
-      <Button
+      {/* <Button
         title="동영상"
         onPressIn ={openVideo}
         containerStyle={styles.button}
