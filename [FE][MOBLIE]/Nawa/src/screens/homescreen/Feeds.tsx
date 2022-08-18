@@ -18,7 +18,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
 
 function Feeds ({ navigation }) {
-  // const [totalFeeds, setTotalFeeds] = useState<number>(0);
+  const [totalFeeds, setTotalFeeds] = useState<number>(0);
   
 
   const isFocused = useIsFocused()

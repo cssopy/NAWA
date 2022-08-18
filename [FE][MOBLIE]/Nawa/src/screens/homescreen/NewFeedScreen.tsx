@@ -92,7 +92,7 @@ function NewFeedScreen({ navigation }) {
         console.log(res.errorMessage)
       } else if(res.assets) {
         const medias = res.assets
-        // console.log(medias)
+        console.log(medias)
         medias.forEach(media => {
           const once = {
             name: media.fileName as string,

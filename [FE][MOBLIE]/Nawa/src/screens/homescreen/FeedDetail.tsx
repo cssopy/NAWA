@@ -16,7 +16,7 @@ import UserIcon from "../../components/userIcon";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 function FeedDetail({ route, navigation }) {
-  // console.log('detail route', route)
+  console.log('detail route', route)
 
   const [title, setTitle] = useState<string>('')
   const [content, setContent] = useState<string>('')
