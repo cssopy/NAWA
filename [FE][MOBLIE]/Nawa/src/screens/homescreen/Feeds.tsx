@@ -11,7 +11,7 @@ import Video from "react-native-video";
 import userSlice from "../../slices/user";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
-import UserIcon from "../../components/userIcon";
+import UserIcon from "../../components/UserIcon";
 import { useAppDispatch } from "../../store";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
