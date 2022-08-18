@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Alert, TextInput, Dimensions, ScrollView } from 'react-native'
-import { Button } from "@rneui/base";
-import { Form, FormItem } from "react-native-form-component";
+import { View, Text, StyleSheet, Alert, TextInput, Dimensions, ScrollView, Image } from 'react-native'
 
+import axios from "axios";
+import { Button } from "@rneui/base";
+import Video from "react-native-video";
+import Swiper from 'react-native-swiper';
 import { useSelector } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
+import { Form, FormItem } from "react-native-form-component";
+import Icon from "react-native-vector-icons/AntDesign"
+
 import { RootState } from "../../store/reducer";
 import UserIcon from "../../components/userIcon";
-import axios from "axios";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 function FeedDetail({ route, navigation }) {
-  // console.log(route)
+  // console.log('detail route', route)
 
   const [title, setTitle] = useState<string>('')
   const [content, setContent] = useState<string>('')
@@ -21,7 +26,7 @@ function FeedDetail({ route, navigation }) {
   const [likes, setLikes] = useState<number>(0)
   const [iLike, setILike] = useState<number>(0)
 
-  const [files, setFiles] = useState<any>([])
+  const [files, setFiles] = useState<object[]>([])
   const [comments, setComments] = useState<any>([])
 
   const [ticTok, setTicTok] = useState<boolean>(false)
@@ -30,7 +35,9 @@ function FeedDetail({ route, navigation }) {
   const myId = useSelector((state: RootState) => state.user.accessToken)
   const { boardId, userId } = route.params;
   const url = 'http://i7d205.p.ssafy.io/api/'
+  const isFocused = useIsFocused()
 
+  // 댓글 생성
   const createComment = () => {
     if (!newcomment) {
       return Alert.alert('알림', '댓글을 1글자 이상 입력해야 합니다')
@@ -38,11 +45,12 @@ function FeedDetail({ route, navigation }) {
     const com = JSON.stringify({
       boardId: boardId,
       cmtContent: newcomment,
-      userId: userId
+      userId: whoamI
     })
 
     console.log('createcomment', newcomment)
 
+    ///////////////// Create Comment
     axios.post(
       `${url}cmt/`,
       com,
@@ -51,56 +59,32 @@ function FeedDetail({ route, navigation }) {
         'Authorization' : `Bearer ${myId}`
       }}
     ).then(res => {
-      console.log(res.data)
+      console.log('댓글 생성', res.data)
       // console.log(comments)
       setTicTok(!ticTok)
+      setNewComment('')
     }).catch(err => 
       console.log('you get error at detail', err))
-  }
-
-  const deleteFeed = () => {
-    axios.delete(
-      `${url}${boardId}`,
-      { headers: { Authorization : `Bearer ${myId}` }}
-    ).then(res => {
-      console.log(res.data)
-      navigation.navigate('Main')
-    }).catch(err => {
-      Alert.alert('오류', err.data)
-    })
-  }
-
-  useEffect(() => {
-    console.log(boardId)
-    axios.get(
-      `${url}board/${boardId}`,
-      { headers: { Authorization : `Bearer ${myId}` }}
-    ).then (res => {
-      // console.log('call at detail', res.data)
-      const datas = res.data
-      setTitle(datas.boardtitle)
-      setContent(datas.boardContent)
-      setHits(datas.boardHit)
-      setComments(datas.comments)
-      setFiles(datas.files)
-      setLikes(datas.boradLikes)
-      axios.get(
-        `${url}board/like/${userId}/${boardId}/`,
-        { headers: { Authorization : `Bearer ${myId}` }}
+    }
+    
+    // 댓글 삭제
+    const deleteComment = (id) => {
+      /////////////////// Delete Comment
+      axios.delete(
+        `${url}cmt/${id}`,
+        { headers: {
+          'Authorization' : `Bearer ${myId}`
+        }}
       ).then(res => {
-        console.log(res.data)
-        setILike(res.data);
-        console.log('nice check')
-      }
-      ).catch(err => {
-        console.log('좋아요 체크 오류', err)
-      })
-    }).catch (err => {
-      console.log('you get error at detail', err)
-    })
-  },[ticTok])
-
+        console.log('댓글 삭제되다', res.data)
+        setTicTok(!ticTok)
+      }).catch(err => 
+        console.log('you get error at detail', err))
+    }
+  
+  // 좋아요 - 좋아요 취소
   const likeBorad = () => {
+    /////////////////////// Check like
     axios.post(
       `${url}board/like`,
       JSON.stringify({
@@ -112,32 +96,155 @@ function FeedDetail({ route, navigation }) {
         'Authorization' : `Bearer ${myId}`
       }}
     ).then(() => {
-      console.log('like?unlike?');
-      setTicTok(!ticTok);
+      setILike(Math.abs(iLike - 1))
+      if (iLike) {
+        setLikes(likes - 1)
+      } else {
+        setLikes(likes + 1)
+      }
     }
     )
   }
 
+  // 피드 삭제
+  const deleteFeed = () => {
+    ////////////////// Delete Feed
+    axios.delete(
+      `${url}board/${boardId}`,
+      { headers: { Authorization : `Bearer ${myId}` }}
+    ).then(res => {
+      console.log(res.data)
+      navigation.navigate('Main', {screen: 'Feeds'})
+    }).catch(err => {
+      Alert.alert('오류', err.data)
+    })
+  }
+
+  // 렌더링
+  useEffect(() => {
+    // console.log(boardId)
+    axios.get(
+      `${url}board/${boardId}`,
+      { headers: { Authorization : `Bearer ${myId}` }}
+    ).then (res => {
+      console.log('call at detail', res.data)
+      const datas = res.data
+      setTitle(datas.boardTitle)
+      setContent(datas.boardContent)
+      setHits(datas.boardHit)
+      setComments(datas.comments)
+      setFiles(datas.files)
+      setLikes(datas.boardLikes)
+      console.log(files)
+      axios.get(
+        `${url}board/like/${userId}/${boardId}/`,
+        { headers: { Authorization : `Bearer ${myId}` }}
+      ).then(res => {
+        console.log('nice check', res.data)
+        setILike(res.data);
+      }
+      ).catch(err => {
+        console.log('좋아요 체크 오류', err)
+      })
+    }).catch (err => {
+      console.log('you get error at detail', err)
+    })
+  },[ticTok, isFocused])
+
+
   return (
-    <View>
+    <ScrollView>
       <View
         style={{
           alignItems: 'center',
           marginVertical: SCREEN_HEIGHT * 0.025,
         }}
       >
-        <View><Text>boardTitle: { title }</Text></View>
-        { (files !== []) &&
-          files.forEach(element => {
-            {element}
-          })
-        }
-        <View><Text>boradContent: { content }</Text></View>
-        <View><Text>boardLikes: { likes }</Text></View>
-        <View><Text>Hits: { hits }</Text></View>
-        <View><Text>Id: { boardId }</Text></View>
+        <View><Text
+          style={styles.title}
+        >{ title }</Text></View>
+        <Swiper
+          style={styles.swiper}
+        >
+        { files.map(file => {
+          if ( file.fileType === 'IMAGE') {
+            return (
+              <View
+                style={styles.mediatool}
+                key={file.fileId}
+              >
+                <Image
+                  source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
+                  resizeMode="cover"
+                  style={styles.media}
+                />
+              </View>
+            )
+          } else {
+            return(
+              <View
+                style={styles.mediatool}
+                key={file.fileId}
+              >
+                <Video
+                  source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
+                  style={styles.media}
+                  controls={true}
+                  muted={true}
+                />
+              </View>
+              )
+          }
+        })}
+        </Swiper>
+        
+        <View
+          style={{
+            flexDirection: 'row',
+            paddingRight: SCREEN_WIDTH * 0.05,
+            paddingLeft: 'auto',
+          }}
+        >
+          <View>
+            <Text>{ hits }</Text>
+          </View>
+          {(whoamI !== userId) && ( iLike ?
+            <View>
+              <Icon
+                name="dislike1"
+                onPress={likeBorad}
+                size={15}
+                style={{
+                  color: 'red',
+                  paddingRight: SCREEN_WIDTH * 0.01,
+                }}
+              />
+            </View>
+            :
+            <View>
+              <Icon
+                name="like1"
+                onPress={likeBorad}
+                size={15}
+                style={{
+                  color: 'blue',
+                  paddingRight: SCREEN_WIDTH * 0.01,
+                }}
+              />
+            </View>
+          )}
+          <Text>{ likes }</Text>
+        </View>
+
+        <View
+          style={styles.content}
+          ><Text
+          style={styles.text}
+          >{ content }</Text></View>
+
+        {/* <View><Text>Id: { boardId }</Text></View> */}
       </View>
-      {( whoamI === userId ) ?
+      {( whoamI === userId ) &&
         <View
           style={{
             flexDirection: "row",
@@ -157,54 +264,102 @@ function FeedDetail({ route, navigation }) {
             containerStyle={styles.button}
           />
         </View>
-        :
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: 'flex-end',
-            marginVertical: SCREEN_HEIGHT * 0.025,
-          }}
-        >
-          <Button
-            title={ !iLike ? "좋아요" : "좋아요 취소"}
-            onPress={likeBorad}
-            containerStyle={styles.button}
-          />
-        </View>
       }
-      <View>
-        <Form
-          onButtonPress={createComment}
-          buttonText="보내기"
+        
+        <View
+        style={{
+          marginVertical: SCREEN_HEIGHT * 0.025,
+          marginHorizontal: SCREEN_WIDTH * 0.1,
+        }}
         >
-          <FormItem
-            value={newcomment}
-            onChangeText={setNewComment}
-            placeholder="댓글을 입력해주세요"
-          />
-        </Form>
-      </View>
+          <Form
+            onButtonPress={createComment}
+            buttonText="보내기"
+            buttonStyle={{
+              flex: 1,
+              marginVertical: 0,
+              paddingVertical: 0,
+              width: SCREEN_WIDTH * 0.1,
+              height: SCREEN_HEIGHT * 0.05,
+              alignSelf: 'flex-end',
+            }}
+            buttonTextStyle={{
+              fontSize: 10,
+            }}
+          >
+            <FormItem
+              value={newcomment}
+              onChangeText={setNewComment}
+              placeholder="댓글을 입력해주세요"
+            />
+          </Form>
+        </View>
       <ScrollView
-        style={comments}
+        style={styles.comments}
         >
-        <Text>Comments</Text>
+          <View><Text
+            style={styles.commentTitle}
+          >Comments</Text></View>
         { comments && 
           comments.map(comment => {
-            // console.log(comment)
+            console.log(comment, Boolean(whoamI === comment.userId))
             return (<View
               key={ comment.cmtId }
+              style={styles.commentTotal}
               >
-                <View><Text>{ comment.cmtContent }</Text></View>
+                <View
+                  style={styles.textBox}
+                ><Text
+                  style={styles.textFont}
+                >{ comment.cmtContent }</Text></View>
+                { (whoamI === comment.userId) &&
+                  <Button
+                    size="sm"
+                    title="삭제하기"
+                    style={styles.commentButton}
+                    titleStyle={{
+                      fontSize: 10,
+                    }}
+                    onPress={() => deleteComment(comment.cmtId)}
+                  />
+                }
               </View>)
           })
         }
       </ScrollView>
       
-    </View>
+    </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
+  button: {
+    paddingHorizontal: SCREEN_WIDTH * 0.01
+  },
+  content : {
+    backgroundColor : 'white',
+    marginHorizontal : SCREEN_WIDTH * 0.05,
+    marginVertical: SCREEN_HEIGHT * 0.01,
+    borderRadius : 10,
+    width: SCREEN_WIDTH * 0.8,
+    paddingHorizontal: SCREEN_WIDTH * 0.05,
+    paddingVertical: SCREEN_HEIGHT * 0.02,
+  },
+  comments: {
+    paddingHorizontal: SCREEN_WIDTH * 0.1,
+  },
+  commentButton: {
+    flex: 1,
+    paddingLeft: SCREEN_WIDTH * 0.005,
+    height: 20,
+  },
+  commentTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  commentTotal: {
+    flexDirection: 'row',
+  },
   feed: {
     marginBottom: 10,
   },
@@ -219,13 +374,36 @@ const styles = StyleSheet.create({
     borderRadius : 10,
     height : 'auto'
   },
-  content : {
-    flex : 11,
+  media: {
+    height: SCREEN_WIDTH * 0.8,
+    width: SCREEN_WIDTH * 0.8,
+    marginBottom: SCREEN_HEIGHT * 0.01
+  },
+  mediatool: {
+    alignItems: 'center'
+  },
+  swiper: {
+    height: SCREEN_HEIGHT * 0.5,
+  },
+  text : {
+    fontSize: 15
+  },
+  textBox : {
+    flex : 9,
     backgroundColor : 'white',
-    marginHorizontal : 5,
-    marginTop : 5,
+    marginRight : 5,
+    marginVertical : 5,
     borderRadius : 10,
-    height : 200
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 20
+  },
+  textFont: {
+    fontSize: 15,
+  },
+  title: {
+    fontSize: 40,
+    fontWeight: 'bold',
   },
   underBar : {
     flex : 2,
@@ -235,26 +413,6 @@ const styles = StyleSheet.create({
     marginHorizontal : 5,
     marginVertical : 5,
   },
-  textBox : {
-    flex : 1,
-    backgroundColor : 'white',
-    marginRight : 5,
-    marginVertical : 5,
-    borderRadius : 10,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  text : {
-    textAlign: 'center',
-    fontSize: 15
-  },
-  button: {
-    paddingHorizontal: SCREEN_WIDTH * 0.01
-  },
-  comments: {
-    width: SCREEN_WIDTH * 0.8,
-  }
 })
 
 export default FeedDetail

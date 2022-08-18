@@ -1,17 +1,15 @@
 import React, { useState } from "react";
-import { ScrollView, Dimensions, StyleSheet, Alert, Platform, View, Image } from "react-native";
+import { ScrollView, Dimensions, StyleSheet, Alert, Platform, View, Image, Text } from "react-native";
 
-import { Form, FormItem } from 'react-native-form-component';
-import { Button, ScreenHeight } from "@rneui/base";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import axios from "axios";
+import Video from "react-native-video";
+import Swiper from 'react-native-swiper';
 import { useSelector } from "react-redux";
-import { RootState } from "../../store/reducer";
-import EncryptedStorage from 'react-native-encrypted-storage';
-import {useAppDispatch} from '../../store';
-import userSlice from "../../slices/user";
-import { useIsFocused } from "@react-navigation/native";
+import { Button, ScreenHeight } from "@rneui/base";
+import { Form, FormItem } from 'react-native-form-component';
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
+import { RootState } from "../../store/reducer";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -19,13 +17,15 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 function NewFeedScreen({ navigation }) {
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
-  const [flag, setFlag] = useState<boolean>(false)
   // const [profileImage, setProfileImage]: any = useState({});
 
   const [file, setFile] = useState<object[]>([])
 
   const whoamI = useSelector((state : RootState) => state.user.userId)
   const myId = useSelector((state: RootState) => state.user.accessToken)
+  
+  let files: object[] = []
+
   const url = 'http://i7d205.p.ssafy.io/api/board/'
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -88,14 +88,11 @@ function NewFeedScreen({ navigation }) {
       (res) => {
       if(res.didCancel) {
         console.log('User Cancelled image picker')
-        setFlag(false)
       } else if(res.errorCode) {
         console.log(res.errorMessage)
-        setFlag(false)
       } else if(res.assets) {
         const medias = res.assets
-        console.log(medias)
-        let files: object[] = []
+        // console.log(medias)
         medias.forEach(media => {
           const once = {
             name: media.fileName as string,
@@ -108,7 +105,7 @@ function NewFeedScreen({ navigation }) {
         })
         console.log('저장소에서 가져옴', files)
         setFile(files);
-        setFlag(true)
+        // console.log('또 저장 안되나?', file[0])
       }
     })
   }
@@ -138,7 +135,7 @@ function NewFeedScreen({ navigation }) {
         }
       }
     ).then(res => {
-      console.log('보냈다 200번인가?', flag, file)
+      console.log('보냈다 200번인가?', file)
       if (file.length > 0) {
         console.log('보낸다 미디어')
         const formData = new FormData()
@@ -181,32 +178,53 @@ function NewFeedScreen({ navigation }) {
     // .catch(err => console.log('?', err))
     // 여기까지
 
-    setFlag(false)
-    console.log(flag)
-    navigation.navigate('Main')
+    navigation.goBack()
   }
 
   return (
     <ScrollView
       style={styles.safe}
     >
-      {/* { flag &&
-        <View
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            marginBottom: SCREEN_HEIGHT * 0.01,
-          }}
+      { (file.length > 0) && 
+        <Swiper
+          style={styles.swiper}
         >
-          <Image
-            source={{uri : file.uri}}
-            style={{
-              width: file.width * 0.2,
-              height: file.height * 0.2,
-            }}
-          />
-        </View>
-      } */}
+          { file.map(file => {
+            if ( file.type === 'image/jpeg') {
+              return (
+                <View
+                  key={ file.name }
+                  style={ styles.media }
+                >
+                  <Image
+                    source={{ uri: file.uri}}
+                    resizeMode="cover"
+                    style={{
+                      width: file.width,
+                      height: file.height,
+                      maxHeight: SCREEN_WIDTH * 0.8,
+                      maxWidth: SCREEN_WIDTH * 0.8,
+                    }}
+                  />
+                </View>
+              )
+            } else {
+              return(
+                <View
+                  key={ file.name }
+                  style={ styles.media }
+                ><Video
+                    source={{ uri: file.uri }}
+                    style={{
+                      height: SCREEN_WIDTH * 0.8,
+                      width: SCREEN_WIDTH * 0.8,
+                    }}
+                /></View>
+                )
+            }
+          })}
+        </Swiper>
+      }
       <View
         style={{
           flexDirection: "row",
@@ -219,9 +237,9 @@ function NewFeedScreen({ navigation }) {
         title="사진"
         onPressIn={openCamera}
         containerStyle={styles.button}
-      />
+      /> */}
 
-      <Button
+      {/* <Button
         title="동영상"
         onPressIn ={openVideo}
         containerStyle={styles.button}
@@ -259,11 +277,17 @@ function NewFeedScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   safe: {
-    paddingVertical: ScreenHeight * 0.05,
+    paddingVertical: SCREEN_HEIGHT * 0.05,
     paddingHorizontal: SCREEN_WIDTH * 0.1,
   },
   button: {
     width: SCREEN_WIDTH * 0.2,
-  }
+  },
+  media: {
+    alignItems: 'center'
+  },
+  swiper: {
+    height: SCREEN_HEIGHT * 0.5,
+  },
 });
 export default NewFeedScreen
