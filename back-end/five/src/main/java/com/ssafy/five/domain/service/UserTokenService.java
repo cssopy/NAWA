@@ -2,6 +2,7 @@ package com.ssafy.five.domain.service;
 
 import com.ssafy.five.config.jwt.JwtTokenProvider;
 import com.ssafy.five.controller.dto.req.TokenReqDto;
+import com.ssafy.five.controller.dto.res.LoginResDto;
 import com.ssafy.five.controller.dto.res.TokenResDto;
 import com.ssafy.five.domain.entity.Users;
 import com.ssafy.five.domain.repository.UserRepository;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
+
+import static com.ssafy.five.util.SecurityUtil.getCurrentUserId;
 
 @Slf4j
 @Service
@@ -51,11 +54,18 @@ public class UserTokenService {
         // acc, ref 토큰 생성
         TokenResDto tokenResDto = jwtTokenProvider.createToken(user.getUserId(), list);
 
+        LoginResDto loginResDto = LoginResDto.builder().userId(tokenResDto.getUserId()).accessToken(tokenResDto.getAccessToken())
+                        .refreshToken(tokenResDto.getRefreshToken()).nickname(user.getNickname()).build();
+
         user.updateRefreshToken(tokenResDto.getRefreshToken());
 
+
+
         log.info("정상 로그인되었습니다.");
+        System.out.println(loginResDto.getNickname());
+
         // userId, acc, ref 반환
-        return new ResponseEntity<>(tokenResDto, HttpStatus.OK);
+        return new ResponseEntity<>(loginResDto, HttpStatus.OK);
     }
 
     @Transactional
@@ -95,6 +105,7 @@ public class UserTokenService {
         String accessToken = jwtTokenProvider.resolveToken(request);
 
         Users user = userRepository.findByUserId(tokenReqDto.getUserId());
+
         if(!user.getEndDate().before(new Date())){
             log.info("정지된 상태입니다.");
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
@@ -107,7 +118,13 @@ public class UserTokenService {
                 .refreshToken(tokenReqDto.getRefreshToken())
                 .build();
 
+        LoginResDto loginResDto = LoginResDto.builder()
+                        .userId(tokenResDto.getUserId()).accessToken(tokenResDto.getAccessToken()).refreshToken(tokenResDto.getRefreshToken())
+                        .nickname(user.getNickname())
+                        .build();
+
         log.info("자동 로그인되었습니다.");
-        return new ResponseEntity<>(tokenResDto, HttpStatus.OK);
+        System.out.println(loginResDto.getNickname());
+        return new ResponseEntity<>(loginResDto, HttpStatus.OK);
     }
 }
