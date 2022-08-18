@@ -194,9 +194,6 @@ function SignUp({navigation} : SignUpScreenProps) {
       if (!nickName || !nickName.trim()) {
           return Alert.alert('닉네임 나와 !', '닉네임을 입력해주세요');
       }
-      if (nickName.trim().length < 3 || nickName.trim().length > 15) {
-        return Alert.alert('닉네임 나와 !', '닉네임은 3 ~ 15 자리까지 가능합니다.');
-      }
       if (!number || !number.trim()) {
           return Alert.alert('번호 나와 !', '번호를 입력해주세요');
       }
@@ -213,7 +210,7 @@ function SignUp({navigation} : SignUpScreenProps) {
       ) {
           return Alert.alert('이메일 나와 !', '올바른 이메일 주소가 아닙니다.');
       }
-      if (!/^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@^!%*#?&]).{8,50}$/.test(password)) {
+      if (!/^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@^!%*#?&]).{8,16}$/.test(password)) {
           return Alert.alert(
               'PassWord 나와 !',
               '비밀번호는 영문,숫자,특수문자($@^!%*#?&)를 모두 포함하여 8자 이상 입력해야합니다.',
@@ -247,29 +244,21 @@ function SignUp({navigation} : SignUpScreenProps) {
     )
     navigation.navigate('SignIn')
   } catch (error) {
-    const errorResponse = (error as AxiosError).response;
-    if (errorResponse) {
-      console.log(errorResponse.data)
-      // console.log(errorResponse)
+    console.log(error.response.status)
+    if (error.response.status === 400) {
       Alert.alert('알림', '등록된 이메일입니다.');
+    }
+    if (error.response.status === 401) {
+      Alert.alert('알림', '인증번호를 다시 확인하세요');
     }
   } finally {
     setLoading(false);
   }
   }, [loading, navigation, userId, password, date, email, nickName, number, gender]);
-  //////////////////////////////////////////////////////////////////// 끝 //////////////////////////////////////////
 
-  // 회원가입 조건
-  // const canGoNext = userId && password && date && email && name && nickName && number && gender;
+  const canGoNext = idCheck && password && password === passwordCheck && date && email && nicknameCheck && authNumberCheck && gender;
 
-  // userId, nickName => id와 닉네임 중복 검사 , 휴대폰 인증 확인 절차 추가 idCheck nicknameCheck authNumberCheck
-  // 비밀번호, 확인용 비밀번호 체크 유무 추가
-  // const canGoNext = idCheck && password && password === passwordCheck && date && email && nicknameCheck && authNumberCheck && gender;
-
-  // !!!!!출시 때 열어두기!!!!!
-  // 현재 서버에서 휴대폰 인증 막아둠 authNumberCheck 생략 
-  const canGoNext = idCheck && password && password === passwordCheck && date && email && nicknameCheck && authNumber && gender; 
-
+ 
   return (
     <DismissKeyboardView>
     <View style={styles.viewTop}></View>

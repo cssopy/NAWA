@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState  } from "react";
+import React, { useCallback, useEffect, useRef, useState  } from "react";
 import {Text, View, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, SafeAreaView, TextInput, Modal} from 'react-native'
 
 import constants from '../../constants';
@@ -19,6 +19,7 @@ import WhatCategory from "../../components/WhatCategory";
 // firebase 클라우드
 import firestore from '@react-native-firebase/firestore';
 import { ActivityIndicator } from "react-native-paper";
+import { useFocusEffect } from "@react-navigation/native";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 
@@ -322,8 +323,8 @@ const Mate3 = ( {navigation} ) => {
   }
 
   // 매칭 대기열 정리하기
-  useEffect(() => {
-    return () => {
+  useFocusEffect(
+    useCallback(() => {
       //대기열 정리
       userOut(nickname)
       // 매칭요청 정리
@@ -340,8 +341,27 @@ const Mate3 = ( {navigation} ) => {
       roomRef2.delete().then();
       setModalVisible(false)
       setModalVisible2(false)
-    }
-  },[])
+      
+      return () => {
+        //대기열 정리
+        userOut(nickname)
+        // 매칭요청 정리
+        firestore()
+          .collection('dataChannel')
+          .doc(nickname)
+          .delete()
+          .then()
+        // RTC 요청 정리
+        const db = firestore();
+        const roomRef = db.collection('MATCHING_GUMI').doc(nickname);
+        roomRef.delete().then();
+        const roomRef2 = db.collection('MATCHING_GUMI').doc(cancleTarget);
+        roomRef2.delete().then();
+        setModalVisible(false)
+        setModalVisible2(false)
+      }
+    }, [])
+  );
 
 
 

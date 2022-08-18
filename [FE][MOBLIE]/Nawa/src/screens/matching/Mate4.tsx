@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import {Alert, Text, View} from 'react-native'
+import React, { useState, useTransition } from "react";
+import {Alert, Modal, Text, View} from 'react-native'
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -28,6 +28,7 @@ const Mate4 = () => {
   const dispatch = useAppDispatch();
 
   const userId = useSelector((state : RootState) => state.user.userId);
+  // const userId = 'windy82581'
   const ment = useSelector((state : RootState) => state.matching.ment);
   const category = useSelector((state : RootState) => state.matching.category);
   const location = useSelector((state : RootState) => state.matching.location);
@@ -41,6 +42,12 @@ const Mate4 = () => {
   const [myrequest, setMyRequest] = useState(false);
   const [myrequestN, setMyRequestN] = useState(0);
   const [friendly, setFriendly] = useState(false)
+
+  const [visible, setVisible] = useState(false);
+
+
+
+
 
   const userMannerPoint = async () => {
     const dispatch = useAppDispatch()
@@ -77,9 +84,7 @@ const Mate4 = () => {
           if (error.response.status === 403) {
             dispatch(
               userSlice.actions.setUser({
-                userId : '',
                 accessToken : '',
-                nickname : ''
               }),
             );
             EncryptedStorage.removeItem('userId')
@@ -90,6 +95,7 @@ const Mate4 = () => {
       }
     }
   }
+
 
   // 신청 받았을때
   const checkRequest = async () => {
@@ -135,9 +141,7 @@ const Mate4 = () => {
           if (error.response.status === 403) {
             dispatch(
               userSlice.actions.setUser({
-                userId : '',
                 accessToken : '',
-                nickname : ''
               }),
             );
             EncryptedStorage.removeItem('userId')
@@ -150,8 +154,6 @@ const Mate4 = () => {
   }
 
   
-
-
   // 내가 신청 했을때
   const checkMyRequest = async () => {
     try {
@@ -195,9 +197,7 @@ const Mate4 = () => {
           if (error.response.status === 403) {
             dispatch(
               userSlice.actions.setUser({
-                userId : '',
                 accessToken : '',
-                nickname : ''
               }),
             );
             EncryptedStorage.removeItem('userId')
@@ -208,108 +208,64 @@ const Mate4 = () => {
       }
     }
   }
-
 
 
   // 거절
-  const reject = async () => {
-    try {
-      const response = await axios({
-        method : 'delete',
-        url : `http://i7d205.p.ssafy.io/api/add-mate/${requestN}`,
-        headers : {"Authorization" : `Bearer ${accessToken}`}
-      });
-    }
-    catch (error) {
-      if (error.response.status === 403) {
-        try {
-          const userId = await EncryptedStorage.getItem('userId');
-          const refreshToken = await EncryptedStorage.getItem('refreshToken');
-          const response = await axios({
-            method : 'post',
-            url : 'http://i7d205.p.ssafy.io/api/checktoken',
-            data : {
-              userId: userId,
-              refreshToken: refreshToken
-            }
-          });
-          // accessToken 신규 발급 > 화면 유지
-          await EncryptedStorage.setItem('accessToken', response.data)
-          dispatch(
-            userSlice.actions.setUser({
-              accessToken : response.data
-            })
-            )
-        } 
-        catch { //refresh 만료 > 로그인화면
-          if (error.response.status === 403) {
-            dispatch(
-              userSlice.actions.setUser({
-                userId : '',
-                accessToken : '',
-                nickname : ''
-              }),
-            );
-            EncryptedStorage.removeItem('userId')
-            EncryptedStorage.removeItem('accessToken')
-            EncryptedStorage.removeItem('refreshToken')
-          }
-        }
-      }
-    }
-  }
 
-  // 승낙
   const accept = async () => {
     try {
-      const response = await axios({
-        method : 'put',
-        url : `http://i7d205.p.ssafy.io/api/add-mate/${requestN}`,
-        headers : {"Authorization" : `Bearer ${accessToken}`}
-      });
-      const response2 = await axios({
-        method : 'put',
-        url : `http://i7d205.p.ssafy.io/api/add-mate/${myrequestN}`,
-        headers : {"Authorization" : `Bearer ${accessToken}`}
-      });
-    }
-    catch (error) {
-      if (error.response.status === 403) {
-        try {
-          const userId = await EncryptedStorage.getItem('userId');
-          const refreshToken = await EncryptedStorage.getItem('refreshToken');
-          const response = await axios({
-            method : 'post',
-            url : 'http://i7d205.p.ssafy.io/api/checktoken',
-            data : {
-              userId: userId,
-              refreshToken: refreshToken
-            }
-          });
-          // accessToken 신규 발급 > 화면 유지
-          await EncryptedStorage.setItem('accessToken', response.data)
+    const response = await axios({
+      method : 'post',
+      url : 'http://i7d205.p.ssafy.io/api/add-mate',
+      data : {
+        addMateFrom : userId,
+        addMateTo : target.userId
+      },
+      headers : {"Authorization" : `Bearer ${accessToken}`}
+    });
+      Alert.alert('알림', '전송완료 이제 서로 메이트 입니다!')
+  } catch (error) {
+
+    if (error.response.status === 403) {
+      try {
+        const userId = await EncryptedStorage.getItem('userId');
+        const refreshToken = await EncryptedStorage.getItem('refreshToken');
+        const response = await axios({
+          method : 'post',
+          url : 'http://i7d205.p.ssafy.io/api/checktoken',
+          data : {
+            userId: userId,
+            refreshToken: refreshToken
+          }
+        });
+        // accessToken 신규 발급 > 화면 유지
+        await EncryptedStorage.setItem('accessToken', response.data)
+        dispatch(
+          userSlice.actions.setUser({
+            accessToken : response.data
+          })
+          )
+      } 
+      catch { //refresh 만료 > 로그인화면
+        if (error.response.status === 403) {
           dispatch(
             userSlice.actions.setUser({
-              accessToken : response.data
-            })
-            )
-        } 
-        catch { //refresh 만료 > 로그인화면
-          if (error.response.status === 403) {
-            dispatch(
-              userSlice.actions.setUser({
-                userId : '',
-                accessToken : '',
-                nickname : ''
-              }),
-            );
-            EncryptedStorage.removeItem('userId')
-            EncryptedStorage.removeItem('accessToken')
-            EncryptedStorage.removeItem('refreshToken')
-          }
+              accessToken : '',
+            }),
+          );
+          EncryptedStorage.removeItem('userId')
+          EncryptedStorage.removeItem('accessToken')
+          EncryptedStorage.removeItem('refreshToken')
         }
       }
     }
+    else if (error.response.status === 406) {
+      Alert.alert('알림', '이미 메이트 랍니다!')
+    }
+    else {
+      Alert.alert('알림', '이미 신청했습니다! 상대방이 수락시 메이트가 됩니다.')
+    }
+  }
   }
 
 
@@ -376,14 +332,35 @@ const Mate4 = () => {
     checkRequest()
     checkMyRequest()
     friend()
-    // console.log('reqest!!!!!!!!!', request, requestN)
-    // console.log('myreqest!!!!!!!!!', myrequest, myrequestN)
+
+
+  useEffect(() => {
+    if (request === true) {
+      setVisible(true)
+    }
+  }, [request])
 
 
 
   return (
     <View style={{flexDirection:'column', height : SCREEN_HEIGHT - 50, backgroundColor:'lightgrey'}}>
-      
+     
+     <Modal
+        animationType="slide"
+        transparent={true}
+        visible={visible}
+        >
+        <View style={{position:"absolute", flexDirection:"column",alignItems:'center', width:SCREEN_WIDTH/4*3, height:250, top:SCREEN_HEIGHT/2 - 100, backgroundColor:'white', elevation:10, borderRadius:10, alignSelf:'center'}}>
+          <Text style={{flex:1, color:'black', fontSize:20, textAlign:"center"}}>{target.nickname}님의</Text>
+          <Text style={{flex:1, color:'black', fontSize:20, textAlign:"center", marginTop:-10}}>메이트 요청이 도착했습니다.</Text>
+          <View style={{flex:1, flexDirection:'row', marginTop:10}}>
+            <Button containerStyle={{marginHorizontal:5}} onPress={() => {accept(); setVisible(false);}} title={'승낙하기'}></Button>
+            <Button containerStyle={{marginHorizontal:5}} onPress={() => setVisible(false)} title={'거절하기'}></Button>
+          </View>
+        </View>
+      </Modal>
+
+
       <View style={{flex:1, backgroundColor:'white',borderRadius:10, marginHorizontal:5, marginTop:5}}>
         <View style={{backgroundColor:'rgb(0, 197, 145)', borderRadius:5, elevation:8}}>
           <Text style={{color:'white', fontSize:20, fontWeight:"600", padding:5, textAlign:'center'}}>메이트 신청</Text>
@@ -398,6 +375,7 @@ const Mate4 = () => {
       <View style={{flex:3, backgroundColor:'white', borderRadius:10, marginHorizontal:5, marginTop:5}}>
         <View style={{backgroundColor:'rgb(0, 197, 145)', borderRadius:5, elevation:8}}>
           <Text style={{color:'white', fontSize:20, fontWeight:"600", padding:5, textAlign:'center'}}>상대방 정보</Text>
+          offer.
         </View>
       </View>
       
