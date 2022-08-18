@@ -62,7 +62,6 @@ public class UserTokenService {
 
 
         log.info("정상 로그인되었습니다.");
-        System.out.println(loginResDto.getNickname());
 
         // userId, acc, ref 반환
         return new ResponseEntity<>(loginResDto, HttpStatus.OK);
@@ -124,7 +123,6 @@ public class UserTokenService {
                         .build();
 
         log.info("자동 로그인되었습니다.");
-        System.out.println(loginResDto.getNickname());
         return new ResponseEntity<>(loginResDto, HttpStatus.OK);
     }
 }
