@@ -142,10 +142,14 @@ public class UserController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "(OK) 프로필 이미지 다운로드 성공"),
             @ApiResponse(responseCode = "403", description = "(FORBIDDEN) accessToken 만료"),
+            @ApiResponse(responseCode = "404", description = "(NOT_FOUND) 프로필 이미지 못찾음")
     })
     @GetMapping("/user/profile-img/{userId}")
     public ResponseEntity<?> getProfileImg(@PathVariable String userId) throws Exception {
         ProfileImg profileImg = profileImgService.findByUserId(userId);
+        if(profileImg == null){
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        }
 
         Path path = Paths.get(bpath + "/PROFILE/" + profileImg.getFileName());
         String contentType = Files.probeContentType(path);

@@ -25,6 +25,9 @@ public class ProfileImgService {
 
     public ProfileImg findByUserId(String userId) {
         Users users = userRepository.findByUserId(userId);
+        if(users == null){
+            return null;
+        }
         log.info("유저 프로필 이미지 조회하였습니다.");
         return users.getProfileImg();
     }
