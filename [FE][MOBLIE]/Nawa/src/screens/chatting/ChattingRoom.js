@@ -52,24 +52,6 @@ const ChattingMain = ({ route }) => {
         }, [chattingss])
 
 
-    // useEffect(() => {
-    //     setChattings([]);
-    //         reference
-    //         .ref(`/users`)
-    //         .once('value')
-    //         .then((snapshot) => {
-    //             const data = snapshot.toJSON()
-    //             const case2 = []
-    //             for (var prop in data) {    
-    //                 if (data[prop].to === targetname && data[prop].from === nickname) {
-    //                     case2.push(data[prop])
-    //                 } else if (data[prop].to === nickname && data[prop].from === targetname) {
-    //                     case2.push(data[prop])
-    //                 }
-    //             }
-    //             setChattings(case2)
-    //         })
-    //     }, [])
 
     // 전송 하기
     const send = (targetname) => {
