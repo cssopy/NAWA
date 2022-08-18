@@ -382,40 +382,42 @@ function FeedDetail({ route, navigation }) {
         <View><Text
           style={styles.title}
         >{ title }</Text></View>
+        { files.length > 0 && 
         <Swiper
-          style={styles.swiper}
+        style={styles.swiper}
         >
         { files.map(file => {
           if ( file.fileType === 'IMAGE') {
             return (
               <View
-                style={styles.mediatool}
-                key={file.fileId}
+              style={styles.mediatool}
+              key={file.fileId}
               >
                 <Image
                   source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
                   resizeMode="cover"
                   style={styles.media}
-                />
+                  />
               </View>
             )
           } else {
             return(
               <View
-                style={styles.mediatool}
-                key={file.fileId}
+              style={styles.mediatool}
+              key={file.fileId}
               >
                 <Video
                   source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
                   style={styles.media}
                   controls={true}
                   muted={true}
-                />
+                  />
               </View>
               )
-          }
-        })}
+            }
+          })}
         </Swiper>
+        }
         
         <View
           style={{
@@ -424,11 +426,19 @@ function FeedDetail({ route, navigation }) {
             paddingLeft: 'auto',
           }}
         >
-          <View>
+          <View
+            style={{
+              marginHorizontal: SCREEN_WIDTH * 0.02
+            }}
+          >
             <Text>{ hits }</Text>
           </View>
           { iLike ?
-            <View>
+            <View
+              style={{
+                marginHorizontal: SCREEN_WIDTH * 0.02,
+              }}
+            >
               <Icon
                 name="heart"
                 onPress={likeBorad}
@@ -440,7 +450,11 @@ function FeedDetail({ route, navigation }) {
               />
             </View>
             :
-            <View>
+            <View
+              style={{
+                marginHorizontal: SCREEN_WIDTH * 0.02,
+              }}
+            >
               <Icon
                 name="hearto"
                 onPress={likeBorad}
@@ -468,18 +482,22 @@ function FeedDetail({ route, navigation }) {
         <View
           style={{
             flexDirection: "row",
-            justifyContent: 'flex-end',
-            marginVertical: SCREEN_HEIGHT * 0.025,
+            justifyContent: 'center',
+            marginVertical: SCREEN_HEIGHT * 0.01,
           }}
         >
           <Button
             title="수정하기"
+            size="sm"
+            color="secondary"
             onPress={() => navigation.navigate('ChangeFeedScreen', boardId)}
             containerStyle={styles.button}
           />
 
           <Button
             title="삭제하기"
+            size="sm"
+            color="error"
             onPress={deleteFeed}
             containerStyle={styles.button}
           />
@@ -490,29 +508,26 @@ function FeedDetail({ route, navigation }) {
         style={{
           marginVertical: SCREEN_HEIGHT * 0.025,
           marginHorizontal: SCREEN_WIDTH * 0.1,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
         }}
         >
-          <Form
-            onButtonPress={createComment}
-            buttonText="보내기"
-            buttonStyle={{
-              flex: 1,
-              marginVertical: 0,
-              paddingVertical: 0,
-              width: SCREEN_WIDTH * 0.1,
-              height: SCREEN_HEIGHT * 0.05,
-              alignSelf: 'flex-end',
-            }}
-            buttonTextStyle={{
-              fontSize: 10,
-            }}
-          >
-            <FormItem
-              value={newcomment}
+          <View>
+            <TextInput
               onChangeText={setNewComment}
               placeholder="댓글을 입력해주세요"
+              value={newcomment}
+              style={{
+                backgroundColor: 'white',
+                width: SCREEN_WIDTH * 0.5,
+              }}
             />
-          </Form>
+          </View>
+          <Button
+            title="보내기"
+            size="md"
+            onPress={createComment}
+          />
         </View>
       <ScrollView
         style={styles.comments}
@@ -528,14 +543,15 @@ function FeedDetail({ route, navigation }) {
               style={styles.commentTotal}
               >
                 <View
-                  style={styles.textBox}
+                  style={ (userId === comment.userId) ? styles.textBoxMe : styles.textBoxYou }
                 ><Text
-                  style={styles.textFont}
+                  style={ (userId === comment.userId) ? styles.textFontMe :styles.textFontYou }
                 >{ comment.cmtContent }</Text></View>
                 { (whoamI === comment.userId) &&
                   <Button
                     size="sm"
-                    title="삭제하기"
+                    title="X"
+                    color="error"
                     style={styles.commentButton}
                     titleStyle={{
                       fontSize: 10,
@@ -567,6 +583,7 @@ const styles = StyleSheet.create({
   },
   comments: {
     paddingHorizontal: SCREEN_WIDTH * 0.1,
+    marginBottom: SCREEN_HEIGHT * 0.2,
   },
   commentButton: {
     flex: 1,
@@ -608,7 +625,17 @@ const styles = StyleSheet.create({
   text : {
     fontSize: 15
   },
-  textBox : {
+  textBoxMe : {
+    flex : 9,
+    backgroundColor : 'rgb(0, 197, 145)',
+    marginRight : 5,
+    marginVertical : 5,
+    borderRadius : 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 20
+  },
+  textBoxYou : {
     flex : 9,
     backgroundColor : 'white',
     marginRight : 5,
@@ -618,7 +645,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 20
   },
-  textFont: {
+  textFontMe: {
+    fontSize: 15,
+    color: 'white'
+  },
+  textFontYou: {
     fontSize: 15,
   },
   title: {

@@ -18,7 +18,8 @@ const UserIcon = (props) => {
       source={{
         uri: `${url}user/profile-img/${props.userId}`,
         headers: { Authorization : `Bearer ${props.myId}`}
-      }}n 
+      }}
+      rounded
     />
   );
 }
