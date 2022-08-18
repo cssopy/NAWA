@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,17 +29,20 @@ public class UserTokenService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public ResponseEntity<?> login(String userId, String password) throws Exception {
+    public ResponseEntity<?> login(String userId, String password) {
         Users user = userRepository.findByUserId(userId);
         if(user == null){
+            log.info("존재하지 않는 유저입니다.");
             throw new UserNotFoundException();
         }
 
         if(!passwordEncoder.matches(password, user.getPassword())){
+            log.info("비밀번호가 틀렸습니다.");
             return new ResponseEntity<>("비밀번호가 틀렸습니다.", HttpStatus.BAD_REQUEST);
         }
 
         if(!user.getEndDate().before(new Date())){
+            log.info("정지된 사용자입니다.");
             return new ResponseEntity<>("정지된 사용자입니다.", HttpStatus.FORBIDDEN);
         }
 
@@ -51,6 +53,7 @@ public class UserTokenService {
 
         user.updateRefreshToken(tokenResDto.getRefreshToken());
 
+        log.info("정상 로그인되었습니다.");
         // userId, acc, ref 반환
         return new ResponseEntity<>(tokenResDto, HttpStatus.OK);
     }
@@ -59,22 +62,30 @@ public class UserTokenService {
     public ResponseEntity<?> logout(String userId){
         // 현재 유저 아이디로 Users 가져오기
         Users user = userRepository.findByUserId(userId);
+        if(user == null){
+            log.info("현재 로그인한 아이디가 아닙니다.");
+            throw new UserNotFoundException();
+        }
         // RefreshTable 가져오기
         // 테이블이 있다면
         if(user.getRefreshToken() != null){
             user.setRefreshToken(null);
+            log.info("정상 로그아웃되었습니다.");
             return new ResponseEntity<>(true, HttpStatus.OK);
         }
+        log.info("이미 로그아웃 상태입니다.");
         return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
     }
 
     @Transactional
     public ResponseEntity<?> validateRefreshToken(TokenReqDto tokenReqDto){
-        // 해당 유저의 refreshToken이 아닐경우 , 만료시 걸림
+        // 해당 유저의 refreshToken이 아닐경우 , 만료시 getUserId에서 걸림
         if(!jwtTokenProvider.getUserId(tokenReqDto.getRefreshToken()).equals(tokenReqDto.getUserId())){
+            log.info("해당 유저의 refresh 토큰이 아닙니다.");
             return new ResponseEntity<>("해당 유저의 토큰이 아닙니다", HttpStatus.BAD_REQUEST);
         }
         String accessToken = jwtTokenProvider.validateRefreshToken(tokenReqDto.getRefreshToken());
+        log.info("access Token 재발급되었습니다.");
         return new ResponseEntity<>(accessToken, HttpStatus.OK);
     }
 
@@ -85,19 +96,8 @@ public class UserTokenService {
 
         Users user = userRepository.findByUserId(tokenReqDto.getUserId());
         if(!user.getEndDate().before(new Date())){
-            return new ResponseEntity<>(false, HttpStatus.FORBIDDEN);
-        }
-
-        // ref 토큰 유효성 만료시
-        if(!jwtTokenProvider.validateToken(tokenReqDto.getRefreshToken())){
-            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED); //401 로그인다시
-        }
-
-        // acc 토큰 유효성 만료시
-        if(!jwtTokenProvider.validateToken(accessToken)){
-            TokenResDto tokenResDto = jwtTokenProvider.createToken(user.getUserId(), jwtTokenProvider.getUserRoles(accessToken));
-            user.updateRefreshToken(tokenReqDto.getRefreshToken());
-            return new ResponseEntity<>(tokenResDto, HttpStatus.OK);
+            log.info("정지된 상태입니다.");
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
         // acc, ref 토큰 유효할 때
@@ -107,6 +107,7 @@ public class UserTokenService {
                 .refreshToken(tokenReqDto.getRefreshToken())
                 .build();
 
+        log.info("자동 로그인되었습니다.");
         return new ResponseEntity<>(tokenResDto, HttpStatus.OK);
     }
 }

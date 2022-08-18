@@ -2,7 +2,8 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import ChangeFeedScreen from "./homescreen/ChangeFeedScreen";
-import NewFeedScrren from './homescreen/NewFeedScreen';
+import NewFeedScreen from './homescreen/NewFeedScreen';
+import FeedDetail from "./homescreen/FeedDetail";
 import Main from './homescreen/Main'
 
 const Stack = createNativeStackNavigator();
@@ -21,8 +22,13 @@ const HomeScreen = () => {
       />
 
       <Stack.Screen
-        name="NewFeedScrren"
-        component={NewFeedScrren}
+        name="NewFeedScreen"
+        component={NewFeedScreen}
+      />
+
+      <Stack.Screen
+        name="FeedDetail"
+        component={FeedDetail}
       />
 
       <Stack.Screen

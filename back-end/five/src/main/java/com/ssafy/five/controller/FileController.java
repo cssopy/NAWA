@@ -3,12 +3,10 @@ package com.ssafy.five.controller;
 import com.ssafy.five.domain.entity.EnumType.FileType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +27,7 @@ public class FileController {
     private String bpath;
 
     @GetMapping("/{fileType}/{fileName}")
-    public ResponseEntity<?> vidoeResourceFileName(@PathVariable FileType fileType, @PathVariable String fileName) throws IOException {
+    public ResponseEntity<?> videoResourceFileName(@PathVariable FileType fileType, @PathVariable String fileName) throws IOException {
         Path path = Paths.get(bpath + "/" + fileType + "/" + fileName);
         String contentType = Files.probeContentType(path);
         HttpHeaders headers = new HttpHeaders();
@@ -40,4 +38,13 @@ public class FileController {
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 
+    @GetMapping("/video/{fileName}")
+    public ResponseEntity<?> videoResourceFileName(@PathVariable String fileName) throws IOException {
+        String fileFullPath = bpath + "/" + FileType.VIDEO + "/" + fileName;
+        Resource resource = new FileSystemResource(fileFullPath);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + "");
+        headers.setContentType(MediaType.parseMediaType("video/mp4"));
+        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+    }
 }

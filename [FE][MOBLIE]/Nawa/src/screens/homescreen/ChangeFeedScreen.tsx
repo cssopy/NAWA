@@ -16,73 +16,32 @@ import { useIsFocused } from "@react-navigation/native";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 
-function NewFeedScreen({ navigation }) {
+function NewFeedScreen({ navigation, route }) {
+  console.log(route)
+
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [flag, setFlag] = useState<boolean>(false)
   // const [profileImage, setProfileImage]: any = useState({});
 
-  const [file, setFile] = useState<object[]>([])
+  const [file, setFile] = useState({
+    name: '',
+    type: '',
+    uri: '',
+    width: 0,
+    height: 0,
+  })
 
   const whoamI = useSelector((state : RootState) => state.user.userId)
   const myId = useSelector((state: RootState) => state.user.accessToken)
   const url = 'http://i7d205.p.ssafy.io/api/board/'
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-
-  // const openCamera = () => {
-  //   const option = {
-  //     mediaType: 'photo',
-  //   };
-    
-  //   launchCamera(option, (res) => {
-  //     if(res.didCancel) {
-  //       console.log('User Cancelled image picker')
-  //     } else if(res.errorCode) {
-  //       console.log(res.errorMessage)
-  //     } else {
-  //       const data = res.assets
-  //       data?.map((file) => {
-  //         const callMedia = {
-  //         uri: file.uri,
-  //         type: file.type,
-  //         name: file.fileName,
-  //         }
-  //       })
-  //     }
-  //   })
-  // }
-
-  // const openVideo = () => {
-
-  //   const option = {
-  //     mediaType: 'video',
-  //   };
-    
-  //   launchCamera(option, (res) => {
-  //     if(res.didCancel) {
-  //       console.log('User Cancelled image picker')
-  //     } else if (res.errorCode) {
-  //       console.log(res.errorMessage)
-  //     } else {
-  //       const data=res.assets
-  //       data?.map((file) => {
-  //         const callMedia = {
-  //         uri: file.uri,
-  //         type: file.type,
-  //         name: file.fileName,
-  //         }
-  //         setMedia(media.append(callMedia))
-  //       })
-  //     }
-  //   })
-  // }
-
   const openStorage = () => {
 
     launchImageLibrary(
       {
-        mediaType: 'mixed',
+        mediaType: 'photo',
         selectionLimit: 0,
       },
       (res) => {
@@ -93,21 +52,15 @@ function NewFeedScreen({ navigation }) {
         console.log(res.errorMessage)
         setFlag(false)
       } else if(res.assets) {
-        const medias = res.assets
-        console.log(medias)
-        let files: object[] = []
-        medias.forEach(media => {
-          const once = {
-            name: media.fileName as string,
-            type: media.type as string,
-            uri: Platform.OS === 'android' ? media.uri as string : media.uri?.replace('file://', '') as string,
-            width: media.width as number,
-            height: media.height as number,
-          }
-          files.push(once)
-        })
-        console.log('저장소에서 가져옴', files)
-        setFile(files);
+        const media = res.assets[0]
+        console.log(media)
+        setFile({
+          name: media.fileName as string,
+          type: media.type as string,
+          uri: Platform.OS === 'android' ? media.uri as string : media.uri?.replace('file://', '') as string,
+          width: media.width as number,
+          height: media.height as number,
+        });
         setFlag(true)
       }
     })
@@ -139,18 +92,16 @@ function NewFeedScreen({ navigation }) {
       }
     ).then(res => {
       console.log('보냈다 200번인가?', flag, file)
-      if (file.length > 0) {
+      if (file.name) {
         console.log('보낸다 미디어')
         const formData = new FormData()
-        file.forEach(f => {
-          formData.append('uploadfile', f)
-        })
+        formData.append('uploadfile', file)
         axios.post(
           url + `files/${res.data}`,
           formData,
           {
             headers : {
-              'Content-Type': 'multipart/form-data',
+              'Content-Type': 'multipart/form-data; boundary=someArbitraryUniqueString',
               'Authorization' : `Bearer ${myId}`
             }
           }
@@ -190,7 +141,7 @@ function NewFeedScreen({ navigation }) {
     <ScrollView
       style={styles.safe}
     >
-      {/* { flag &&
+      { flag &&
         <View
           style={{
             display: 'flex',
@@ -206,7 +157,7 @@ function NewFeedScreen({ navigation }) {
             }}
           />
         </View>
-      } */}
+      }
       <View
         style={{
           flexDirection: "row",

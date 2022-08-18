@@ -23,7 +23,7 @@ public class RegistBoardReqDto {
     public Board toEntity(BoardType boardType) {
         return Board.builder()
                 .boardTitle(this.boardTitle)
-                .user(Users.builder().userId(this.userId).build())
+                .users(Users.builder().userId(this.userId).build())
                 .boardContent(this.boardContent)
                 .boardDate(new Date())
                 .boardUpdate(new Date())

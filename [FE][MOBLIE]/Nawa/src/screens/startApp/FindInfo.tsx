@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../AppInner";
-import { useAppDispatch } from "../store";
+import { RootStackParamList } from "../../../AppInner";
+import { useAppDispatch } from "../../store";
 import { 
     Alert, 
     Text,
@@ -10,7 +10,7 @@ import {
     Pressable,
     View,
     } from "react-native";
-import DismissKeyboardView from '../components/DismissKeyboardView';
+import DismissKeyboardView from '../../components/DismissKeyboardView';
 import axios, {AxiosError} from 'axios';
 
 
@@ -56,7 +56,7 @@ function FindInfo({navigation} : FindInfoScreenProps) {
             return Alert.alert('이메일 나와 !', '올바른 이메일 주소가 아닙니다.');
         }
         try {
-            const response = await axios.post(`http://i7d205.p.ssafy.io:8080/find-id`, {
+            const response = await axios.post(`http://i7d205.p.ssafy.io:8080/api/find-id`, {
                 "emailDomain" : email.split('@')[1],
                 "emailId" : email.split('@')[0],
             });
@@ -88,7 +88,7 @@ function FindInfo({navigation} : FindInfoScreenProps) {
             return Alert.alert('이메일 나와 !', '올바른 이메일 주소가 아닙니다.');
         }
         try {
-            const response = await axios.post(`http://i7d205.p.ssafy.io:8080/give-temp-pw`, {
+            const response = await axios.post(`http://i7d205.p.ssafy.io:8080/api/give-temp-pw`, {
                 "emailDomain" : emailpw.split('@')[1],
                 "emailId" : emailpw.split('@')[0],
                 "userId": userId

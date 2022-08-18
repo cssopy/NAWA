@@ -25,7 +25,7 @@ public class CmtController {
             cmtService.regist(registCmtReqDto);
             return new ResponseEntity<>(true, HttpStatus.valueOf(201));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }

@@ -7,6 +7,8 @@ interface initialState {
     distance : number;
     category : Array<String>;
     settings : string;
+    ment : string;
+    target : object;
 }
 
 const initialState = {
@@ -14,6 +16,15 @@ const initialState = {
     distance : 0,
     category : [],
     settings : '',
+    ment : '',
+    target : {
+        userId : '선택된 유저가 없습니다.',
+        nickname : '선택된 유저가 없습니다.',
+        distance : 0,
+        location : {latitude : 0, longitude:0},
+        category : [],
+        ment : '선택된 유저가 없습니다.'
+    }
 };
 
 const matchingSlice = createSlice({
@@ -26,10 +37,15 @@ const matchingSlice = createSlice({
         },
         setC(state, action) {
             state.category = action.payload.category;
+            state.ment = action.payload.ment;
         },
         setS(state, action) {
             state.settings = action.payload.settings;
         },
+        setTarget(state, action) {
+            state.target = action.payload.target;
+        }
+        
     },
 })
 

@@ -28,10 +28,11 @@ public class StompHandler implements ChannelInterceptor {
 
         // 입장시 구현
         if (StompCommand.SUBSCRIBE == accessor.getCommand() && accessor.getDestination().startsWith("/sub/chat/room/")) {
-            String roomId = (String) ((List) Objects.requireNonNull((Map) message.getHeaders().get("nativeHeaders")).get("roomId")).get(0);
+            String[] splits = accessor.getDestination().split("/");
+            long roomId = Long.parseLong(splits[splits.length-1]);
             String simpSessionId = (String) message.getHeaders().get("simpSessionId");
-            roomSessionService.saveSession(simpSessionId, Long.parseLong(roomId));
-            roomService.roomCount(Long.parseLong(roomId), -1);
+            roomSessionService.saveSession(simpSessionId, roomId);
+            roomService.roomCount(roomId, -1);
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
             String simpSessionId = (String) message.getHeaders().get("simpSessionId");
             Long roomId = roomSessionService.deleteSession(simpSessionId);

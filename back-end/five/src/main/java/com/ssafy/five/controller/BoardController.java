@@ -33,7 +33,7 @@ public class BoardController {
             Long boardId = boardService.save(boardReqDto);
             return new ResponseEntity<>(boardId, HttpStatus.valueOf(201));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }
@@ -45,7 +45,7 @@ public class BoardController {
             fileService.saveFiles(boardId, uploadfile);
             return new ResponseEntity<>(true, HttpStatus.valueOf(201));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }
@@ -60,6 +60,16 @@ public class BoardController {
         return new ResponseEntity<>(boards, HttpStatus.valueOf(200));
     }
 
+    @Operation(summary = "게시글 전체 시간순 조회", description = "게시글 리스트 또는 null 반환")
+    @GetMapping("/mainFeed/{time}/{startNum}")
+    public ResponseEntity<?> findAllOrderByTime(@PathVariable String time, @PathVariable int startNum) {
+        List<BoardResDto> boards = boardService.findAllOrderByTime(time, startNum);
+        for (BoardResDto board : boards) {
+            board.setFiles(fileService.getFilesByBoardId(board.getBoardId()));
+        }
+        return new ResponseEntity<>(boards, HttpStatus.valueOf(200));
+    }
+
     @Operation(summary = "게시글 내용 수정", description = "게시글 수정 성공시 true, 실패시 false 반환")
     @PutMapping("/")
     public ResponseEntity<?> updateBoard(@RequestBody BoardReqDto boardReqDto) {
@@ -67,7 +77,7 @@ public class BoardController {
             boardService.update(boardReqDto);
             return new ResponseEntity<>(true, HttpStatus.valueOf(201));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }
@@ -79,7 +89,7 @@ public class BoardController {
             boardService.deleteById(boardId);
             return new ResponseEntity<>(true, HttpStatus.valueOf(200));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(400));
         }
     }
@@ -93,7 +103,7 @@ public class BoardController {
             board.setFiles(fileService.getFilesByBoardId(boardId));
             return new ResponseEntity<>(board, HttpStatus.valueOf(200));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.valueOf(500));
         }
     }
@@ -102,6 +112,9 @@ public class BoardController {
     @GetMapping("/type/{boardType}")
     public ResponseEntity<?> getBoardByType(@PathVariable(name = "boardType") BoardType boardType) {
         List<BoardResDto> boards = boardService.findAllByBoardType(boardType);
+        for (BoardResDto board : boards) {
+            board.setFiles(fileService.getFilesByBoardId(board.getBoardId()));
+        }
         return new ResponseEntity<>(boards, HttpStatus.valueOf(200));
     }
 
@@ -109,6 +122,9 @@ public class BoardController {
     @PostMapping("/type")
     public ResponseEntity<?> getBoardByUserAndType(@RequestBody GetUserTypeBoardReqDto getUserTypeBoardReqDto) {
         List<BoardResDto> boards = boardService.findAllByUserAndType(getUserTypeBoardReqDto);
+        for (BoardResDto board : boards) {
+            board.setFiles(fileService.getFilesByBoardId(board.getBoardId()));
+        }
         return new ResponseEntity<>(boards, HttpStatus.valueOf(200));
     }
 
@@ -119,7 +135,7 @@ public class BoardController {
             boardService.onOffBoardLike(onOffBoardLikeReqDto);
             return new ResponseEntity<>(true, HttpStatus.valueOf(201));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }
@@ -128,13 +144,26 @@ public class BoardController {
     @GetMapping("/like/{userId}")
     public ResponseEntity<?> getLikeBoardsByUserId(@PathVariable String userId) {
         List<BoardResDto> boards = boardService.findAllByUser(userId);
+        for (BoardResDto board : boards) {
+            board.setFiles(fileService.getFilesByBoardId(board.getBoardId()));
+        }
         return new ResponseEntity<>(boards, HttpStatus.valueOf(200));
+    }
+
+    @Operation(summary = "사용자 게시글 좋아요 상태 여부 확인", description = "게시글 리스트 또는 null 반환")
+    @GetMapping("/like/{userId}/{boardId}")
+    public ResponseEntity<?> isLikedBoard(@PathVariable String userId, @PathVariable Long boardId) {
+        int state = boardService.isLikedBoard(userId, boardId);
+        return new ResponseEntity<>(state, HttpStatus.valueOf(200));
     }
 
     @Operation(summary = "비디오 게시글 랜덤 조회", description = "게시글 리스트 또는 null 반환")
     @GetMapping("/shorts")
     public ResponseEntity<?> getRandomVideoBoards() {
         List<BoardResDto> boards = boardService.findRandomVideo();
+        for (BoardResDto board : boards) {
+            board.setFiles(fileService.getFilesByBoardId(board.getBoardId()));
+        }
         return new ResponseEntity<>(boards, HttpStatus.valueOf(200));
     }
 
@@ -142,8 +171,10 @@ public class BoardController {
     @GetMapping("/{userId}/{time}")
     public ResponseEntity<?> findAllByUserLatest(@PathVariable String userId, @PathVariable String time) {
         List<BoardResDto> boards = boardService.findAllByUserLatest(userId, time);
+        for (BoardResDto board : boards) {
+            board.setFiles(fileService.getFilesByBoardId(board.getBoardId()));
+        }
         return new ResponseEntity<>(boards, HttpStatus.valueOf(200));
     }
-
 
 }

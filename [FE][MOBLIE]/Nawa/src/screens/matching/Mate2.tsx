@@ -3,13 +3,13 @@ import {Text, View, StyleSheet, TextInput, KeyboardAvoidingView , Keyboard} from
 import { Button, CheckBox } from "@rneui/themed";
 
 
-import constants from '../constants';
-import {useAppDispatch} from '../store';
+import constants from '../../constants';
+import {useAppDispatch} from '../../store';
 import * as Progress from 'react-native-progress';
 
 import { FAB } from '@rneui/themed';
 
-import matchingSlice from "../slices/matching";
+import matchingSlice from "../../slices/matching";
 
 
 const checkList = ['헬스', '배드민턴', '러닝', '애견산책', '산책', '등산', '자전거', '수영', '볼링', '당구', '농구', '풋살']
@@ -75,12 +75,18 @@ const Mate2 = ( {navigation} ) => {
   };
 
   useEffect(() => {
+    let gage = 0.33
     if (1 <= box.length && box.length <= 3) {
-      setGage(0.48)
+      gage += 0.22
     }
-     else {
-      setGage(0.33)
-    }}, [box.length])
+    if (value.length >= 10) {
+      gage += 0.22
+    }
+    if (readWarnings) {
+      gage += 0.23
+    }
+    setGage(gage)
+    }, [box.length, value, readWarnings])
   
   // 승인 버튼
   useEffect(() => {
