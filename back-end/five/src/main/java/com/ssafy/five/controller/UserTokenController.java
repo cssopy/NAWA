@@ -28,7 +28,7 @@ public class UserTokenController {
             @ApiResponse(responseCode = "404", description = "(NOT_FOUND) 없는 유저")
     })
     @PostMapping("/token/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginReqDto loginReqDto) throws Exception {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginReqDto loginReqDto) {
         return userTokenService.login(loginReqDto.getUserId(), loginReqDto.getPassword());
     }
 
