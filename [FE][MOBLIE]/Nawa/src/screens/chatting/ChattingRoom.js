@@ -18,6 +18,8 @@ const ChattingMain = ({ route }) => {
     const targetname = route.params.targetname
     const nickname = useSelector((state : RootState) => state.user.nickname)
     const [chattings, setChattings] = useState([]);
+    const chattingss = useSelector((state : RootState) => state.user.chatting)
+    
     const [texting, setTexting] = useState([]);
     
     const onChangeText = useCallback(text => {
@@ -45,11 +47,30 @@ const ChattingMain = ({ route }) => {
                         case2.push(data[prop])
                     }
                 }
-                setChattings(case2)
+                setChattings(case2.sort((a, b) => new Date(a.time) - new Date(b.time)))
             })
-        }, [])
+        }, [chattingss])
 
-  
+
+    // useEffect(() => {
+    //     setChattings([]);
+    //         reference
+    //         .ref(`/users`)
+    //         .once('value')
+    //         .then((snapshot) => {
+    //             const data = snapshot.toJSON()
+    //             const case2 = []
+    //             for (var prop in data) {    
+    //                 if (data[prop].to === targetname && data[prop].from === nickname) {
+    //                     case2.push(data[prop])
+    //                 } else if (data[prop].to === nickname && data[prop].from === targetname) {
+    //                     case2.push(data[prop])
+    //                 }
+    //             }
+    //             setChattings(case2)
+    //         })
+    //     }, [])
+
     // 전송 하기
     const send = (targetname) => {
         const data = {
@@ -84,10 +105,10 @@ const ChattingMain = ({ route }) => {
                     {!!chattings &&
                         chattings.map((item, idx) =>
                                 <View style={{flexDirection:'column', marginVertical:5, width:SCREEN_WIDTH * 0.8}}key={idx}>
-                                    <Text style={{fontSize:20, color:'black'}}>{targetname} 님</Text>
+                                    <Text style={{fontSize:20, color:'black'}}>{item.from} 님</Text>
                                     
                                     <View style={{flexDirection:'row', backgroundColor:'white', borderRadius:10, elevation:8 }}>
-                                        <Text style={{fontSize:20, color:'black'}}>채팅내용 dqdnqiodqiodnqiodnq</Text>
+                                        <Text style={{fontSize:20, color:'black'}}>{item.content}</Text>
                                     </View>
                                     <Text style={{fontSize:10, alignSelf:"flex-end", marginLeft:5, color:'grey'}}>{item.time}</Text>
                                 </View>

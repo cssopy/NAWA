@@ -385,7 +385,7 @@ const Mate1 = ( {navigation} ) => {
                     distance : distance
                   }),
                 )
-                setTimeout(() => {setButtonLoading(false); navigation.navigate('Mate2')}, 500)
+                setTimeout(() => {setButtonLoading(false); navigation.navigate('Mate2')}, 100)
                 
               }}
               containerStyle={{

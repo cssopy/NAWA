@@ -5,7 +5,7 @@ interface User  {
     nickname : string,
     accessToken: string,
     chatting : [],
-    counting : number,
+    get201 : boolean,
 }
 
 const initialState = {
@@ -13,7 +13,7 @@ const initialState = {
     nickname: '',
     accessToken: '',
     chatting : [],
-    counting : 0
+    get201 : false,
 };
 
 const userSlice = createSlice({
@@ -24,10 +24,13 @@ const userSlice = createSlice({
             state.userId = action.payload.userId;
             state.nickname = action.payload.nickname;
             state.accessToken = action.payload.accessToken;
-            state.counting = action.payload.accessToken;
+            state.get201 = action.payload.get201;
+        },
+        setChatting(state, action : PayloadAction<User> ) {
+            state.chatting = action.payload.chatting;
         },
         addChatting(state, action : PayloadAction<User> ) {
-            state.chatting.push(action.payload);
+            state.chatting.push(action.payload.chatting)
         }
     },
 })
