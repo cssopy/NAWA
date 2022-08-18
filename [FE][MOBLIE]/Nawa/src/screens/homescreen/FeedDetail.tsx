@@ -427,12 +427,12 @@ function FeedDetail({ route, navigation }) {
           <View>
             <Text>{ hits }</Text>
           </View>
-          {(whoamI !== userId) && ( iLike ?
+          { iLike ?
             <View>
               <Icon
-                name="dislike1"
+                name="heart"
                 onPress={likeBorad}
-                size={15}
+                size={20}
                 style={{
                   color: 'red',
                   paddingRight: SCREEN_WIDTH * 0.01,
@@ -442,16 +442,15 @@ function FeedDetail({ route, navigation }) {
             :
             <View>
               <Icon
-                name="like1"
+                name="hearto"
                 onPress={likeBorad}
-                size={15}
+                size={20}
                 style={{
-                  color: 'blue',
                   paddingRight: SCREEN_WIDTH * 0.01,
                 }}
               />
             </View>
-          )}
+          }
           <View>
             <Text>{ likes }</Text>
           </View>

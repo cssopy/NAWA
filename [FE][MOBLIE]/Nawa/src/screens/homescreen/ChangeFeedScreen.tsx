@@ -13,6 +13,7 @@ import { launchImageLibrary } from "react-native-image-picker";
 import userSlice from "../../slices/user";
 import { useAppDispatch } from "../../store";
 import { RootState } from "../../store/reducer";
+import Swiper from "react-native-swiper";
 
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -280,6 +281,9 @@ function ChangeFeedScreen({ navigation, route }) {
           marginBottom: SCREEN_HEIGHT * 0.01,
         }}
       >
+        <Swiper
+          style={styles.swiper}
+        >
         { files.map(file => {
           if ( file.fileType === 'IMAGE') {
             return (
@@ -321,41 +325,44 @@ function ChangeFeedScreen({ navigation, route }) {
               )
           }
         })}
+        </Swiper>
         { newFiles.length > 0 && 
-          newFiles.map(file => {
-            if ( file.type === 'image/jpeg') {
-              return (
-                <View
-                  key={ file.fileId }
-                  style={ styles.media }
-                >
-                  <Image
-                  source={{ uri: file.uri}}
-                  resizeMode="cover"
-                  style={{
-                    width: file.width,
-                    height: file.height,
-                    maxHeight: SCREEN_WIDTH * 0.8,
-                    maxWidth: SCREEN_WIDTH * 0.8,
-                  }}
-                />
-                </View>
-              )
-            } else {
-              return(
-                <View
-                  key={ file.fileId }
-                  style={ styles.media }
-                ><Video
-                    source={{ uri: file.uri }}
+          <Swiper>
+            {newFiles.map(file => {
+              if ( file.type === 'image/jpeg') {
+                return (
+                  <View
+                    key={ file.fileId }
+                    style={ styles.media }
+                  >
+                    <Image
+                    source={{ uri: file.uri}}
+                    resizeMode="cover"
                     style={{
-                      height: SCREEN_WIDTH * 0.8,
-                      width: SCREEN_WIDTH * 0.8,
+                      width: file.width,
+                      height: file.height,
+                      maxHeight: SCREEN_WIDTH * 0.8,
+                      maxWidth: SCREEN_WIDTH * 0.8,
                     }}
-                /></View>
+                  />
+                  </View>
                 )
-            }
-          })
+              } else {
+                return(
+                  <View
+                    key={ file.fileId }
+                    style={ styles.media }
+                  ><Video
+                      source={{ uri: file.uri }}
+                      style={{
+                        height: SCREEN_WIDTH * 0.8,
+                        width: SCREEN_WIDTH * 0.8,
+                      }}
+                  /></View>
+                  )
+              }
+            })}
+          </Swiper>
         }
       </View>
       <View
@@ -367,7 +374,7 @@ function ChangeFeedScreen({ navigation, route }) {
       >
 
       <Button
-        title="갤러리"
+        title="추가하기"
         onPressIn={openStorage}
         containerStyle={styles.button}
       />
@@ -397,15 +404,18 @@ function ChangeFeedScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    paddingVertical: ScreenHeight * 0.05,
-    paddingHorizontal: SCREEN_WIDTH * 0.1,
-  },
   button: {
     width: SCREEN_WIDTH * 0.2,
   },
   media: {
     marginBottom: SCREEN_HEIGHT * 0.005,
-  }
+  },
+  safe: {
+    paddingVertical: ScreenHeight * 0.05,
+    paddingHorizontal: SCREEN_WIDTH * 0.1,
+  },
+  swiper: {
+    height: SCREEN_HEIGHT * 0.5,
+  },
 });
 export default ChangeFeedScreen

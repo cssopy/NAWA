@@ -148,6 +148,7 @@ function Feeds ({ navigation }) {
 
     const one = (item: object) => {
       // console.log(item, item.files?.length)
+      // console.log('누구', item.userId)
       if ( item.files.length > 0 ) {
         const data = item.files[0]
         // console.log(data.fileType, data.fileName)
@@ -191,7 +192,7 @@ function Feeds ({ navigation }) {
             <View style={ styles.content }><Text style={{ textAlign:'center'}}>{ item.boardContent }</Text></View>}
 
             <View style={ styles.underBar }>
-              <View style={styles.userIcon}><UserIcon /></View>
+              <View style={styles.userIcon}><UserIcon userId={item.userId} myId={myId} /></View>
               <View style={styles.textBox}><Text style={styles.text}>{item.boardTitle}</Text></View>
             </View>
           </View>
