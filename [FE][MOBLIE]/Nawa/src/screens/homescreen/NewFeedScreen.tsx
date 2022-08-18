@@ -7,8 +7,11 @@ import Swiper from 'react-native-swiper';
 import { useSelector } from "react-redux";
 import { Button, ScreenHeight } from "@rneui/base";
 import { Form, FormItem } from 'react-native-form-component';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
+import userSlice from "../../slices/user";
+import { useAppDispatch } from "../../store";
 import { RootState } from "../../store/reducer";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -21,6 +24,7 @@ function NewFeedScreen({ navigation }) {
 
   const [file, setFile] = useState<object[]>([])
 
+  const dispatch = useAppDispatch();
   const whoamI = useSelector((state : RootState) => state.user.userId)
   const myId = useSelector((state: RootState) => state.user.accessToken)
   
@@ -152,10 +156,83 @@ function NewFeedScreen({ navigation }) {
             }
           }
         ).then(res => console.log('받았다', res.data)
-        ).catch(err => console.log('지긋지긋한 미디어 오류', err))
+        ).catch(async (err) =>{
+          console.log('지긋지긋한 미디어 오류', err)
+        if (err.status === 403) {
+          try {
+            const userId = await EncryptedStorage.getItem('userId');
+            const refreshToken = await EncryptedStorage.getItem('refreshToken');
+            const response = await axios({
+              method : 'post',
+              url : 'http://i7d205.p.ssafy.io/api/checktoken',
+              data : {
+                userId: userId,
+                refreshToken: refreshToken
+              }
+            });
+            // accessToken 신규 발급 > 화면 유지
+            await EncryptedStorage.setItem('accessToken', response.data)
+            dispatch(
+              userSlice.actions.setUser({
+                accessToken : response.data
+              })
+              )
+          } 
+          catch { //refresh 만료 > 로그인화면
+            if (err.response.status === 403) {
+              dispatch(
+                userSlice.actions.setUser({
+                  userId : '',
+                  accessToken : '',
+                  nickname : ''
+                }),
+              );
+              EncryptedStorage.removeItem('userId')
+              EncryptedStorage.removeItem('accessToken')
+              EncryptedStorage.removeItem('refreshToken')
+            }
+          }
+        }
+        })
       }
+    }).catch(async (err) =>{
+      console.log('일단 보낸거 같긴한데', err)
+    if (err.status === 403) {
+      try {
+        const userId = await EncryptedStorage.getItem('userId');
+        const refreshToken = await EncryptedStorage.getItem('refreshToken');
+        const response = await axios({
+          method : 'post',
+          url : 'http://i7d205.p.ssafy.io/api/checktoken',
+          data : {
+            userId: userId,
+            refreshToken: refreshToken
+          }
+        });
+        // accessToken 신규 발급 > 화면 유지
+        await EncryptedStorage.setItem('accessToken', response.data)
+        dispatch(
+          userSlice.actions.setUser({
+            accessToken : response.data
+          })
+          )
+      } 
+      catch { //refresh 만료 > 로그인화면
+        if (err.response.status === 403) {
+          dispatch(
+            userSlice.actions.setUser({
+              userId : '',
+              accessToken : '',
+              nickname : ''
+            }),
+          );
+          EncryptedStorage.removeItem('userId')
+          EncryptedStorage.removeItem('accessToken')
+          EncryptedStorage.removeItem('refreshToken')
+        }
+      }
+    }
     })
-    .catch(err => console.log('일단 보낸거 같긴한데', err))
 
 
     // // 프로필 이미지 전송 => 성공
