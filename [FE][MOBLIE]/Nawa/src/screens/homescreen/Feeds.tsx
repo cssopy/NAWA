@@ -196,7 +196,7 @@ function Feeds ({ navigation }) {
             }
 
             <View style={ styles.underBar }>
-              <View style={styles.userIcon}><UserIcon userId={item.userId} myId={myId} /></View>
+              {/* <View style={styles.userIcon}><UserIcon userId={item.userId} myId={myId} /></View> */}
               <TouchableWithoutFeedback
                 style={styles.feed}
                 onPress={() => {
@@ -238,12 +238,17 @@ function Feeds ({ navigation }) {
           }
           
           ListEmptyComponent={
-            <View><Text style={{ textAlign: 'center' }}>새로운 이야기를 채워주세요</Text></View>
+            <View
+              style={{marginTop: SCREEN_HEIGHT * 0.02}}
+            ><Text style={{ textAlign: 'center' }}>새로운 이야기를 채워주세요</Text></View>
           }
           
           // 보통 여기에 로딩(원 도는거 넣는다는데...)
           ListFooterComponent={
-            !(noMoreFeed) ? <ActivityIndicator /> : <View><Text style={{ textAlign: 'center' }}>새로운 이야기를 채워주세요</Text></View>
+            !(noMoreFeed) ? <ActivityIndicator /> :
+            <View style={{marginTop: SCREEN_HEIGHT * 0.02}}>
+              <Text style={{ textAlign: 'center' }}>새로운 이야기를 채워주세요</Text>
+            </View>
           }
         />
       </>
