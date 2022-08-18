@@ -30,7 +30,7 @@ public class BoardReqDto {
         return Board.builder()
                 .boardId(this.boardId)
                 .boardTitle(this.boardTitle)
-                .user(Users.builder().userId(this.userId).build())
+                .users(Users.builder().userId(this.userId).build())
                 .boardContent(this.boardContent)
                 .boardDate(this.boardDate)
                 .boardUpdate(this.boardUpdate)

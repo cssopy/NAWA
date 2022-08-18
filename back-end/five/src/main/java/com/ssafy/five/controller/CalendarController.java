@@ -20,7 +20,7 @@ public class CalendarController {
     @PostMapping
     public ResponseEntity<?> createTodo(@RequestBody CalReqDto calReqDto) {
         Map<String, ?> calendars = calendarService.createTodo(calReqDto);
-        if (calendars.get("result").equals(401) || calendars.get("result").equals(403)) {
+        if (calendars.get("result").equals(400) || calendars.get("result").equals(404)) {
             return new ResponseEntity<>(false, HttpStatus.valueOf((int) calendars.get("result")));
         } else {
             return new ResponseEntity<>(calendars.get("result"), HttpStatus.OK);
@@ -36,7 +36,7 @@ public class CalendarController {
     @PutMapping
     public ResponseEntity<?> updateTodo(@RequestBody CalReqDto calReqDto) {
         Map<String, ?> calendars = calendarService.updateTodo(calReqDto);
-        if (calendars.get("result").equals(401) || calendars.get("result").equals(403)) {
+        if (calendars.get("result").equals(400) || calendars.get("result").equals(404)) {
             return new ResponseEntity<>(false, HttpStatus.valueOf((int) calendars.get("result")));
         } else {
             return new ResponseEntity<>(calendars.get("result"), HttpStatus.OK);
@@ -46,6 +46,6 @@ public class CalendarController {
     @DeleteMapping
     public ResponseEntity<?> deleteTodo(@RequestBody Long calendarId) {
         Map<String, ?> calendars = calendarService.deleteTodo(calendarId);
-        return new ResponseEntity<>(calendars.get("result"), calendars.get("result").equals(false)? HttpStatus.FORBIDDEN : HttpStatus.OK);
+        return new ResponseEntity<>(calendars.get("result"), calendars.get("result").equals(false)? HttpStatus.NOT_FOUND : HttpStatus.OK);
     }
 }

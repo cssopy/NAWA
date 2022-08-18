@@ -33,7 +33,7 @@ public class BoardController {
             Long boardId = boardService.save(boardReqDto);
             return new ResponseEntity<>(boardId, HttpStatus.valueOf(201));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }
@@ -45,7 +45,7 @@ public class BoardController {
             fileService.saveFiles(boardId, uploadfile);
             return new ResponseEntity<>(true, HttpStatus.valueOf(201));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }
@@ -77,7 +77,7 @@ public class BoardController {
             boardService.update(boardReqDto);
             return new ResponseEntity<>(true, HttpStatus.valueOf(201));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }
@@ -89,7 +89,7 @@ public class BoardController {
             boardService.deleteById(boardId);
             return new ResponseEntity<>(true, HttpStatus.valueOf(200));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(400));
         }
     }
@@ -103,7 +103,7 @@ public class BoardController {
             board.setFiles(fileService.getFilesByBoardId(boardId));
             return new ResponseEntity<>(board, HttpStatus.valueOf(200));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.valueOf(500));
         }
     }
@@ -135,7 +135,7 @@ public class BoardController {
             boardService.onOffBoardLike(onOffBoardLikeReqDto);
             return new ResponseEntity<>(true, HttpStatus.valueOf(201));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseEntity<>(false, HttpStatus.valueOf(500));
         }
     }

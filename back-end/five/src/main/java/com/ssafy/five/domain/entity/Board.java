@@ -28,7 +28,7 @@ public class Board {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "userId")
     @NotNull
-    private Users user;
+    private Users users;
 
     @Column(name = "boardTitle", nullable = false, columnDefinition = "varchar(20)")
     private String boardTitle;

@@ -18,6 +18,7 @@ import com.ssafy.five.domain.repository.UserRepository;
 import com.ssafy.five.exception.BoardNotFoundException;
 import com.ssafy.five.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -49,14 +51,17 @@ public class BoardService {
         Board boardEntity = boardRepository.save(boardReqDto.toEntity());
 
         if (boardEntity != null) {
+            log.info(boardEntity.getBoardId() + "번 게시글 등록 성공하였습니다.");
             return boardEntity.getBoardId();
         } else {
+            log.info("게시글 등록 실패하였습니다.");
             throw new Exception("게시글 내용 등록 실패");
         }
     }
 
     public List<BoardResDto> findAll() {
         List<Board> list = boardRepository.findAll();
+        log.info("게시글 전체 조회에 성공하였습니다.");
         return list.stream().map(BoardResDto::new).collect(Collectors.toList());
     }
 
@@ -66,6 +71,7 @@ public class BoardService {
         boardReqDto.setBoardUpdate(new Date());
         Board boardEntity = boardRepository.save(boardReqDto.toEntity());
         if (boardEntity == null) {
+            log.info("게시글 수정에 실패하였습니다.");
             throw new Exception("게시글 수정 실패");
         }
 
@@ -73,6 +79,7 @@ public class BoardService {
         for (FileDto fileDto : boardReqDto.getFiles()) {
             Files filesEntity = fileRepository.findById(fileDto.getFileId()).orElseThrow(() -> new FileNotFoundException());
             if (filesEntity != null) {
+                log.info(boardEntity.getBoardId() + "번 게시글에 파일을 삭제하였습니다.");
                 fileRepository.deleteById(fileDto.getFileId());
             }
         }
@@ -92,7 +99,7 @@ public class BoardService {
 
             if (existVideo) {
                 boardEntity = boardRepository.save(Board.builder()
-                        .user(boardEntity.getUser())
+                        .users(boardEntity.getUsers())
                         .boardId(boardEntity.getBoardId())
                         .boardTitle(boardEntity.getBoardTitle())
                         .boardContent(boardEntity.getBoardContent())
@@ -101,9 +108,10 @@ public class BoardService {
                         .boardHit(boardEntity.getBoardHit())
                         .boardLikes(boardEntity.getBoardLikes())
                         .boardType(BoardType.VIDEO).build());
+                log.info(boardEntity.getBoardId() + "번 게시글이 VIDEO 타입으로 변경되었습니다.");
             } else if (existImage) {
                 boardEntity = boardRepository.save(Board.builder()
-                        .user(boardEntity.getUser())
+                        .users(boardEntity.getUsers())
                         .boardId(boardEntity.getBoardId())
                         .boardTitle(boardEntity.getBoardTitle())
                         .boardContent(boardEntity.getBoardContent())
@@ -112,10 +120,11 @@ public class BoardService {
                         .boardHit(boardEntity.getBoardHit())
                         .boardLikes(boardEntity.getBoardLikes())
                         .boardType(BoardType.IMAGE).build());
+                log.info(boardEntity.getBoardId() + "번 게시글이 IMAGE 타입으로 변경되었습니다.");
             }
         } else {
             boardEntity = boardRepository.save(Board.builder()
-                    .user(boardEntity.getUser())
+                    .users(boardEntity.getUsers())
                     .boardId(boardEntity.getBoardId())
                     .boardTitle(boardEntity.getBoardTitle())
                     .boardContent(boardEntity.getBoardContent())
@@ -124,8 +133,10 @@ public class BoardService {
                     .boardHit(boardEntity.getBoardHit())
                     .boardLikes(boardEntity.getBoardLikes())
                     .boardType(BoardType.GENERAL).build());
+            log.info(boardEntity.getBoardId() + "번 게시글이 GENERAL 타입으로 변경되었습니다.");
         }
         if (boardEntity == null) {
+            log.info("게시글 DB 저장 실패하였습니다.");
             throw new Exception("게시글 DB 저장 실패");
         }
 
@@ -135,8 +146,10 @@ public class BoardService {
             if (file != null) {
                 if (file.exists()) {
                     if (!file.delete()) {
+                        log.info("로컬에 저장된 파일 삭제 실패하였습니다.");
                         throw new Exception("로컬에 저장된 파일 삭제 실패");
                     }
+                    log.info("로컬에 저장된 파일 삭제 성공하였습니다.");
                 }
             }
         }
@@ -153,6 +166,7 @@ public class BoardService {
         List<Files> files = fileRepository.findAllByBoard(boardEntity);
         // DB에 있는 게시글, 댓글, 파일 정보 삭제
         boardRepository.deleteById(boardId);
+        log.info(boardEntity.getBoardId() + "번 게시글이 삭제되었습니다.");
 
         // 서버 로컬에 저장된 파일 삭제
         if (files != null) {
@@ -161,8 +175,10 @@ public class BoardService {
                 // 해당하는 이름의 파일이 존재하면 삭제
                 if (dfile.exists()) {
                     if (!dfile.delete()) {
+                        log.info("로컬에 저장된 파일 삭제 실패하였습니다.");
                         throw new Exception("로컬에 저장된 파일 삭제 실패");
                     }
+                    log.info("로컬에 저장된 파일 삭제 성공하였습니다.");
                 }
             }
         }
@@ -170,16 +186,19 @@ public class BoardService {
 
     @Transactional(rollbackFor = {Exception.class})
     public BoardResDto findById(Long boardId) throws Exception {
+        Board entity = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException());
         int result = boardRepository.updateHit(boardId);
         if (result == 0) {
+            log.info("게시글 조회수 반영 실패하였습니다.");
             throw new Exception("게시글 조회수 반영 실패");
         }
-        Board entity = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException());
+        log.info(boardId + "번 게시글을 조회하였습니다.");
         return new BoardResDto(entity);
     }
 
     public List<BoardResDto> findAllByBoardType(BoardType boardType) {
         List<Board> boards = boardRepository.findAllByBoardType(boardType);
+        log.info("게시글 타입으로 전체 조회하였습니다.");
         return boards.stream().map(BoardResDto::new).collect(Collectors.toList());
     }
 
@@ -196,7 +215,7 @@ public class BoardService {
 
             // 게시글 좋아요 수 감소
             boardEntity = boardRepository.save(Board.builder()
-                    .user(users)
+                    .users(users)
                     .boardId(board.getBoardId())
                     .boardTitle(board.getBoardTitle())
                     .boardContent(board.getBoardContent())
@@ -206,6 +225,7 @@ public class BoardService {
                     .boardDate(board.getBoardDate())
                     .boardUpdate(board.getBoardUpdate())
                     .build());
+            log.info(boardEntity.getBoardId() + "번 게시글 좋아요 취소하였습니다.");
         }
         // 해당 유저가 해당 게시글을 좋아요를 안한 상태라면 ON
         else {
@@ -217,7 +237,7 @@ public class BoardService {
 
             // 게시글 좋아요 수 증가
             boardEntity = boardRepository.save(Board.builder()
-                    .user(users)
+                    .users(users)
                     .boardId(board.getBoardId())
                     .boardTitle(board.getBoardTitle())
                     .boardContent(board.getBoardContent())
@@ -227,10 +247,12 @@ public class BoardService {
                     .boardDate(board.getBoardDate())
                     .boardUpdate(board.getBoardUpdate())
                     .build());
+            log.info(boardEntity.getBoardId() + "번 게시글 좋아요 눌렀습니다.");
         }
 
         // 게시글 좋아요 수 반영 실패
         if (boardEntity == null) {
+            log.info("게시글 좋아요 수 반영 실패하였습니다.");
             throw new Exception("게시글 좋아요 수 반영 실패");
         }
     }
@@ -238,16 +260,19 @@ public class BoardService {
     public List<BoardResDto> findAllByUser(String userId) {
         Users usersEntity = userRepository.findByUserId(userId);
         List<Board> likeBoards = likeBoardRepository.findAllByUser(usersEntity);
+        log.info("좋아요한 게시글 조회하였습니다.");
         return likeBoards.stream().map(BoardResDto::new).collect(Collectors.toList());
     }
 
     public List<BoardResDto> findAllByUserAndType(GetUserTypeBoardReqDto getUserTypeBoardReqDto) {
         Users userEntity = userRepository.findByUserId(getUserTypeBoardReqDto.getUserId());
+        log.info("게시글 타입으로 게시글 조회하였습니다.");
         return boardRepository.findAllByUserAndType(userEntity, getUserTypeBoardReqDto.getBoardType());
     }
 
     public List<BoardResDto> findRandomVideo() {
         List<Board> boards = boardRepository.findRandomVideo();
+        log.info("랜덤 동영상 조회하였습니다.");
         return boards.stream().map(BoardResDto::new).collect(Collectors.toList());
     }
 
@@ -257,8 +282,10 @@ public class BoardService {
         List<Board> boards = null;
         if (time.equals("NEW")) {
             boards = boardRepository.findAllByUserNEW(userEntity);
+            log.info("유저의 최신 게시글을 조회하였습니다.");
         } else if (time.equals("OLD")) {
             boards = boardRepository.findAllByUserOLD(userEntity);
+            log.info("유저의 오래된 게시글을 조회하였습니다.");
         }
         return boards.stream().map(BoardResDto::new).collect(Collectors.toList());
     }
@@ -267,8 +294,10 @@ public class BoardService {
         List<Board> boards = null;
         if (time.equals("NEW")) {
             boards = boardRepository.findAllOrderByNEW(startNum);
+            log.info("최신 게시글을 조회하였습니다.");
         } else if (time.equals("OLD")) {
             boards = boardRepository.findAllOrderByOLD(startNum);
+            log.info("오래된 게시글을 조회하였습니다.");
         }
         return boards.stream().map(BoardResDto::new).collect(Collectors.toList());
     }
@@ -276,9 +305,12 @@ public class BoardService {
     public int isLikedBoard(String userId, Long boardId) {
         LikeBoard likeBoardEntity = likeBoardRepository.findByUserIdAndBoardId(userId, boardId);
         if (likeBoardEntity == null) {
+            log.info("좋아요 안 누른 게시글입니다.");
             return 0;
         } else {
+            log.info("좋아요 누른 게시글입니다.");
             return 1;
         }
     }
+
 }
