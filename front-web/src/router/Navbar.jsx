@@ -45,7 +45,7 @@ function Navbartop() {
       <Link to="/" style={isMobile? mobileStyle : style}>
         <Navbar.Brand>
           <img
-            src="img/nawa_white.png"
+            src="img/nawa_black.png"
             alt="nawalogo"
             style={ isMobile ? imgSize.mobile : imgSize.web }
           />
