@@ -19,14 +19,13 @@ const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
 
 function Feeds ({ navigation }) {
   const [totalFeeds, setTotalFeeds] = useState<number>(0);
-  
 
-  const isFocused = useIsFocused()
-  
   const animationRef = useRef(new Animated.Value(0)).current;
   
   // baseUrl
   const url = 'http://i7d205.p.ssafy.io/api/'
+  const isFocused = useIsFocused()
+  const dispatch = useAppDispatch(); 
   const myId = useSelector((state: RootState) => state.user.accessToken)
   
   const translateY = animationRef.interpolate({
@@ -60,7 +59,44 @@ function Feeds ({ navigation }) {
         }
         setFeeds(feeds.concat(res.data))
         setPage(page + res.data.length)
-      }).catch(err => Alert.alert('알림', `오류 발생 ${err}`))
+      }).catch(async (err) =>{
+        Alert.alert('알림', `오류 발생 ${err}`)
+        if (err.status === 403) {
+          try {
+            const userId = await EncryptedStorage.getItem('userId');
+            const refreshToken = await EncryptedStorage.getItem('refreshToken');
+            const response = await axios({
+              method : 'post',
+              url : 'http://i7d205.p.ssafy.io/api/checktoken',
+              data : {
+                userId: userId,
+                refreshToken: refreshToken
+              }
+            });
+            // accessToken 신규 발급 > 화면 유지
+            await EncryptedStorage.setItem('accessToken', response.data)
+            dispatch(
+              userSlice.actions.setUser({
+                accessToken : response.data
+              })
+              )
+          } 
+          catch { //refresh 만료 > 로그인화면
+            if (err.response.status === 403) {
+              dispatch(
+                userSlice.actions.setUser({
+                  userId : '',
+                  accessToken : '',
+                  nickname : ''
+                }),
+              );
+              EncryptedStorage.removeItem('userId')
+              EncryptedStorage.removeItem('accessToken')
+              EncryptedStorage.removeItem('refreshToken')
+            }
+          }
+        }
+      })
     }
       
     useEffect(() => {

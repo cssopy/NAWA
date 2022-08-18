@@ -6,12 +6,14 @@ import { Button } from "@rneui/base";
 import Video from "react-native-video";
 import Swiper from 'react-native-swiper';
 import { useSelector } from "react-redux";
+import Icon from "react-native-vector-icons/AntDesign";
 import { useIsFocused } from "@react-navigation/native";
 import { Form, FormItem } from "react-native-form-component";
-import Icon from "react-native-vector-icons/AntDesign"
+import EncryptedStorage from 'react-native-encrypted-storage';
 
+import userSlice from "../../slices/user";
+import { useAppDispatch } from "../../store";
 import { RootState } from "../../store/reducer";
-import UserIcon from "../../components/userIcon";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -31,11 +33,12 @@ function FeedDetail({ route, navigation }) {
 
   const [ticTok, setTicTok] = useState<boolean>(false)
 
-  const whoamI = useSelector((state : RootState) => state.user.userId)
-  const myId = useSelector((state: RootState) => state.user.accessToken)
+  const isFocused = useIsFocused()
+  const dispatch = useAppDispatch();
   const { boardId, userId } = route.params;
   const url = 'http://i7d205.p.ssafy.io/api/'
-  const isFocused = useIsFocused()
+  const whoamI = useSelector((state : RootState) => state.user.userId)
+  const myId = useSelector((state: RootState) => state.user.accessToken)
 
   // 댓글 생성
   const createComment = () => {
@@ -63,8 +66,44 @@ function FeedDetail({ route, navigation }) {
       // console.log(comments)
       setTicTok(!ticTok)
       setNewComment('')
-    }).catch(err => 
-      console.log('you get error at detail', err))
+    }).catch(async (err) =>{
+      console.log('you get error at detail', err)
+      if (err.status === 403) {
+        try {
+          const userId = await EncryptedStorage.getItem('userId');
+          const refreshToken = await EncryptedStorage.getItem('refreshToken');
+          const response = await axios({
+            method : 'post',
+            url : 'http://i7d205.p.ssafy.io/api/checktoken',
+            data : {
+              userId: userId,
+              refreshToken: refreshToken
+            }
+          });
+          // accessToken 신규 발급 > 화면 유지
+          await EncryptedStorage.setItem('accessToken', response.data)
+          dispatch(
+            userSlice.actions.setUser({
+              accessToken : response.data
+            })
+            )
+        } 
+        catch { //refresh 만료 > 로그인화면
+          if (err.response.status === 403) {
+            dispatch(
+              userSlice.actions.setUser({
+                userId : '',
+                accessToken : '',
+                nickname : ''
+              }),
+            );
+            EncryptedStorage.removeItem('userId')
+            EncryptedStorage.removeItem('accessToken')
+            EncryptedStorage.removeItem('refreshToken')
+          }
+        }
+      }
+    })
     }
     
     // 댓글 삭제
@@ -78,8 +117,44 @@ function FeedDetail({ route, navigation }) {
       ).then(res => {
         console.log('댓글 삭제되다', res.data)
         setTicTok(!ticTok)
-      }).catch(err => 
-        console.log('you get error at detail', err))
+      }).catch(async (err) =>{
+          console.log('you get error at detail', err)
+          if (err.status === 403) {
+            try {
+              const userId = await EncryptedStorage.getItem('userId');
+              const refreshToken = await EncryptedStorage.getItem('refreshToken');
+              const response = await axios({
+                method : 'post',
+                url : 'http://i7d205.p.ssafy.io/api/checktoken',
+                data : {
+                  userId: userId,
+                  refreshToken: refreshToken
+                }
+              });
+              // accessToken 신규 발급 > 화면 유지
+              await EncryptedStorage.setItem('accessToken', response.data)
+              dispatch(
+                userSlice.actions.setUser({
+                  accessToken : response.data
+                })
+                )
+            } 
+            catch { //refresh 만료 > 로그인화면
+              if (err.response.status === 403) {
+                dispatch(
+                  userSlice.actions.setUser({
+                    userId : '',
+                    accessToken : '',
+                    nickname : ''
+                  }),
+                );
+                EncryptedStorage.removeItem('userId')
+                EncryptedStorage.removeItem('accessToken')
+                EncryptedStorage.removeItem('refreshToken')
+              }
+            }
+          }
+        })
     }
   
   // 좋아요 - 좋아요 취소
@@ -103,7 +178,44 @@ function FeedDetail({ route, navigation }) {
         setLikes(likes + 1)
       }
     }
-    )
+    ).catch(async (err) =>{
+      console.log('you get error at detail', err)
+      if (err.status === 403) {
+        try {
+          const userId = await EncryptedStorage.getItem('userId');
+          const refreshToken = await EncryptedStorage.getItem('refreshToken');
+          const response = await axios({
+            method : 'post',
+            url : 'http://i7d205.p.ssafy.io/api/checktoken',
+            data : {
+              userId: userId,
+              refreshToken: refreshToken
+            }
+          });
+          // accessToken 신규 발급 > 화면 유지
+          await EncryptedStorage.setItem('accessToken', response.data)
+          dispatch(
+            userSlice.actions.setUser({
+              accessToken : response.data
+            })
+            )
+        } 
+        catch { //refresh 만료 > 로그인화면
+          if (err.response.status === 403) {
+            dispatch(
+              userSlice.actions.setUser({
+                userId : '',
+                accessToken : '',
+                nickname : ''
+              }),
+            );
+            EncryptedStorage.removeItem('userId')
+            EncryptedStorage.removeItem('accessToken')
+            EncryptedStorage.removeItem('refreshToken')
+          }
+        }
+      }
+    })
   }
 
   // 피드 삭제
@@ -115,8 +227,43 @@ function FeedDetail({ route, navigation }) {
     ).then(res => {
       console.log(res.data)
       navigation.navigate('Main', {screen: 'Feeds'})
-    }).catch(err => {
+    }).catch(async (err) =>{
       Alert.alert('오류', err.data)
+      if (err.status === 403) {
+        try {
+          const userId = await EncryptedStorage.getItem('userId');
+          const refreshToken = await EncryptedStorage.getItem('refreshToken');
+          const response = await axios({
+            method : 'post',
+            url : 'http://i7d205.p.ssafy.io/api/checktoken',
+            data : {
+              userId: userId,
+              refreshToken: refreshToken
+            }
+          });
+          // accessToken 신규 발급 > 화면 유지
+          await EncryptedStorage.setItem('accessToken', response.data)
+          dispatch(
+            userSlice.actions.setUser({
+              accessToken : response.data
+            })
+            )
+        } 
+        catch { //refresh 만료 > 로그인화면
+          if (err.response.status === 403) {
+            dispatch(
+              userSlice.actions.setUser({
+                userId : '',
+                accessToken : '',
+                nickname : ''
+              }),
+            );
+            EncryptedStorage.removeItem('userId')
+            EncryptedStorage.removeItem('accessToken')
+            EncryptedStorage.removeItem('refreshToken')
+          }
+        }
+      }
     })
   }
 
@@ -135,7 +282,8 @@ function FeedDetail({ route, navigation }) {
       setComments(datas.comments)
       setFiles(datas.files)
       setLikes(datas.boardLikes)
-      console.log(files)
+      // console.log(files)
+      console.log(likes)
       axios.get(
         `${url}board/like/${userId}/${boardId}/`,
         { headers: { Authorization : `Bearer ${myId}` }}
@@ -143,11 +291,82 @@ function FeedDetail({ route, navigation }) {
         console.log('nice check', res.data)
         setILike(res.data);
       }
-      ).catch(err => {
+      ).catch(async (err) =>{
         console.log('좋아요 체크 오류', err)
+        console.log('you get error at detail', err)
+        if (err.status === 403) {
+          try {
+            const userId = await EncryptedStorage.getItem('userId');
+            const refreshToken = await EncryptedStorage.getItem('refreshToken');
+            const response = await axios({
+              method : 'post',
+              url : 'http://i7d205.p.ssafy.io/api/checktoken',
+              data : {
+                userId: userId,
+                refreshToken: refreshToken
+              }
+            });
+            // accessToken 신규 발급 > 화면 유지
+            await EncryptedStorage.setItem('accessToken', response.data)
+            dispatch(
+              userSlice.actions.setUser({
+                accessToken : response.data
+              })
+              )
+          } 
+          catch { //refresh 만료 > 로그인화면
+            if (err.response.status === 403) {
+              dispatch(
+                userSlice.actions.setUser({
+                  userId : '',
+                  accessToken : '',
+                  nickname : ''
+                }),
+              );
+              EncryptedStorage.removeItem('userId')
+              EncryptedStorage.removeItem('accessToken')
+              EncryptedStorage.removeItem('refreshToken')
+            }
+          }
+        }
       })
-    }).catch (err => {
+    }).catch(async (err) =>{
       console.log('you get error at detail', err)
+      if (err.status === 403) {
+        try {
+          const userId = await EncryptedStorage.getItem('userId');
+          const refreshToken = await EncryptedStorage.getItem('refreshToken');
+          const response = await axios({
+            method : 'post',
+            url : 'http://i7d205.p.ssafy.io/api/checktoken',
+            data : {
+              userId: userId,
+              refreshToken: refreshToken
+            }
+          });
+          // accessToken 신규 발급 > 화면 유지
+          await EncryptedStorage.setItem('accessToken', response.data)
+          dispatch(
+            userSlice.actions.setUser({
+              accessToken : response.data
+            })
+            )
+        } 
+        catch { //refresh 만료 > 로그인화면
+          if (err.response.status === 403) {
+            dispatch(
+              userSlice.actions.setUser({
+                userId : '',
+                accessToken : '',
+                nickname : ''
+              }),
+            );
+            EncryptedStorage.removeItem('userId')
+            EncryptedStorage.removeItem('accessToken')
+            EncryptedStorage.removeItem('refreshToken')
+          }
+        }
+      }
     })
   },[ticTok, isFocused])
 
@@ -233,7 +452,9 @@ function FeedDetail({ route, navigation }) {
               />
             </View>
           )}
-          <Text>{ likes }</Text>
+          <View>
+            <Text>{ likes }</Text>
+          </View>
         </View>
 
         <View
