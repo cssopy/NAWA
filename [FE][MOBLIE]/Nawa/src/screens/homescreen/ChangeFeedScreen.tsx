@@ -374,7 +374,7 @@ function ChangeFeedScreen({ navigation, route }) {
       >
 
       <Button
-        title="추가하기"
+        title="추가"
         onPressIn={openStorage}
         containerStyle={styles.button}
       />
