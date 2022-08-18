@@ -466,7 +466,7 @@ const Mate3 = ( {navigation} ) => {
           <View style={{flexDirection:"row", justifyContent:'space-between', position:"absolute", top:0, borderRadius:30, padding:5 , marginLeft:5 }}>
             {online ?
               <Button onPress={() => {userOut(nickname); setOnline(false);}} buttonStyle={{borderRadius:20}} containerStyle={{flex:1, elevation:8}}>
-                <Text style={{justifyContent:'center', fontSize:19, color:'white'}}>매칭중 . . .  </Text>
+                <Text style={{justifyContent:'center', fontSize:19, color:'white'}}>매칭중. . .   현재 {realTime.length} 명   </Text>
                 <ActivityIndicator size={"small"} color="white" ></ActivityIndicator>
               </Button>
             :

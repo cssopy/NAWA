@@ -10,6 +10,8 @@ import { Button, normalize } from "@rneui/themed";
 import axios from "axios";
 import { Dimensions } from "react-native";
 import { black } from "react-native-paper/lib/typescript/styles/colors";
+import { useAppDispatch } from "../../store";
+import { useFocusEffect } from "@react-navigation/native";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 
@@ -19,6 +21,8 @@ const ChattingMain = ({ navigation }) => {
   const userId = useSelector((state : RootState) => state.user.userId)
   const accessToken = useSelector((state : RootState) => state.user.accessToken)
   const [friends, setFriends] = useState([]);
+  
+  
   const friend = async () => {
     try {
       const response = await axios({
@@ -74,41 +78,6 @@ const ChattingMain = ({ navigation }) => {
     }, [])
   );
 
-
-  useEffect(() => {
-    const friend = async () => {
-      try {
-        const response = await axios({
-          method : 'get',
-          url : `http://i7d205.p.ssafy.io/api/mate/${userId}`,
-          headers : {"Authorization" : `Bearer ${accessToken}`}
-        });
-        setFriends(response.data.mateList);
-      }
-      catch (error) {
-        console.log(error)
-      }
-    }
-    friend()
-  },[userId])
-  useEffect(() => {
-    const friend = async () => {
-      try {
-        const response = await axios({
-          method : 'get',
-          url : `http://i7d205.p.ssafy.io/api/mate/${userId}`,
-          headers : {"Authorization" : `Bearer ${accessToken}`}
-        });
-        setFriends(response.data.mateList);
-      }
-      catch (error) {
-        console.log(error)
-      }
-    }
-    friend()
-  },[userId])
-
-  console.log(friends)
 
   return (
     <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#ddd' }}>

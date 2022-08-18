@@ -9,6 +9,7 @@ interface initialState {
     settings : string;
     ment : string;
     target : object;
+    check : boolean;
 }
 
 const initialState = {
@@ -24,7 +25,8 @@ const initialState = {
         location : {latitude : 0, longitude:0},
         category : [],
         ment : '선택된 유저가 없습니다.'
-    }
+    },
+    check : false
 };
 
 const matchingSlice = createSlice({
@@ -44,8 +46,10 @@ const matchingSlice = createSlice({
         },
         setTarget(state, action) {
             state.target = action.payload.target;
+        },
+        setCheck(state, action) {
+            state.check = action.payload.check;
         }
-        
     },
 })
 
