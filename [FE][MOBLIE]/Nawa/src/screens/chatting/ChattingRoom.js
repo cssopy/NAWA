@@ -55,6 +55,8 @@ const ChattingMain = ({ route }) => {
             })
         }, [chattingss])
 
+
+
     // 전송 하기
     const send = (targetname) => {
         const data = {

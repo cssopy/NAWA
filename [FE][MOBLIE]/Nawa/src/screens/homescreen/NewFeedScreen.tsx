@@ -331,6 +331,9 @@ function NewFeedScreen({ navigation }) {
       <Form
         onButtonPress={onSubmit}
         buttonText = "보내기"
+        style={{
+          marginBottom: SCREEN_HEIGHT * 0.1
+        }}
         >
         <FormItem
           label="제목"

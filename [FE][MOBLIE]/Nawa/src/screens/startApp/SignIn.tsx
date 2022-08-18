@@ -61,7 +61,7 @@ function SignIn({navigation}: SignInScreenProps) {
       dispatch(
         userSlice.actions.setUser({ // 이 액션이 dispatch 되면 
           userId : response.data.userId,
-          nickname : nickname,
+          nickname : response.data.nickname,
           accessToken : response.data.accessToken,
         }),
         );

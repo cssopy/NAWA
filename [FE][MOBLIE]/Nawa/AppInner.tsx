@@ -119,12 +119,11 @@ function AppInner() {
           },
           headers : {"Authorization" : `Bearer ${accessToken}`}
         });
-        
         dispatch(
           userSlice.actions.setUser({
             userId : response.data.userId,
             accessToken : response.data.accessToken,
-            nickname : nickname
+            nickname : response.data.nickname
           }),
         );
         EncryptedStorage.setItem(

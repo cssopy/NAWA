@@ -11,14 +11,16 @@ import Video from "react-native-video";
 import userSlice from "../../slices/user";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/reducer";
-import UserIcon from "../../components/userIcon";
+import UserIcon from "../../components/UserIcon";
 import { useAppDispatch } from "../../store";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const HEADER_HEIGHT = SCREEN_HEIGHT * 0.05;
 
 function Feeds ({ navigation }) {
-  const [totalFeeds, setTotalFeeds] = useState<number>(0);
+  const [offset, setOffset] = useState(0);
+  const [scrollUp, setScrollUp] = useState(true);
+
 
   const animationRef = useRef(new Animated.Value(0)).current;
   
@@ -32,6 +34,8 @@ function Feeds ({ navigation }) {
     inputRange: [0, 1],
     outputRange: [0, -HEADER_HEIGHT],
   });
+
+  console.log('start')
 
   const MainFeed = () => {
     const [feeds, setFeeds] = useState<object[]>([]);
@@ -59,6 +63,7 @@ function Feeds ({ navigation }) {
         }
         setFeeds(feeds.concat(res.data))
         setPage(page + res.data.length)
+
       }).catch(async (err) =>{
         Alert.alert('알림', `오류 발생 ${err}`)
         if (err.status === 403) {
@@ -99,27 +104,31 @@ function Feeds ({ navigation }) {
       })
     }
       
-    useEffect(() => {
-      // console.log('access token', myId)
-      // const sendUrl = `${url}board/`
-  
-      // 현재 피드의 총 갯수 확인
-      // axios.get(
-      //   'http://i7d205.p.ssafy.io/api/board/count',
-      //   { headers: { Authorization : `Bearer ${myId}` }}
-      // ).then(res=> setTotalFeeds(res.data))
-  
-      // refresh 해제
-      setLoading(true)
-      
-      // 초기 10개의 피드 호출
-      getfeeds();
-      
-      setReFreshing(false)
-      setNoMoreFeed(false)
-      setLoading(false)
-  
-    },[isFocused, ticTok])
+    useFocusEffect(
+      useCallback(() => {
+        console.log(1111111)
+        // console.log(isFocused)
+        // console.log('access token', myId)
+        // const sendUrl = `${url}board/`
+    
+        // 현재 피드의 총 갯수 확인
+        // axios.get(
+        //   'http://i7d205.p.ssafy.io/api/board/count',
+        //   { headers: { Authorization : `Bearer ${myId}` }}
+        // ).then(res=> setTotalFeeds(res.data))
+    
+        // refresh 해제
+        setLoading(true)
+        
+        // 초기 10개의 피드 호출
+        getfeeds();
+        
+        setReFreshing(false)
+        setNoMoreFeed(false)
+        setLoading(false)
+    
+      },[])
+    )
     
     const checkfeed = async () => {
       if (!loading) {
@@ -148,22 +157,17 @@ function Feeds ({ navigation }) {
 
     const one = (item: object) => {
       // console.log(item, item.files?.length)
+      // console.log('누구', item.userId)
       if ( item.files.length > 0 ) {
         const data = item.files[0]
         // console.log(data.fileType, data.fileName)
         fileUrl = `${url}file/${(data.fileType === 'IMAGE') ? 'IMAGE' : 'video'}/${data.fileName}`
         fileType = data.fileType
         // console.log('oneMedia', fileUrl)
-        console.log('oneMedia create', fileUrl)
+        // console.log('oneMedia create', fileUrl)
       }
 
       return (
-        <TouchableWithoutFeedback
-        style={styles.feed}
-        onPress={() => {
-          onPressListHandler(item)
-        }}
-        >
           <View style={ styles.feedItem }>
             { item.files.length > 0 ?
             <View
@@ -188,14 +192,24 @@ function Feeds ({ navigation }) {
               }
             </View>
             :
-            <View style={ styles.content }><Text style={{ textAlign:'center'}}>{ item.boardContent }</Text></View>}
+            <View style={ styles.content }><Text style={{ textAlign:'center'}}>{ item.boardContent }</Text></View>
+            }
 
             <View style={ styles.underBar }>
-              <View style={styles.userIcon}><UserIcon /></View>
-              <View style={styles.textBox}><Text style={styles.text}>{item.boardTitle}</Text></View>
+              {/* <View style={styles.userIcon}><UserIcon userId={item.userId} myId={myId} /></View> */}
+              <TouchableWithoutFeedback
+                style={styles.feed}
+                onPress={() => {
+                  onPressListHandler(item)
+                }}
+                >
+                <View
+                  style={styles.textBox}>
+                    <Text style={styles.text}>{item.boardTitle}</Text>
+                </View>
+              </TouchableWithoutFeedback>
             </View>
           </View>
-        </TouchableWithoutFeedback>
         )
       }
 
@@ -224,12 +238,17 @@ function Feeds ({ navigation }) {
           }
           
           ListEmptyComponent={
-            <View><Text style={{ textAlign: 'center' }}>새로운 이야기를 채워주세요</Text></View>
+            <View
+              style={{marginTop: SCREEN_HEIGHT * 0.02}}
+            ><Text style={{ textAlign: 'center' }}>새로운 이야기를 채워주세요</Text></View>
           }
           
           // 보통 여기에 로딩(원 도는거 넣는다는데...)
           ListFooterComponent={
-            !(noMoreFeed) ? <ActivityIndicator /> : <View><Text style={{ textAlign: 'center' }}>새로운 이야기를 채워주세요</Text></View>
+            !(noMoreFeed) ? <ActivityIndicator /> :
+            <View style={{marginTop: SCREEN_HEIGHT * 0.02}}>
+              <Text style={{ textAlign: 'center' }}>새로운 이야기를 채워주세요</Text>
+            </View>
           }
         />
       </>
@@ -256,59 +275,78 @@ const styles = StyleSheet.create({
     marginBottom: SCREEN_HEIGHT * 0.01,
   },
   feedItem : {
-    flexDirection: 'column',
-    backgroundColor : 'lightgrey',
-    paddingVertical : SCREEN_HEIGHT * 0.005,
-    marginHorizontal : 10,
-    marginTop : 10,
+    backgroundColor : 'white',
     borderRadius : 10,
+    elevation: 15,
+    flexDirection: 'column',
     height : 'auto',
+    // marginHorizontal : 10,
+    marginTop : 10,
+    shadowColor: "black", //그림자색
+    shadowOpacity: 1,//그림자 투명도
+    shadowOffset: { width: 0, height: 2 },
+    paddingVertical : SCREEN_HEIGHT * 0.005,
   },
   content : {
-    flex : 11,
+    alignSelf: 'center',
     backgroundColor : 'white',
-    marginHorizontal : 5,
-    marginTop : 5,
     borderRadius : 10,
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    flex : 11,
+    justifyContent: 'center',
+    marginHorizontal : 0,
+    marginTop : 5,
     overflow: 'hidden',
     paddingVertical: SCREEN_HEIGHT * 0.005,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+
+    width: SCREEN_WIDTH * 0.9,
+    height: SCREEN_HEIGHT * 0.1,
   },
   underBar : {
     flex : 2,
     flexDirection : 'row',
+    alignSelf: 'center',
+
+    width: SCREEN_WIDTH * 0.9,
   },
   userIcon : {
     marginHorizontal : 5,
     marginVertical : 5,
   },
   textBox : {
-    flex : 1,
+    alignItems: 'center',
     backgroundColor : 'white',
-    marginRight : 5,
-    marginVertical : 5,
     borderRadius : 10,
     display: 'flex',
+    flex : 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    marginRight : 5,
+    marginVertical : 5,
+    
+    shadowColor: "black", //그림자색
+    shadowOpacity: 1,//그림자 투명도
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 9,
   },
   text : {
+    fontSize: 18,
     textAlign: 'center',
-    fontSize: 15
   },
   img : {
-    width: SCREEN_WIDTH * 0.8,
-    height: SCREEN_HEIGHT * 0.3,
-    resizeMode: 'cover',
     borderRadius: 10,
     marginVertical: SCREEN_HEIGHT * 0.01,
+    resizeMode: 'cover',
+    
+    width: SCREEN_WIDTH * 0.9,
+    height: SCREEN_HEIGHT * 0.3,
   },
   vdo : {
-    height: SCREEN_WIDTH * 0.8,
-    width: SCREEN_WIDTH * 0.8,
     borderRadius: 10,
     marginVertical: SCREEN_HEIGHT * 0.01,
+    
+    height: SCREEN_WIDTH * 0.8,
+    width: SCREEN_WIDTH * 0.9,
   }
 })
 
