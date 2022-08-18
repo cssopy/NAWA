@@ -10,7 +10,7 @@ function Intro2 () {
   const coDevelopers = [
     {
         name: '이정재',
-        image: '${process.env.PUBLIC_URL}/img/Intro/Lee.png',
+        image: '${process.env.PUBLIC_URL}/img/Intro/Lee.jpg',
         part: 'BackEnd/Server',
         stack: 'Java/Spring',
     },
