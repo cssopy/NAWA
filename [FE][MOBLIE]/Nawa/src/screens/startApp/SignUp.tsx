@@ -264,11 +264,12 @@ function SignUp({navigation} : SignUpScreenProps) {
 
   // userId, nickName => id와 닉네임 중복 검사 , 휴대폰 인증 확인 절차 추가 idCheck nicknameCheck authNumberCheck
   // 비밀번호, 확인용 비밀번호 체크 유무 추가
-  // const canGoNext = idCheck && password && password === passwordCheck && date && email && nicknameCheck && authNumberCheck && gender;
+  // 출시할 거니까 번호 인증
+  const canGoNext = idCheck && password && password === passwordCheck && date && email && nicknameCheck && authNumberCheck && gender;
 
   // !!!!!출시 때 열어두기!!!!!
   // 현재 서버에서 휴대폰 인증 막아둠 authNumberCheck 생략 
-  const canGoNext = idCheck && password && password === passwordCheck && date && email && nicknameCheck && authNumber && gender; 
+  // const canGoNext = idCheck && password && password === passwordCheck && date && email && nicknameCheck && authNumber && gender; 
 
   return (
     <DismissKeyboardView>

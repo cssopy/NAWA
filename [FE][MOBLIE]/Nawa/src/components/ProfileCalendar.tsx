@@ -31,7 +31,7 @@ const ProfileCalendar = () => {
     const accessToken = useSelector((state: RootState) => state.user.accessToken)
 
     const onChangeTodo = useCallback(text => {
-      setTodo(text.trim());
+      setTodo(text);
     }, []);
 
     const todoCreate = async () => {
@@ -42,7 +42,6 @@ const ProfileCalendar = () => {
         const response = await axios.post(`http://i7d205.p.ssafy.io:8080/api/calendar`, {
           "calContent": todo,
           "calDate": date,
-          "calId": 0,
           "userId": userId
         });
         console.log("CalTodo Send")
@@ -168,6 +167,15 @@ const ProfileCalendar = () => {
               <Text style={styles.modalText}> Calendar Todo</Text>
               <Text style={styles.modalText}></Text>
               {/* 기기 내부에서  */}
+              <TextInput
+                  onChangeText={onChangeTodo}
+                  placeholder="할 일을 입력해주세요"
+                  placeholderTextColor="#666"
+                  textContentType="none"
+                  value={todo}
+                  ref={todoRef}
+                  blurOnSubmit={false}
+                  autoCapitalize= 'none'/>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => {
@@ -177,15 +185,6 @@ const ProfileCalendar = () => {
                   }
                 }}
               >
-                <TextInput
-                  onChangeText={onChangeTodo}
-                  placeholder="할 일을 입력해주세요"
-                  placeholderTextColor="#666"
-                  textContentType="none"
-                  value={todo}
-                  ref={todoRef}
-                  blurOnSubmit={false}
-                  autoCapitalize= 'none'/>
                 <Text style={styles.textStyle}>할 일 추가</Text>
               </Pressable>
               <Pressable
