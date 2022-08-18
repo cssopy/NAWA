@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { FAB } from "@rneui/base";
 
 
-import { Animated, Dimensions, StyleSheet, Text, TouchableWithoutFeedback, View, Image, ScrollView } from "react-native";
+import { Animated, Dimensions, StyleSheet, Text, TouchableWithoutFeedback, View, Image } from "react-native";
 import { useIsFocused } from '@react-navigation/native'
 
 import axios from 'axios';
@@ -120,9 +120,6 @@ function ProfileFeeditem ({ navigation }) {
       }
 
     return (
-      <ScrollView
-      style={styles.safe}
-    >
         <Animated.FlatList
         data={feeds.reverse()}
         renderItem={onefeed}
@@ -134,7 +131,6 @@ function ProfileFeeditem ({ navigation }) {
         nestedScrollEnabled
         ></Animated.FlatList>
     )
-    </ScrollView>
   }
 
   return (
