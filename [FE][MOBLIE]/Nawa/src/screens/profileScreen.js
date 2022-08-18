@@ -14,6 +14,7 @@ const ProfileScreen = () => {
   const nickname = useSelector((state : RootState) => state.user.nickname)
   const userId = useSelector((state: RootState) => state.user.userId)
   const accessToken = useSelector((state : RootState) => state.user.accessToken)
+  // console.log(nickname, accessToken)
   // 임시
   const [follow, setFollow] = useState(100)
   const [following, setFollowing] = useState(1000)

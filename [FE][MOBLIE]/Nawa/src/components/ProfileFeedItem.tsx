@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { FAB } from "@rneui/base";
 
 
-import { Animated, Dimensions, StyleSheet, Text, TouchableWithoutFeedback, View, Image } from "react-native";
+import { Animated, Dimensions, StyleSheet, Text, TouchableWithoutFeedback, View, Image, ScrollView } from "react-native";
 import { useIsFocused } from '@react-navigation/native'
 
 import axios from 'axios';
@@ -12,6 +12,7 @@ import { RootState } from "../store/reducer";
 // import UserIcon from "../../components/userIcon";
 import Video from "react-native-video";
 import UserImage from "./UserImage";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function ProfileFeeditem ({ navigation }) {
 
@@ -120,16 +121,19 @@ function ProfileFeeditem ({ navigation }) {
       }
 
     return (
+      // <ScrollView>
+      <SafeAreaView>
         <Animated.FlatList
-        data={feeds.reverse()}
-        renderItem={onefeed}
-        style={{
-          backgroundColor: "white",
-          transform: [{ translateY: translateY }],
-          elevation: 8,
-        }}
-        nestedScrollEnabled
-        ></Animated.FlatList>
+          data={feeds}
+          renderItem={onefeed}
+          style={{
+            backgroundColor: "white",
+            transform: [{ translateY: translateY }],
+            elevation: 8,
+          }}
+          nestedScrollEnabled
+          ></Animated.FlatList>
+        </SafeAreaView>
     )
   }
 

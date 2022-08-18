@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {Alert, KeyboardAvoidingView, ScrollView, Text, TextInput, View} from 'react-native'
 
 import { useSelector } from "react-redux";
@@ -11,12 +11,16 @@ import {Dimensions} from 'react-native';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 import { firebase } from '@react-native-firebase/database';
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import DismissKeyboardView from "../../components/DismissKeyboardView";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 
 
 const ChattingMain = ({ route }) => {
     const targetname = route.params.targetname
     const nickname = useSelector((state : RootState) => state.user.nickname)
+    // console.log(nickname)
     const [chattings, setChattings] = useState([]);
     const chattingss = useSelector((state : RootState) => state.user.chatting)
     
@@ -51,26 +55,6 @@ const ChattingMain = ({ route }) => {
             })
         }, [chattingss])
 
-
-    // useEffect(() => {
-    //     setChattings([]);
-    //         reference
-    //         .ref(`/users`)
-    //         .once('value')
-    //         .then((snapshot) => {
-    //             const data = snapshot.toJSON()
-    //             const case2 = []
-    //             for (var prop in data) {    
-    //                 if (data[prop].to === targetname && data[prop].from === nickname) {
-    //                     case2.push(data[prop])
-    //                 } else if (data[prop].to === nickname && data[prop].from === targetname) {
-    //                     case2.push(data[prop])
-    //                 }
-    //             }
-    //             setChattings(case2)
-    //         })
-    //     }, [])
-
     // 전송 하기
     const send = (targetname) => {
         const data = {
@@ -87,11 +71,15 @@ const ChattingMain = ({ route }) => {
         .then(() => {console.log('전송완료')})
         setTexting('');
     }
-
+   
+    // _scrollToInput = (reactNode) => {
+    //     this.scroll.props.scrollToFocusedInput(reactNode)
+    // }
 
 // 작성내용 없으면 전송 안되도록 버튼 만들기
     return (
-        <View style={{flexDirection:'column', width:SCREEN_WIDTH, height:SCREEN_HEIGHT - 50}}>
+        <SafeAreaProvider>
+            <View style={{flexDirection:'column', width:SCREEN_WIDTH, height:SCREEN_HEIGHT - 50}}>
             <View style={{flex:1, flexDirection:'row', backgroundColor:'rgb(0, 197, 145)'}}>
                 <View style={{flex:3}}><Text>{targetname} 님</Text></View>
                 <View style={{flex:1}}><Text>신고</Text></View> 
@@ -119,7 +107,7 @@ const ChattingMain = ({ route }) => {
 
                 <View style={{flex:1, flexDirection:'row', borderRadius:20, marginBottom:20}}>
                     <TextInput
-                        style={{flex:6, color:'black', fontSize:20}}
+                        style={{flex:6, backgroundColor: 'white', color:'black', fontSize:20, paddingLeft: 10}}
                         onChangeText={onChangeText}
                         value={texting}
                     />
@@ -128,6 +116,8 @@ const ChattingMain = ({ route }) => {
             </KeyboardAvoidingView>
 
         </View>
+
+        </SafeAreaProvider>
     )
 }
 

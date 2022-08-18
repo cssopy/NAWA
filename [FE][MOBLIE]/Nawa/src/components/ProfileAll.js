@@ -7,10 +7,9 @@ const ProfileAll = () => {
     
     return (
         <View style={{flex: 1, justifyContent: 'center', alignItems:'center', flexDirection:'column'}}>
-            <View style={{flex:4}}>
+            <View>
                 <ProfileFeedItem/>
             </View>
-            
         </View>
     )
 }
