@@ -22,7 +22,7 @@ function ProfileFeeditem ({ navigation }) {
   const [feeds, setFeeds] = useState([]);
 
   const isFocused = useIsFocused()
-  
+  const [refreshing, setReFreshing] = useState<boolean>(false);
   const animationRef = useRef(new Animated.Value(0)).current;
   
   const url = 'http://i7d205.p.ssafy.io/api/'
@@ -85,8 +85,8 @@ function ProfileFeeditem ({ navigation }) {
                   alignItems: 'center',
                 }}
               >
-                <Text>{ image[0] }</Text>
-                <Text>{ imageType[0] }</Text>
+                {/* <Text>{ image[0] }</Text>
+                <Text>{ imageType[0] }</Text> */}
                 { (imageType[0] === 'IMAGE') ?
                 <Image
                   source={{ uri: image[0] }}
@@ -112,7 +112,7 @@ function ProfileFeeditem ({ navigation }) {
             }
 
             <View style={ styles.underBar }>
-              <View style={styles.userIcon}><UserImage /></View>
+              {/* <View style={styles.userIcon}><UserImage /></View> */}
               <View style={styles.textBox}><Text style={styles.text}>{item.boardTitle}</Text></View>
             </View>
           </View>
@@ -121,7 +121,7 @@ function ProfileFeeditem ({ navigation }) {
       }
 
     return (
-      // <ScrollView>
+      
       <SafeAreaView>
         <Animated.FlatList
           data={feeds}

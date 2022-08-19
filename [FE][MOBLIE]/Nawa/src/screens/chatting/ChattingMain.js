@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     width: SCREEN_WIDTH*0.95,
     height: SCREEN_WIDTH*0.15,
+    borderBottomWidth: 1
   },
   chatText: {
     color: "black",
