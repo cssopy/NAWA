@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { FAB } from "@rneui/base";
 
 
-import { Animated, Dimensions, StyleSheet, Text, TouchableWithoutFeedback, View, Image } from "react-native";
+import { Animated, Dimensions, StyleSheet, Text, TouchableWithoutFeedback, View, Image, ScrollView } from "react-native";
 import { useIsFocused } from '@react-navigation/native'
 
 import axios from 'axios';
@@ -12,6 +12,7 @@ import { RootState } from "../store/reducer";
 // import UserIcon from "../../components/userIcon";
 import Video from "react-native-video";
 import UserImage from "./UserImage";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function ProfileFeeditem ({ navigation }) {
 
@@ -21,7 +22,7 @@ function ProfileFeeditem ({ navigation }) {
   const [feeds, setFeeds] = useState([]);
 
   const isFocused = useIsFocused()
-  
+  const [refreshing, setReFreshing] = useState<boolean>(false);
   const animationRef = useRef(new Animated.Value(0)).current;
   
   const url = 'http://i7d205.p.ssafy.io/api/'
@@ -84,8 +85,8 @@ function ProfileFeeditem ({ navigation }) {
                   alignItems: 'center',
                 }}
               >
-                <Text>{ image[0] }</Text>
-                <Text>{ imageType[0] }</Text>
+                {/* <Text>{ image[0] }</Text>
+                <Text>{ imageType[0] }</Text> */}
                 { (imageType[0] === 'IMAGE') ?
                 <Image
                   source={{ uri: image[0] }}
@@ -111,7 +112,7 @@ function ProfileFeeditem ({ navigation }) {
             }
 
             <View style={ styles.underBar }>
-              <View style={styles.userIcon}><UserImage /></View>
+              {/* <View style={styles.userIcon}><UserImage /></View> */}
               <View style={styles.textBox}><Text style={styles.text}>{item.boardTitle}</Text></View>
             </View>
           </View>
@@ -120,16 +121,19 @@ function ProfileFeeditem ({ navigation }) {
       }
 
     return (
+      
+      <SafeAreaView>
         <Animated.FlatList
-        data={feeds.reverse()}
-        renderItem={onefeed}
-        style={{
-          backgroundColor: "white",
-          transform: [{ translateY: translateY }],
-          elevation: 8,
-        }}
-        nestedScrollEnabled
-        ></Animated.FlatList>
+          data={feeds}
+          renderItem={onefeed}
+          style={{
+            backgroundColor: "white",
+            transform: [{ translateY: translateY }],
+            elevation: 8,
+          }}
+          nestedScrollEnabled
+          ></Animated.FlatList>
+        </SafeAreaView>
     )
   }
 

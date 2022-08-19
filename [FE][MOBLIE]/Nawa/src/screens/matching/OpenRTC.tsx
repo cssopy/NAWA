@@ -111,7 +111,6 @@ const OpenRTC = ( {navigation} ) => {
         }
       };
   
-      //create offer
       const offerDescription = await pc.current.createOffer();
       await pc.current.setLocalDescription(offerDescription);
   
@@ -122,7 +121,6 @@ const OpenRTC = ( {navigation} ) => {
   
       await channelDoc.set({offer});
   
-      // Listen for remote answer
       channelDoc.onSnapshot(snapshot => {
         const data = snapshot.data();
         if (!pc.current.currentRemoteDescription && data?.answer) {
@@ -131,7 +129,6 @@ const OpenRTC = ( {navigation} ) => {
         }
       });
   
-      // When answered, add candidate to peer connection
       answerCandidates.onSnapshot(snapshot => {
         snapshot.docChanges().forEach(change => {
           if (change.type === 'added') {

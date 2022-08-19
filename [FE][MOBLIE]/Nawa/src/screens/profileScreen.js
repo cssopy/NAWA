@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Text, View, StyleSheet, Image, Pressable} from 'react-native'
 import ProfileAll from "../components/ProfileAll";
 import ProfileCalendar from "../components/ProfileCalendar";
@@ -6,7 +6,7 @@ import UserImage from "../components/UserImage";
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useSelector } from 'react-redux';
 import { RootState } from './src/store/reducer';
-// import VideoItem from "../components/VideoItem";
+import axios from "axios";
 
 
 const ProfileScreen = () => {
@@ -14,42 +14,54 @@ const ProfileScreen = () => {
   const nickname = useSelector((state : RootState) => state.user.nickname)
   const userId = useSelector((state: RootState) => state.user.userId)
   const accessToken = useSelector((state : RootState) => state.user.accessToken)
-  // 임시
-  const [follow, setFollow] = useState(100)
-  const [following, setFollowing] = useState(1000)
-  const [rank, setRank] = useState(1)
+  // console.log(nickname, accessToken)
+  
   const [show, setShow] = useState('ALL')
+  const [friends, setFriends] = useState([]);
+
+  useEffect(() => {
+    const friend = async () => {
+      try {
+        const response = await axios({
+          method : 'get',
+          url : `http://i7d205.p.ssafy.io/api/mate/${userId}`,
+          headers : {"Authorization" : `Bearer ${accessToken}`}
+        });
+        setFriends(response.data.mateList);
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+    friend()
+  },[])
   
   
   return (
     <View style={[styles.container, {flexDirection: "column"}]}>
-      <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center', flexDirection: "row", padding: 10, borderWidth: 1, }}>
+      <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center', flexDirection: "row", padding: 10,  }}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
           {/* 프로필 이미지 누르면 모달 띄워서 이미지 변경하도록 해야됨 */}
           <UserImage></UserImage>
         </View>
-        <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center', flexDirection:"column", borderWidth: 1,}}>
-            <View styles={{ flex: 1, justifyContent: 'center', alignItems: 'center', borderWidth: 1, }}>
-              <Text> { nickname } </Text> 
+        <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center', flexDirection:"column", }}>
+            <View styles={{ flex: 2 }}/>
+            <View styles={{ flex: 1, justifyContent: 'center', alignItems: 'center',  }}>
+              <Text style={{fontSize: 25, fontWeight: "bold"}}> { nickname } </Text> 
             </View>
-            <View styles={{ flex: 3, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', borderWidth: 1,}}>
-              <View styles={{ flex: 4, justifyContent: 'center', alignItems: 'center', borderWidth: 1,}}>
-                <Text>팔로우  {follow}</Text>
-              </View>
-              <View styles={{ flex: 4, justifyContent: 'center', alignItems: 'center', borderWidth: 1,}}>
-                <Text>팔로잉  {following}</Text>
-              </View>
-              <View styles={{ flex: 4, justifyContent: 'center', alignItems: 'center', borderWidth: 1,}}>
-                <Text>순위  {rank} </Text>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', }}>
+              
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
+                <Text style={{fontSize:16}}>메이트  {friends.length} 명 </Text>
               </View>
             </View>
         </View>
       </View>
-      <View style={{ flex:1, justifyContent:'center', alignItems: 'center', flexDirection: "row"}}>
+      {/* <View style={{ flex:1, justifyContent:'center', alignItems: 'center', flexDirection: "row"}}>
         <View style={{flex:4, justifyContent:'center', alignItems: 'center', borderWidth: 1,}}>
           <Text>Badges</Text> 
         </View>
-      </View>
+      </View> */}
       <View style={{ flex:1, justifyContent:'center', alignItems: 'center', flexDirection: "row"}}>
         <View style={{flex:4, justifyContent:'center', alignItems: 'center', borderWidth: 1,}}>
           {/* 버튼이나 프레서블로 아래 것들 바뀌게 설정 */}
