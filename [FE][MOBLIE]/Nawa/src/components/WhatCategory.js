@@ -16,7 +16,7 @@ const WhatCategory = (item, idx) => {
             <Icon
             raised
             size={15}
-            iconStyle={{fontSize:20}}
+            iconStyle={{fontSize:25}}
             name='barbell'
             type='ionicon'
             color='#f50'
@@ -30,7 +30,7 @@ const WhatCategory = (item, idx) => {
             <Icon
             raised
             size={15}
-            iconStyle={{fontSize:20}}
+            iconStyle={{fontSize:25}}
             name='badminton'
             type='material-community'
             color='#f50'
@@ -44,7 +44,7 @@ const WhatCategory = (item, idx) => {
             <Icon
             raised
             size={15}
-            iconStyle={{fontSize:20}}
+            iconStyle={{fontSize:25}}
             name='directions-run'
             type='material'
             color='#f50'
@@ -58,7 +58,7 @@ const WhatCategory = (item, idx) => {
             <Icon
             raised
             size={15}
-            iconStyle={{fontSize:20}}
+            iconStyle={{fontSize:25}}
             name='guide-dog'
             type='foundation'
             color='#f50'
@@ -72,7 +72,7 @@ const WhatCategory = (item, idx) => {
             <Icon
             raised
             size={15}
-            iconStyle={{fontSize:20}}
+            iconStyle={{fontSize:25}}
             name='directions-walk'
             type='material'
             color='#f50'
@@ -86,7 +86,7 @@ const WhatCategory = (item, idx) => {
             <Icon
             raised
             size={15}
-            iconStyle={{fontSize:20}}
+            iconStyle={{fontSize:25}}
             name='mountains'
             type='foundation'
             color='#f50'
@@ -100,7 +100,7 @@ const WhatCategory = (item, idx) => {
             <Icon
             raised
             size={15}
-            iconStyle={{fontSize:20}}
+            iconStyle={{fontSize:25}}
             name='bicycle'
             type='ionicon'
             color='#f50'
@@ -114,7 +114,7 @@ const WhatCategory = (item, idx) => {
             <Icon
             raised
             size={15}
-            iconStyle={{fontSize:20}}
+            iconStyle={{fontSize:25}}
             name='swim'
             type='material-community'
             color='#f50'
@@ -128,7 +128,7 @@ const WhatCategory = (item, idx) => {
             <Icon
             raised
             size={15}
-            iconStyle={{fontSize:20}}
+            iconStyle={{fontSize:25}}
             name='bowling'
             type='material-community'
             color='#f50'
@@ -142,7 +142,7 @@ const WhatCategory = (item, idx) => {
             <Icon
             raised
             size={15}
-            iconStyle={{fontSize:20}}
+            iconStyle={{fontSize:25}}
             name='baseball-bat'
             type='material-community'
             color='#f50'
@@ -156,7 +156,7 @@ const WhatCategory = (item, idx) => {
             <Icon
             raised
             size={15}
-            iconStyle={{fontSize:20}}
+            iconStyle={{fontSize:25}}
             name='basketball'
             type='material-community'
             color='#f50'
@@ -170,7 +170,7 @@ const WhatCategory = (item, idx) => {
             <Icon
             raised
             size={15}
-            iconStyle={{fontSize:20}}
+            iconStyle={{fontSize:25}}
             name='football'
             type='ionicon'
             color='#f50'
@@ -180,4 +180,4 @@ const WhatCategory = (item, idx) => {
         }
       }
 
-      export default WhatCateGory;
+      export default WhatCategory;

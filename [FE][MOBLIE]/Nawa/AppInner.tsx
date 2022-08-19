@@ -11,19 +11,21 @@ import { RootState } from './src/store/reducer';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeScreen from './src/screens/HomeScreen';
-import MatingScreen from './src/screens/Matching';
+import MatingScreen from './src/screens/MatchingScreen';
 import ChattingScreen from './src/screens/ChattingScreen';
 import SettingScreen from './src/screens/SettingScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
-import SignUp from './src/screens/SignUp';
-import SignIn from './src/screens/SignIn';
-import FindInfo from './src/screens/FindInfo';
+import SignUp from './src/screens/startApp/SignUp';
+import SignIn from './src/screens/startApp/SignIn';
+import FindInfo from './src/screens/startApp/FindInfo';
 import { useAppDispatch } from './src/store';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, { AxiosError } from 'axios';
 import userSlice from './src/slices/user';
 import SplashScreen from 'react-native-splash-screen';
 import AsyncStorage from '@react-native-community/async-storage';
+import { firebase } from '@react-native-firebase/database';
+import { useState } from 'react';
 
 
 
@@ -47,41 +49,79 @@ export type RootStackParamList = {
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-// const Drawer = createDrawerNavigator();
 
 
 function AppInner() {
-  //////////////////////////////////////////////////////////////////// 시작//////////////////////////////////////////
   const dispatch = useAppDispatch()
   const accessToken = useSelector((state : RootState) => state.user.accessToken)
-  
+  const nickname = useSelector((state : RootState) => state.user.nickname)
+
+  // realtime database 등록
+  const reference = firebase
+    .app()
+    .database('https://nawa-firebase-webrtc-default-rtdb.asia-southeast1.firebasedatabase.app/')
+
+  // 내 채널 구독
+  reference
+    .ref(`/users`)
+    .on('child_added', snapshot => {
+      const newData = snapshot.val();
+      if (newData.time >= Date()) {
+        if (newData.to === nickname && newData.from !== nickname) {
+          Alert.alert('알림', '새로운 메세지가 도착했습니다.');
+          dispatch(userSlice.actions.addChatting(newData));
+          return ;
+        } 
+        if (newData.to !== nickname && newData.from === nickname) {
+          dispatch(userSlice.actions.addChatting(newData));
+          return ;
+        }
+      }
+    })
+      
+    
+ 
+  useEffect(() => {
+      reference
+        .ref(`/users`)
+        .once('value')
+        .then((snapshot) => {
+            const data = snapshot.toJSON()
+            dispatch(
+              userSlice.actions.setChatting({
+                chatting : [data]
+              })
+            )
+        })
+  }, [])
+
+
+
   // 자동 로그인
   useEffect(() => {
     const getTokenAndRefresh = async () => {
       try {
         const userId = await EncryptedStorage.getItem('userId');
-        const accessToken = await EncryptedStorage.getItem('accessToken');
-        const nickname = await AsyncStorage.getItem('nickname');
         const refreshToken = await EncryptedStorage.getItem('refreshToken');
-        
-        console.log(userId)
-        console.log(accessToken)
-        console.log(refreshToken)
-        
+        let accessToken = await EncryptedStorage.getItem('accessToken');
+        const nickname = await AsyncStorage.getItem('nickname');
         if (!accessToken) {
           SplashScreen.hide();
           return;
         }
-        const response = await axios.put(
-          'http://i7d205.p.ssafy.io:8080/user/autoLogin',
-          {
+
+        const response = await axios({
+          method : 'put',
+          url : 'http://i7d205.p.ssafy.io/api/user/autoLogin',
+          data : {
             userId: userId,
-            accessToken: accessToken,
             refreshToken: refreshToken
           },
-        );
+          headers : {"Authorization" : `Bearer ${accessToken}`}
+        });
+        
         dispatch(
-          userSlice.actions.setUser({ // redux state는 값이 변하면, useselector로 참조하고 있는 모든 컴포넌트가 다시 렌더링.
+          userSlice.actions.setUser({
             userId : response.data.userId,
             accessToken : response.data.accessToken,
             nickname : nickname
@@ -97,20 +137,70 @@ function AppInner() {
         )
 
       } catch (error) {
-        Alert.alert('알림', '다시 로그인 해주세요');
+         // 정지유저 400
+          if (error.response.status === 400) {
+            dispatch(
+              userSlice.actions.setUser({
+                userId : '',
+                accessToken : '',
+                nickname : ''
+              }),
+            );
+            EncryptedStorage.removeItem('userId')
+            EncryptedStorage.removeItem('accessToken')
+            EncryptedStorage.removeItem('refreshToken')
+            Alert.alert('알림', '사용이 정지된 회원입니다. 고객센터를 통해 문의 해주세요')
+          }
+          // access토큰 만료시 403
+          if (error.response.status === 403) {
+            try {
+              const userId = await EncryptedStorage.getItem('userId');
+              const refreshToken = await EncryptedStorage.getItem('refreshToken');
+              const response = await axios({
+                method : 'post',
+                url : 'http://i7d205.p.ssafy.io/api/checktoken',
+                data : {
+                  userId: userId,
+                  refreshToken: refreshToken
+                }
+              });
+              // accessToken 신규 발급
+              await EncryptedStorage.setItem('accessToken', response.data)
+              dispatch(
+                userSlice.actions.setUser({
+                  accessToken : response.data
+                })
+              )
+            } catch {
+              if (error.response.status === 403) {
+                dispatch(
+                  userSlice.actions.setUser({
+                    userId : '',
+                    accessToken : '',
+                    nickname : ''
+                  }),
+                );
+                EncryptedStorage.removeItem('userId')
+                EncryptedStorage.removeItem('accessToken')
+                EncryptedStorage.removeItem('refreshToken')
+              }
+            } finally {
+              SplashScreen.hide();
+            }
+          }
 
       } finally {
-        SplashScreen.hide();
+            SplashScreen.hide();
       }
-    };
+    }
     getTokenAndRefresh();
   }, [dispatch]);
-  //////////////////////////////////////////////////////////////////// 끝//////////////////////////////////////////
+
+
+ 
   return (
     <>
       <NavigationContainer>
-        {/* <Drawer.Navigator>
-        </Drawer.Navigator> */}
         {accessToken ? (
           <Tab.Navigator
           screenOptions={({ route }) => ({
@@ -130,15 +220,15 @@ function AppInner() {
               }
               return <Ionicons name={iconName} size={size} color={color} />;
             },
-            tabBarActiveTintColor : 'rgb(0, 197, 145)', // 활성화된 탭 색
-            tabBarInactiveTintColor : 'grey',  // 활성화 안된 탭 색
+            tabBarActiveTintColor : 'rgb(0, 197, 145)',
+            tabBarInactiveTintColor : 'grey',
             headerShown : false,
             tabBarHideOnKeyboard : true,
             tabBarStyle : {height:50}
           })}
         >
           <Tab.Screen name="홈" component={HomeScreen} />
-          <Tab.Screen name="채팅" component={ChattingScreen} options={{ tabBarBadge: 10 }} />
+          <Tab.Screen name="채팅" component={ChattingScreen} />
           <Tab.Screen name="매칭" component={MatingScreen} />
           <Tab.Screen name="프로필" component={ProfileScreen} />
           <Tab.Screen name="설정" component={SettingScreen} />
@@ -148,19 +238,15 @@ function AppInner() {
                 <Stack.Screen
                 name="SignIn"
                 component={SignIn}
-                // options={{title: '로그인'}}
                 />
                 <Stack.Screen
                 name="SignUp"
                 component={SignUp}
-                // options={{title: '회원가입', headerShown:true ,headerStyle:{backgroundColor:'rgb(0, 197, 145)'}}}
                 />
                 <Stack.Screen
                 name="FindInfo"
                 component={FindInfo}
-                // options={{title: '아이디/비밀번호찾기' }}
                 />
-                
             </Stack.Navigator>
         )}
       </NavigationContainer>
