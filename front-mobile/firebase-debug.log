@@ -1,0 +1,21 @@
+[debug] [2022-08-06T13:34:37.131Z] ----------------------------------------------------------------------
+[debug] [2022-08-06T13:34:37.132Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\multicampus\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2022-08-06T13:34:37.133Z] CLI Version:   11.4.2
+[debug] [2022-08-06T13:34:37.133Z] Platform:      win32
+[debug] [2022-08-06T13:34:37.133Z] Node Version:  v16.16.0
+[debug] [2022-08-06T13:34:37.134Z] Time:          Sat Aug 06 2022 22:34:37 GMT+0900 (대한민국 표준시)
+[debug] [2022-08-06T13:34:37.134Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-08-06T13:34:37.141Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2022-08-06T13:34:37.141Z] > authorizing via signed-in user (windy82588@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\multicampus\Desktop\S07P12D205\[FE][MOBLIE]\Nawa
+
