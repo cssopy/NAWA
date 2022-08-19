@@ -58,11 +58,12 @@ function Feeds ({ navigation }) {
         sendUrl,
         { headers: { Authorization : `Bearer ${myId}` }}
       ).then(res => {
+        console.log('얼마나 가져왔니', res.data.length)
         if (res.data.length < 10 ) {
           setNoMoreFeed(true)
         }
         setFeeds(feeds.concat(res.data))
-        setPage(page + res.data.length)
+        setPage((page + res.data.length))
 
       }).catch(async (err) =>{
         Alert.alert('알림', `오류 발생 ${err}`)
@@ -127,13 +128,13 @@ function Feeds ({ navigation }) {
         setNoMoreFeed(false)
         setLoading(false)
     
-      },[])
+      },[ticTok])
     )
     
     const checkfeed = async () => {
       if (!loading) {
         console.log('더 없나?', page, noMoreFeed)
-        if (page >= 10 && !noMoreFeed) {
+        if (!noMoreFeed) {
           setTicTok(!ticTok)
         } else {
           console.log('더 없네')

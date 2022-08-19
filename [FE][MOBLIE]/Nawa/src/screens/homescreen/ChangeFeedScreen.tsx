@@ -281,19 +281,20 @@ function ChangeFeedScreen({ navigation, route }) {
           marginBottom: SCREEN_HEIGHT * 0.01,
         }}
       >
+        { files.length > 0 &&
         <Swiper
-          style={styles.swiper}
+        style={styles.swiper}
         >
         { files.map(file => {
           if ( file.fileType === 'IMAGE') {
             return (
               <TouchableWithoutFeedback
-                key={ file.fileId }
-                style={ styles.media }
-                onPress={() => {
-                  changestatus(file.fileId)
-                  // console.log(file.fileId)
-                } }
+              key={ file.fileId }
+              style={ styles.media }
+              onPress={() => {
+                changestatus(file.fileId)
+                // console.log(file.fileId)
+              } }
               >
                 {/* <Text>{ `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }</Text> */}
                 <Image
@@ -303,31 +304,34 @@ function ChangeFeedScreen({ navigation, route }) {
                     height: SCREEN_WIDTH * 0.8,
                     width: SCREEN_WIDTH * 0.8,
                   }}
-                />
+                  />
               </TouchableWithoutFeedback>
             )
           } else {
             return(
               <TouchableWithoutFeedback
-                key={ file.fileId }
-                style={ styles.media }
-                onPress={() => {
-                  changestatus(file.fileId)
-                }}
+              key={ file.fileId }
+              style={ styles.media }
+              onPress={() => {
+                changestatus(file.fileId)
+              }}
               ><Video
-                  source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
-                  controls={true}
-                  style={{
-                    height: SCREEN_WIDTH * 0.8,
-                    width: SCREEN_WIDTH * 0.8,
-                  }}
+              source={{ uri: `http://i7d205.p.ssafy.io/api/file/${file.fileType}/${file.fileName}` }}
+              controls={true}
+              style={{
+                height: SCREEN_WIDTH * 0.8,
+                width: SCREEN_WIDTH * 0.8,
+              }}
               /></TouchableWithoutFeedback>
               )
-          }
-        })}
+            }
+          })}
         </Swiper>
+        }
         { newFiles.length > 0 && 
-          <Swiper>
+          <Swiper
+            style={styles.swiper}
+          >
             {newFiles.map(file => {
               if ( file.type === 'image/jpeg') {
                 return (
@@ -382,6 +386,9 @@ function ChangeFeedScreen({ navigation, route }) {
       <Form
         onButtonPress={onSubmit}
         buttonText = "보내기"
+        style={{
+          marginBottom: SCREEN_HEIGHT * 0.1,
+        }}
         >
         <FormItem
           label="제목"
