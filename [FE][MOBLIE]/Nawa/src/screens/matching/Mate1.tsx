@@ -124,7 +124,6 @@ const Mate1 = ( {navigation} ) => {
     });
     setLoc(loc => response.data)
     } catch (error) {
-      console.log('전체 조회',error)
     }
   }
 
@@ -159,10 +158,10 @@ const Mate1 = ( {navigation} ) => {
         })
       }
     } catch (error) {
-      console.log('추가',error)
     }
     getLoc()
   }
+
   // 즐겨찾기 삭제
   const delLoc = async (item) => {
     loc.forEach((loc, idx) => {
@@ -190,7 +189,6 @@ const Mate1 = ( {navigation} ) => {
         headers : {"Authorization" : `Bearer ${accessToken}`},
       })
       } catch (error) {
-        console.log('목록에서 삭제',error)
       }
       getLoc()
       return

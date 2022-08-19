@@ -162,6 +162,10 @@ android {
         }
     }
     buildTypes {
+        customDebugType {
+            debuggable false
+        }
+        
         debug {
             signingConfig signingConfigs.debug
             if (nativeArchitectures) {

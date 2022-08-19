@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React, {useEffect} from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Alert, Text, View, LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -50,6 +50,8 @@ export type RootStackParamList = {
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+LogBox.ignoreAllLogs();
+
 
 function AppInner() {
   const dispatch = useAppDispatch()
@@ -68,7 +70,7 @@ function AppInner() {
       const newData = snapshot.val();
       if (newData.time >= Date()) {
         if (newData.to === nickname && newData.from !== nickname) {
-          Alert.alert('알림', '새로운 메세지가 도착했습니다.');
+          // Alert.alert('알림', '새로운 메세지가 도착했습니다.');
           dispatch(userSlice.actions.addChatting(newData));
           return ;
         } 
