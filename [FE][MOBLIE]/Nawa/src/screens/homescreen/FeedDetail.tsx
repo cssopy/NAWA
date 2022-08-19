@@ -18,7 +18,7 @@ import { RootState } from "../../store/reducer";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 function FeedDetail({ route, navigation }) {
-  console.log('detail route', route)
+  // console.log('detail route', route)
 
   const [title, setTitle] = useState<string>('')
   const [content, setContent] = useState<string>('')
@@ -225,7 +225,7 @@ function FeedDetail({ route, navigation }) {
       `${url}board/${boardId}`,
       { headers: { Authorization : `Bearer ${myId}` }}
     ).then(res => {
-      console.log(res.data)
+      // console.log(res.data)
       navigation.navigate('Main', {screen: 'Feeds'})
     }).catch(async (err) =>{
       Alert.alert('오류', err.data)
@@ -283,7 +283,7 @@ function FeedDetail({ route, navigation }) {
       setFiles(datas.files)
       setLikes(datas.boardLikes)
       // console.log(files)
-      console.log(likes)
+      // console.log(likes)
       axios.get(
         `${url}board/like/${userId}/${boardId}/`,
         { headers: { Authorization : `Bearer ${myId}` }}
@@ -379,7 +379,9 @@ function FeedDetail({ route, navigation }) {
           marginVertical: SCREEN_HEIGHT * 0.025,
         }}
       >
-        <View><Text
+        <View
+          style={styles.titleView}
+        ><Text
           style={styles.title}
         >{ title }</Text></View>
         { files.length > 0 && 
@@ -520,6 +522,8 @@ function FeedDetail({ route, navigation }) {
               style={{
                 backgroundColor: 'white',
                 width: SCREEN_WIDTH * 0.5,
+                paddingHorizontal: SCREEN_WIDTH * 0.03,
+                borderRadius: 10,
               }}
             />
           </View>
@@ -537,7 +541,7 @@ function FeedDetail({ route, navigation }) {
           >Comments</Text></View>
         { comments && 
           comments.map(comment => {
-            console.log(comment, Boolean(whoamI === comment.userId))
+            // console.log(comment, Boolean(whoamI === comment.userId))
             return (<View
               key={ comment.cmtId }
               style={styles.commentTotal}
@@ -623,38 +627,47 @@ const styles = StyleSheet.create({
     height: SCREEN_HEIGHT * 0.5,
   },
   text : {
-    fontSize: 15
+    fontSize: SCREEN_WIDTH * 0.04
   },
   textBoxMe : {
     flex : 9,
     backgroundColor : 'rgb(0, 197, 145)',
-    marginRight : 5,
-    marginVertical : 5,
+    marginVertical : SCREEN_HEIGHT * 0.005,
+    paddingHorizontal: SCREEN_WIDTH * 0.05,
+    paddingVertical: SCREEN_HEIGHT * 0.005,
     borderRadius : 10,
     justifyContent: 'center',
-    alignItems: 'center',
-    height: 20
+    // alignItems: 'center',
+    flexShrink: 0,
+    flexBasis: 150,
   },
   textBoxYou : {
     flex : 9,
     backgroundColor : 'white',
-    marginRight : 5,
-    marginVertical : 5,
+    marginVertical : SCREEN_HEIGHT * 0.005,
+    paddingHorizontal: SCREEN_WIDTH * 0.05,
+    paddingVertical: SCREEN_HEIGHT * 0.005,
     borderRadius : 10,
     justifyContent: 'center',
-    alignItems: 'center',
-    height: 20
+    // alignItems: 'center',
+    flexShrink: 0,
+    flexBasis: 150,
   },
   textFontMe: {
-    fontSize: 15,
+    fontSize: SCREEN_WIDTH * 0.04,
     color: 'white'
   },
   textFontYou: {
-    fontSize: 15,
+    fontSize: SCREEN_WIDTH * 0.04,
   },
   title: {
-    fontSize: 40,
+    fontSize: SCREEN_WIDTH * 0.08,
     fontWeight: 'bold',
+    flexWrap: 'wrap',
+  },
+  titleView: {
+    flexWrap: 'wrap',
+    marginBottom: SCREEN_HEIGHT * 0.02
   },
   underBar : {
     flex : 2,
