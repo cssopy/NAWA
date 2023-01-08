@@ -19,6 +19,12 @@
 - SpringBoot, Java, JPA, MySQL
 - AWS EC2, Jenkins, Nginx
 
+
+## 🎨 서비스화면
+![image](https://user-images.githubusercontent.com/83584721/211181664-4fe67d1e-a3d9-4fa2-9a2b-c249215f5f6d.png)
+
+
+
 ## 👥 멤버
 
 - 프론트엔드
