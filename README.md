@@ -19,6 +19,23 @@
 - SpringBoot, Java, JPA, MySQL
 - AWS EC2, Jenkins, Nginx
 
+## 📚 라이브러리
+
+- 프론트엔드
+    |이름|버전|적용|
+    |---|---|---|
+    |react-redux|^8.0.2|데이터 상태 관리|
+    |axios|^0.27.2|서버와의 API 통신|
+    |react-native-image-picker|^4.8.5|캡쳐 및 캡쳐이미지 사용|
+    |react-native-video|^6.0.0-alpha.1|비디오파일 재생|
+- 백엔드
+    |이름|버전|적용|
+    |---|---|---|
+    |spring-boot-starter-data-jpa|2.7.2|반복적인 CRUD SQL 처리|
+    |jjwt|0.9.1|JWT 생성 및 검증, 사용자 인증|
+    |commons-email|0.11.5|이메일인증|
+    |lombok|1.18.24|Repository Class 사용|
+
 
 ## 🎨 서비스화면
 ![image](https://user-images.githubusercontent.com/83584721/211181664-4fe67d1e-a3d9-4fa2-9a2b-c249215f5f6d.png)
